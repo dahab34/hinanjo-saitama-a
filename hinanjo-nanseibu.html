@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>避難所さがし 南西部版</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --ink:#1c2530; --sub:#5b6573; --line:#e3e7ec; --accent:#2b5d8a;
+  --okbg:#e6f4ea; --ok:#1d7a3d; --warnbg:#fdf1dc; --warn:#b6731a; --ngbg:#fde8e8; --ng:#c0392b;
+  --capbg:#eef1f4; --cap:#566; --kindbg:#eaf1f8; --kind:#2b5d8a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;font-size:15px;line-height:1.5}
+header{position:sticky;top:0;background:var(--bg);padding:10px 12px 4px;z-index:5;border-bottom:1px solid var(--line)}
+h1{font-size:17px;margin:0 0 8px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:6px}
+.tabs button{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--sub);padding:7px 12px;border-radius:18px;font-size:14px;white-space:nowrap}
+.tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.search{display:flex;gap:6px;margin-top:8px}
+.search input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px;background:#fff}
+.search button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:0 12px}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.seg button{border:1px solid var(--line);background:#fff;color:var(--sub);padding:6px 10px;border-radius:14px;font-size:13px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.hint{color:var(--sub);font-size:12.5px;margin:8px 12px 0}
+.count{color:var(--sub);font-size:12.5px;margin:6px 12px}
+main{padding:0 12px 40px}
+.sec{font-weight:700;font-size:13px;color:var(--accent);margin:16px 2px 8px;padding-bottom:4px;border-bottom:2px solid var(--line)}
+.note{background:var(--warnbg);color:#6b4b16;border-radius:8px;padding:8px 10px;font-size:12.5px;margin:8px 0}
+.alert{background:var(--ngbg);color:#8a2a20;border-radius:8px;padding:8px 10px;font-size:13px;margin:8px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin:8px 0}
+.card.match{box-shadow:0 0 0 2px var(--kindbg) inset}
+.name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.kind{font-size:11px;font-weight:600;background:var(--kindbg);color:var(--kind);border-radius:5px;padding:1px 6px}
+.addr{color:var(--sub);font-size:13px;margin:4px 0 6px}
+.addr a{color:var(--accent)}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11.5px;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.p-ok{background:var(--okbg);color:var(--ok)} .p-up{background:var(--warnbg);color:var(--warn)}
+.p-ng{background:var(--ngbg);color:var(--ng)} .p-cap{background:var(--capbg);color:var(--cap)}
+.empty{color:var(--sub);text-align:center;padding:28px 12px;font-size:14px}
+.empty a{color:var(--accent)}
+details.help{margin:8px 12px 0;border:1px solid var(--line);border-radius:10px;background:#fff}
+details.help summary{padding:9px 12px;font-size:13.5px;font-weight:600;color:var(--accent);cursor:pointer;list-style:none}
+details.help summary::-webkit-details-marker{display:none}
+details.help summary::before{content:"ⓘ ";}
+details.help[open] summary{border-bottom:1px solid var(--line)}
+.helpbody{padding:8px 12px;font-size:12.8px;line-height:1.6}
+.helpbody p{margin:6px 0}.helpbody u{text-decoration:none;color:var(--accent);font-weight:600}
+.helpbody .src{color:var(--sub);font-size:11.5px;margin-top:8px}
+.links{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 10px}
+.links a.lk{flex:0 0 auto;font-size:12px;border:1px solid var(--line);background:#fff;color:var(--accent);border-radius:14px;padding:6px 11px;text-decoration:none;white-space:nowrap}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 14px;align-items:start}
+.col{min-width:0}
+.col .sec:first-child{margin-top:0}
+header{max-width:1180px;margin:0 auto}
+.hint,.count{max-width:1180px;margin-left:auto;margin-right:auto}
+details.help{max-width:1180px;margin-left:auto;margin-right:auto}
+main{max-width:1180px;margin:0 auto}
+#out{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px 14px;align-items:start}
+#out>.sec,#out>.note,#out>.alert,#out>.links,#out>.empty,#out>.count,#out>.cols,#out>button{grid-column:1/-1}
+@media(max-width:560px){
+ #out{display:block}
+ .cols{grid-template-columns:1fr}
+}
+footer{color:var(--sub);font-size:11.5px;padding:16px 14px 30px;line-height:1.6}
+.datasrc{max-width:1180px;margin:12px auto 30px;padding:0 14px;font-size:11.5px;color:#6b7787;line-height:1.7}.datasrc a{color:inherit}
+.gpsbtn{display:block;width:100%;margin:8px 0 2px;padding:13px 16px;font-size:16px;font-weight:700;color:#fff;background:var(--accent,#1f6feb);border:none;border-radius:10px;cursor:pointer}
+.gpsbtn:active{filter:brightness(.92)}
+.gpsbtn.loading{background:#888}
+.gpsbest{background:#eef3fb;border:2px solid var(--accent,#1f6feb);border-radius:10px;padding:12px 14px;margin:6px 0 10px;font-size:15px;line-height:1.6}
+.gpsbest b{font-size:17px}
+#out>.gpsbest,#out>.alert{grid-column:1/-1}
+</style>
+</head>
+<body>
+<header>
+  <h1>避難所さがし　南西部版</h1>
+  <div class="tabs" id="tabs"></div>
+  <div class="search">
+    <input id="q" type="search" placeholder="地名・施設名でしぼり込み（例：高坂／下細谷／〇〇小）" autocomplete="off">
+    <button id="clr">消去</button>
+  </div>
+  <button id="gps" type="button" class="gpsbtn">📍 今いる場所から一番近い避難所</button>
+  <div class="seg" id="seg"></div>
+</header>
+<details class="help"><summary>避難所の種類と、どんな時に使うか</summary>
+<div class="helpbody">
+ <p><b>指定緊急避難場所</b>＝<u>今すぐ危険から逃げる場所</u>。災害の危険から命を守るため緊急に避難。洪水・土砂・地震など<b>災害種別ごと</b>に指定。屋外（公園・グラウンド・駐車場）や堅牢な建物。</p>
+ <p><b>指定避難所</b>＝<u>災害後に寝泊まりする施設</u>。家に戻れないとき一定期間 生活する場所（学校・体育館・公民館）。</p>
+ <p><b>福祉避難所</b>＝<u>要配慮者向け</u>。高齢者・障害者など配慮が必要な人を受け入れ。<b>二次的に開設</b>（最初から開いてはいません）。</p>
+ <p><b>補助避難所</b>＝指定避難所が満員のときの予備。<b>協定</b>＝ゴルフ場・駐車場など民間と協定した一時避難先。</p>
+ <p class="src">※指定緊急避難場所と指定避難所は別物（同じ建物が両方を兼ねることも、別々のこともある）。出典：国土地理院。</p>
+</div></details>
+<div class="hint" id="hint"></div>
+<div class="count" id="count"></div>
+<main id="out"></main>
+<footer id="foot"></footer>
+<div class="datasrc">避難所データ出典：<a href="https://hinanmap.gsi.go.jp/hinanjocp/hinanbasho/koukaidate.html" target="_blank" rel="noopener">国土地理院 指定緊急避難場所・指定避難所データ（公開日一覧）</a>。<b>このツール作成：2026年6月</b>。情報は古くなります—最新の指定状況・公開日は各市町村および国土地理院で確認してください。</div>
+
+<script>
+/* ===== データ：[市町, 施設名, 住所, 地区, 種別, 水害, 電話]
+   種別 K=指定避難所 / Q=指定緊急のみ(避難所でない) / H=補助避難所 / F=福祉避難所 / P=指定緊急(公園・グラウンド)
+   水害 ok=1階から使える / up=上階へ(2〜3階) / no=水害時は使えない・開設しない / -=情報なし ===== */
+const RAW = [
+["朝霞市","仲町市民センター","仲町1-2-16","-","K","ok","",35.799173,139.600332],
+["朝霞市","内間木公民館","田島2-18-47","-","K","no","",35.818545,139.605088],
+["朝霞市","北朝霞公民館","朝志ケ丘1-4-1","-","K","ok","",35.819598,139.584157],
+["朝霞市","南朝霞公民館","溝沼1-5-24","-","K","ok","",35.799644,139.589722],
+["朝霞市","宮戸市民センター","宮戸1-2-60","-","K","ok","",35.824765,139.589179],
+["朝霞市","弁財市民センター","西弁財2-2-3","-","K","ok","",35.812295,139.581875],
+["朝霞市","朝志ヶ丘市民センター","朝志ケ丘3-8-16","-","K","ok","",35.821397,139.582902],
+["朝霞市","朝霞第一中学校","大字膝折2-31","-","K","ok","",35.791544,139.590974],
+["朝霞市","朝霞第一小学校","膝折町4-11-7","-","K","ok","",35.801179,139.582376],
+["朝霞市","朝霞第七小学校","北原2-6-1","-","K","ok","",35.819877,139.586489],
+["朝霞市","朝霞第三中学校","大字溝沼1043-1","-","K","no","",35.807511,139.585896],
+["朝霞市","朝霞第三小学校","大字浜崎230","-","K","no","",35.819337,139.600164],
+["朝霞市","朝霞第九小学校","大字台295","-","K","no","",35.809283,139.611982],
+["朝霞市","朝霞第二中学校","大字岡199","-","K","no","",35.815425,139.597115],
+["朝霞市","朝霞第二小学校","岡3-16-13","-","K","ok","",35.809039,139.60387],
+["朝霞市","朝霞第五中学校","大字宮戸1580","-","K","no","",35.824923,139.597129],
+["朝霞市","朝霞第五小学校","泉水3-16-1","-","K","ok","",35.810538,139.580882],
+["朝霞市","朝霞第八小学校","栄町5-1-41","-","K","ok","",35.790801,139.595831],
+["朝霞市","朝霞第六小学校","本町1-25-1","-","K","ok","",35.804547,139.596541],
+["朝霞市","朝霞第十小学校","大字溝沼828-1","-","K","no","",35.804504,139.584589],
+["朝霞市","朝霞第四中学校","栄町5-1-60","-","K","ok","",35.789436,139.59533],
+["朝霞市","朝霞第四小学校","幸町1-6-9","-","K","ok","",35.794553,139.587831],
+["朝霞市","東朝霞公民館","根岸台6-8-45","-","K","ok","",35.798334,139.604826],
+["朝霞市","東洋大学朝霞キャンパス（体育館）","大字岡48-1","-","K","no","",35.813278,139.594633],
+["朝霞市","栄町市民センター","栄町4-4-26","-","K","ok","",35.786581,139.598171],
+["朝霞市","根岸台市民センター","根岸台2-15-12","-","K","ok","",35.806891,139.605231],
+["朝霞市","溝沼市民センター","大字溝沼1057-3","-","K","no","",35.807551,139.587056],
+["朝霞市","県立朝霞高等学校","幸町3-13-65","-","K","ok","",35.78779,139.589534],
+["朝霞市","膝折市民センター","膝折町1-7-40","-","K","ok","",35.79428,139.5846],
+["朝霞市","西朝霞公民館","膝折町4-19-1","-","K","ok","",35.801776,139.5795],
+["朝霞市","クリード朝霞","大字浜崎656-1","-","F","-","",35.813835,139.591034],
+["朝霞市","介護老人保健施設つつじの郷","大字下内間木1363-1","-","F","-","",35.817599,139.617731],
+["朝霞市","介護老人保健施設グリーンビレッジ朝霞台","大字宮戸3-3","-","F","-","",35.820888,139.60222],
+["朝霞市","介護老人保健施設ケアライフ朝霞","溝沼2-4-10","-","F","-","",35.800964,139.589447],
+["朝霞市","児童発達支援センター元気キッズチルズ","大字浜崎79-1","-","F","-","",35.817745,139.600815],
+["朝霞市","埼玉県社会福祉事業団あさか向陽園","青葉台1-10-60","-","F","-","",35.790064,139.591428],
+["朝霞市","多機能型障害福祉サービス事業所ひまわり工房","大字宮戸17","-","F","-","",35.821798,139.602068],
+["朝霞市","朝霞市特別養護老人ホーム朝光苑","青葉台1-10-32","-","F","-","",35.790407,139.590418],
+["朝霞市","朝霞市総合福祉センター（はあとぴあ）","大字浜崎51-1","-","F","-","",35.816536,139.599888],
+["朝霞市","朝霞市障害者ふれあいセンター","上内間木493-9","-","F","-","",35.828177,139.605582],
+["朝霞市","特別養護老人ホーム内間木苑","上内間木498-4","-","F","-","",35.828221,139.602924],
+["朝霞市","特別養護老人ホーム花水木の里","大字宮戸24-1","-","F","-","",35.821365,139.602475],
+["朝霞市","社会福祉法人ハレルヤ","溝沼1-5-6","-","F","-","",35.799729,139.589285],
+["朝霞市","さくら保育園","大字溝沼435-1","-","Q","no","",35.810951,139.588456],
+["朝霞市","仲町保育園","仲町2-4-31","-","Q","ok","",35.794946,139.601778],
+["朝霞市","北朝霞保育園","朝志ケ丘1-3-26","-","Q","ok","",35.818197,139.584221],
+["朝霞市","宮戸保育園","宮戸4-6-2","-","Q","ok","",35.825601,139.591874],
+["朝霞市","本町保育園","本町1-20-4","-","Q","ok","",35.801489,139.596973],
+["朝霞市","東朝霞保育園","根岸台1-5-27","-","Q","ok","",35.802488,139.602216],
+["朝霞市","栄町保育園","栄町1-5-43","-","Q","ok","",35.791399,139.600487],
+["朝霞市","根岸台保育園","根岸台8-2-41","-","Q","ok","",35.799286,139.610385],
+["朝霞市","泉水保育園","泉水2-12-11","-","Q","ok","",35.804954,139.578379],
+["朝霞市","浜崎保育園","大字浜崎662-1","-","Q","no","",35.813222,139.591268],
+["朝霞市","溝沼保育園","溝沼7-13-11","-","Q","no","",35.807684,139.587934],
+["朝霞市","青葉台公園","大字膝折2-30","-","P","ok","",35.795318,139.590623],
+["志木市","いろは遊学館","本町1-10-1","-","K","ok","",35.831152,139.576827],
+["志木市","健康増進センター（西原ふれあいセンター）","幸町3-4-70","-","K","ok","",35.823008,139.564787],
+["志木市","宗岡中学校","上宗岡1-8-1","-","K","no","",35.842967,139.578904],
+["志木市","宗岡公民館","中宗岡4-16-11","-","K","no","",35.837687,139.591221],
+["志木市","宗岡小学校","中宗岡3-1-1","-","K","no","",35.839572,139.589758],
+["志木市","宗岡第三小学校","下宗岡1-15-30","-","K","no","",35.831149,139.592466],
+["志木市","宗岡第二中学校","下宗岡4-1-10","-","K","no","",35.830618,139.597374],
+["志木市","宗岡第二小学校","上宗岡3-13-1","-","K","no","",35.852886,139.5821],
+["志木市","宗岡第四小学校","上宗岡1-1-2","-","K","no","",35.839665,139.581489],
+["志木市","志木中学校","柏町3-2-2","-","K","no","",35.834279,139.569348],
+["志木市","志木小学校","本町1-10-1","-","K","ok","",35.831104,139.576587],
+["志木市","志木第三小学校","柏町3-2-1","-","K","ok","",35.833195,139.569506],
+["志木市","志木第二中学校","館1-3-1","-","K","no","",35.826344,139.562494],
+["志木市","志木第二小学校","館1-2-1","-","K","no","",35.827078,139.563347],
+["志木市","志木第四小学校","館1-4-1","-","K","no","",35.826355,139.560587],
+["志木市","慶應義塾志木高等学校","本町4-14-1","-","K","ok","",35.824126,139.578165],
+["志木市","柳瀬川図書館","館2-6-14","-","K","no","",35.829108,139.563138],
+["志木市","武道館","柏町3-6-19","-","K","ok","",35.831116,139.571515],
+["志木市","県立志木高等学校","上宗岡1-1-1","-","K","no","",35.841089,139.580709],
+["志木市","総合福祉センター","上宗岡1-5-1","-","K","no","",35.842272,139.581562],
+["志木市","福祉センター","上宗岡1-5-1","-","F","no","",35.842597,139.581895],
+["志木市","第二福祉センター","柏町3-5-1","-","F","no","",35.832207,139.572391],
+["志木市","秋ヶ瀬運動公園","大字宗岡","-","P","no","",35.846323,139.596298],
+["志木市","館近隣公園","館2-4","-","P","no","",35.828141,139.559392],
+["和光市","下新倉小学校","下新倉5-21-1","-","K","no","",35.796972,139.633315],
+["和光市","中央公民館","中央1-7-27","-","K","no","",35.783277,139.610874],
+["和光市","勤労福祉センター","新倉7-10-7","-","K","no","",35.803367,139.623367],
+["和光市","勤労青少年ホーム","新倉1-20-40","-","K","no","",35.793687,139.610658],
+["和光市","北原小学校","新倉1-5-27","-","K","no","",35.791909,139.6063],
+["和光市","南公民館","南2-3-1","-","K","no","",35.774929,139.612879],
+["和光市","南地域センター","南1-8-47","-","K","no","",35.772856,139.616688],
+["和光市","向山地域センター","白子1-33-20","-","K","no","",35.768014,139.622197],
+["和光市","和光市運動場","南2-2-2","-","K","no","",35.775028,139.614114],
+["和光市","坂下公民館","新倉3-4-18","-","K","ok","",35.793783,139.624263],
+["和光市","大和中学校","丸山台2-8-8","-","K","ok","",35.785196,139.619584],
+["和光市","広沢小学校","広沢1-5","-","K","no","",35.7828,139.606971],
+["和光市","新倉コミュニティセンター","新倉2-26-1","-","K","no","",35.793157,139.620653],
+["和光市","新倉児童館","新倉1-38-1","-","K","no","",35.792099,139.618557],
+["和光市","新倉北地域センター","新倉2-9-10","-","K","ok","",35.798083,139.617283],
+["和光市","新倉小学校","新倉2-2-39","-","K","ok","",35.792855,139.619639],
+["和光市","本町地域センター","本町3-3","-","K","no","",35.788379,139.611458],
+["和光市","本町小学校","本町31-17","-","K","no","",35.785967,139.604869],
+["和光市","白子コミュニティセンター","白子2-15-51","-","K","ok","",35.781226,139.622159],
+["和光市","白子吹上コミュニティセンター","白子3-8-21","-","K","ok","",35.788995,139.628337],
+["和光市","白子宿地域センター","白子2-20-40","-","K","no","",35.781586,139.62438],
+["和光市","白子小学校","白子3-2-10","-","K","ok","",35.784277,139.624294],
+["和光市","県立和光国際高校","広沢4-1","-","K","no","",35.778438,139.603614],
+["和光市","県立和光高校","新倉3-22-1","-","K","no","",35.797215,139.628196],
+["和光市","第三中学校","南2-2-1","-","K","ok","",35.773085,139.614543],
+["和光市","第三小学校","中央1-1-4","-","K","no","",35.784832,139.611939],
+["和光市","第二中学校","広沢1-4","-","K","no","",35.782422,139.608742],
+["和光市","第五小学校","南1-5-10","-","K","no","",35.770957,139.617336],
+["和光市","第四小学校","諏訪3-20","-","K","no","",35.777244,139.616337],
+["和光市","総合体育館","広沢3-1","-","K","ok","",35.776701,139.606189],
+["和光市","総合児童センター","広沢1-5-54","-","K","no","",35.783065,139.606538],
+["和光市","しらこ保育園","白子3-29-10","-","F","-","",35.787159,139.629494],
+["和光市","みなみ保育園","南2-3-3","-","F","-","",35.773971,139.613108],
+["和光市","わこう助産院","下新倉2-1-25","-","F","-","",35.787916,139.616809],
+["和光市","新倉高齢者福祉センター","新倉1-20-39","-","F","-","",35.793621,139.610167],
+["和光市","県立和光南特別支援学校","広沢4-5","-","F","-","",35.779108,139.600434],
+["和光市","県立和光特別支援学校","広沢4-3","-","F","-","",35.778307,139.602111],
+["和光市","総合福祉会館","南1-23-1","-","F","-","",35.772011,139.602834],
+["和光市","県営和光樹林公園","広沢3","-","P","no","",35.776988,139.605275],
+["新座市","八石小学校","野寺2-8-45","-","K","ok","",35.765647,139.557447],
+["新座市","十文字学園女子大学","菅沢2-1-28","-","K","ok","",35.799683,139.551151],
+["新座市","市民総合体育館","本多2-1-20","-","K","ok","",35.785203,139.553176],
+["新座市","新堀小学校","新堀1-16-5","-","K","ok","",35.772781,139.529607],
+["新座市","新座中学校","野火止2-4-1","-","K","ok","",35.784192,139.560197],
+["新座市","新座小学校","新座3-4-1","-","K","no","",35.81967,139.554547],
+["新座市","新座柳瀬高校","大和田4-12-1","-","K","no","",35.815937,139.551359],
+["新座市","新座総合技術高校","新塚1-3-1","-","K","ok","",35.778776,139.584945],
+["新座市","新座高校","池田1-1-2","-","K","ok","",35.775452,139.573935],
+["新座市","新開小学校","大和田1-22-10","-","K","ok","",35.810788,139.555652],
+["新座市","東北小学校","北野3-1-1","-","K","ok","",35.817708,139.568184],
+["新座市","東野小学校","野火止6-22-12","-","K","ok","",35.808118,139.567666],
+["新座市","栄小学校","新塚1-1-1","-","K","ok","",35.778868,139.587906],
+["新座市","栗原小学校","栗原1-5-1","-","K","ok","",35.763278,139.551115],
+["新座市","池田小学校","池田4-8-49","-","K","ok","",35.771722,139.575585],
+["新座市","片山小学校","片山1-8-31","-","K","ok","",35.770499,139.566752],
+["新座市","石神小学校","石神1-10-20","-","K","ok","",35.775193,139.552087],
+["新座市","立教大学新座キャンパス","北野1-2-26","-","K","ok","",35.813913,139.565778],
+["新座市","立教新座中学・高校","北野1-2-25","-","K","ok","",35.814974,139.567308],
+["新座市","第三中学校","池田1-1-1","-","K","no","",35.776793,139.573001],
+["新座市","第二中学校","野火止7-17-10","-","K","ok","",35.806917,139.568954],
+["新座市","第五中学校","野寺4-8-1","-","K","ok","",35.762112,139.560725],
+["新座市","第六中学校","堀ノ内3-11-1","-","K","ok","",35.776532,139.556242],
+["新座市","第四中学校","大和田4-17-1","-","K","no","",35.818382,139.553113],
+["新座市","第四小学校","馬場3-6-1","-","K","no","",35.778891,139.576999],
+["新座市","西堀小学校","西堀2-18-3","-","K","ok","",35.776502,139.539642],
+["新座市","西武台高校","中野2-9-1","-","K","no","",35.818493,139.547225],
+["新座市","跡見学園女子大学","中野1-9-6","-","K","ok","",35.816932,139.542792],
+["新座市","野寺小学校","野寺5-1-24","-","K","ok","",35.759737,139.556379],
+["新座市","野火止小学校","野火止4-9-1","-","K","ok","",35.80069,139.556891],
+["新座市","陣屋小学校","野火止1-18-20","-","K","ok","",35.788669,139.565655],
+["新座市","ふるさと新座館（野火止公民館）","野火止6-1-48","-","Q","ok","",35.800531,139.562626],
+["新座市","中央公民館","道場2-14-12","-","Q","ok","",35.770008,139.562058],
+["新座市","大和田公民館","大和田1-26-16","-","Q","no","",35.812621,139.5546],
+["新座市","市民会館","野火止1-1-2","-","Q","ok","",35.7927,139.565995],
+["新座市","東北コミュニティセンター","東北2-28-5","-","Q","ok","",35.820356,139.571923],
+["新座市","栗原ふれあいの家","栗原5-2-15","-","Q","ok","",35.762668,139.545406],
+["新座市","栗原公民館","栗原3-8-34","-","Q","ok","",35.76112,139.550786],
+["新座市","畑中公民館","畑中1-15-58","-","Q","ok","",35.785304,139.572959],
+["新座市","西堀新堀コミュニティセンター","新堀1-5-9","-","Q","ok","",35.772002,139.535798],
+["富士見市","つるせ台小学校","鶴瀬西2-9-1","-","K","ok","",35.847889,139.5332],
+["富士見市","ふじみ野交流センター","ふじみ野東3-7-1","-","K","-","",35.864648,139.529148],
+["富士見市","ふじみ野小学校","ふじみ野東4-4-1","-","K","ok","",35.862683,139.52893],
+["富士見市","みずほ台コミュニティセンター","西みずほ台1-19-2","-","K","-","",35.837818,139.549079],
+["富士見市","みずほ台小学校","東みずほ台3-21","-","K","ok","",35.844625,139.551504],
+["富士見市","健康増進センター","鶴馬3351-2","-","K","-","",35.851046,139.554932],
+["富士見市","勝瀬中学校","勝瀬400-1","-","K","-","",35.86672,139.542555],
+["富士見市","勝瀬小学校","勝瀬674","-","K","no","",35.86423,139.53767],
+["富士見市","南畑公民館","上南畑306-1","-","K","-","",35.860484,139.558766],
+["富士見市","南畑小学校","上南畑1280","-","K","no","",35.862749,139.562429],
+["富士見市","大井小学校","（埼玉県ふじみ野市）苗間37","-","K","-","",35.854963,139.514377],
+["富士見市","大井東中学校","（埼玉県ふじみ野市）ふじみ野3-2-1","-","K","-","",35.860646,139.516076],
+["富士見市","富士見台中学校","諏訪2-8-1","-","K","-","",35.851003,139.550306],
+["富士見市","市民総合体育館","鶴馬1887-1","-","K","-","",35.856795,139.551649],
+["富士見市","本郷中学校","水子539","-","K","-","",35.849543,139.558237],
+["富士見市","東中学校","上南畑980","-","K","-","",35.863606,139.561935],
+["富士見市","水谷中学校","水子3117","-","K","-","",35.839776,139.569502],
+["富士見市","水谷公民館","水谷1-13-6","-","K","-","",35.84122,139.558858],
+["富士見市","水谷小学校","水谷1-13-3","-","K","ok","",35.841524,139.559513],
+["富士見市","水谷東公民館","水谷東2-12-10","-","K","-","",35.839074,139.573895],
+["富士見市","水谷東小学校","水子3614","-","K","no","",35.839195,139.570571],
+["富士見市","県立富士見高校","上南畑950","-","K","-","",35.863948,139.563067],
+["富士見市","西中学校","西みずほ台3-14-6","-","K","-","",35.834844,139.544045],
+["富士見市","諏訪小学校","鶴馬1932-1","-","K","no","",35.855228,139.552536],
+["富士見市","針ケ谷コミュニティセンター","針ケ谷1-38","-","K","-","",35.832033,139.553977],
+["富士見市","針ケ谷小学校","針ケ谷2-38-1","-","K","ok","",35.828325,139.553008],
+["富士見市","関沢児童館","西みずほ台1-7","-","K","-","",35.840341,139.546359],
+["富士見市","関沢小学校","関沢3-24-1","-","K","ok","",35.835956,139.543633],
+["富士見市","鶴瀬公民館","羽沢3-23-10","-","K","-","",35.852894,139.540476],
+["富士見市","鶴瀬小学校","羽沢2-1-1","-","K","ok","",35.853486,139.539323],
+["富士見市","鶴瀬西交流センター","鶴馬3575-1","-","K","-","",35.842041,139.53488],
+["富士見市","みずほ学園","みどり野南2-1","-","F","-","",35.865775,139.562525],
+["富士見市","富士見特別支援学校","上南畑1317","-","F","-","",35.863431,139.563646],
+["富士見市","老人福祉センター","東大久保3655","-","F","-","",35.880879,139.556235],
+["ふじみ野市","さぎの森小学校","駒林28","-","K","no","",35.869744,139.540014],
+["ふじみ野市","ふじみ野ステラ・イースト","福岡1-1-8","-","K","-","",35.879895,139.519974],
+["ふじみ野市","ふじみ野市第２運動公園","福岡字川袋5-1","-","K","no","",35.872194,139.549132],
+["ふじみ野市","サービスセンターホール","霞ケ丘1-2-7","-","K","-","",35.873264,139.509918],
+["ふじみ野市","三角小学校","亀久保1709-1","-","K","ok","",35.858236,139.490654],
+["ふじみ野市","上野台小学校","福岡1-2-1","-","K","ok","",35.87852,139.520351],
+["ふじみ野市","亀久保小学校","ふじみ野2-22-1","-","K","ok","",35.863679,139.516336],
+["ふじみ野市","大井中学校","苗間24-1","-","K","ok","",35.852622,139.512537],
+["ふじみ野市","大井小学校","苗間37","-","K","ok","",35.854336,139.513908],
+["ふじみ野市","大井東中学校","ふじみ野3-2-1","-","K","ok","",35.861012,139.515748],
+["ふじみ野市","大井西中学校","大井武蔵野408-1","-","K","ok","",35.854374,139.49417],
+["ふじみ野市","東原小学校","大井2-9-1","-","K","ok","",35.851903,139.521465],
+["ふじみ野市","東台小学校","大井710-1","-","K","ok","",35.847827,139.522834],
+["ふじみ野市","福岡中学校","上野台3-3-1","-","K","ok","",35.875476,139.521893],
+["ふじみ野市","福岡小学校","西原2-6-1","-","K","no","",35.874636,139.527192],
+["ふじみ野市","花の木中学校","中福岡213-1","-","K","no","",35.877443,139.535294],
+["ふじみ野市","葦原中学校","川崎310","-","K","no","",35.888046,139.516904],
+["ふじみ野市","西原小学校","大井武蔵野1322-4","-","K","ok","",35.851056,139.49874],
+["ふじみ野市","西小学校","西2-10-25","-","K","ok","",35.871531,139.504704],
+["ふじみ野市","駒西小学校","駒西3-6-1","-","K","ok","",35.867836,139.523635],
+["ふじみ野市","鶴ヶ丘小学校","鶴ケ岡1-3-1","-","K","ok","",35.863434,139.505105],
+["ふじみ野市","大井総合福祉センター","大井中央2-2-1","-","F","-","",35.859448,139.507259],
+["ふじみ野市","市民交流プラザ（フクトピア内）","福岡1-2-5","-","F","-","",35.877871,139.521727],
+["ふじみ野市","上野台体育館","福岡1-1-3","-","Q","ok","",35.878758,139.519301],
+["ふじみ野市","市民憩の森","大井中央1-1094-3","-","Q","ok","",35.856311,139.505787],
+["ふじみ野市","県立ふじみ野高等学校","大井1158-1","-","Q","ok","",35.849877,139.511536],
+["ふじみ野市","総合体育館","大井武蔵野1392-1","-","Q","ok","",35.843967,139.487439],
+["ふじみ野市","駒林体育館","駒林28","-","Q","no","",35.869769,139.539973],
+["ふじみ野市","ふじみ野小学校グラウンド","（埼玉県富士見市）ふじみ野東4-4-1","-","P","ok","",35.862085,139.528177],
+["ふじみ野市","亀久保中央公園","亀久保1-2","-","P","ok","",35.85859,139.509564],
+["ふじみ野市","勝瀬小学校グラウンド","（埼玉県富士見市）大字勝瀬674","-","P","no","",35.863887,139.536904],
+["ふじみ野市","市沢公園","市沢2-5-5","-","P","ok","",35.853784,139.523797],
+["ふじみ野市","文京学院大学第１グラウンド","亀久保1150-13","-","P","ok","",35.854003,139.502488],
+["ふじみ野市","文京学院大学第２グラウンド","大井中央1-1168-11","-","P","ok","",35.855277,139.505299],
+["ふじみ野市","東久保中央公園","ふじみ野1-3","-","P","ok","",35.858941,139.514881],
+["ふじみ野市","東原親水公園","大井2-13-1","-","P","ok","",35.850934,139.522146],
+["ふじみ野市","福岡中央公園","上野台1-3-1","-","P","ok","",35.875509,139.516374],
+["ふじみ野市","西ノ原中央公園","うれし野1-5-1","-","P","ok","",35.855462,139.519773],
+["ふじみ野市","西中央公園","霞ケ丘2-1791-21","-","P","ok","",35.874164,139.508004],
+["ふじみ野市","西鶴ケ岡公園","西鶴ケ岡2-741-11","-","P","ok","",35.863109,139.497575],
+["ふじみ野市","鶴ケ岡中央公園","鶴ケ岡2-5","-","P","ok","",35.865262,139.506052],
+["三芳町","三芳中学校","大字北永井350","-","K","ok","",35.829838,139.513896],
+["三芳町","三芳小学校","大字北永井343","-","K","ok","",35.831183,139.518187],
+["三芳町","三芳東中学校","大字藤久保610-1","-","K","ok","",35.832156,139.537837],
+["三芳町","上富小学校","大字上富1267-4","-","K","ok","",35.829283,139.500874],
+["三芳町","唐沢小学校","大字藤久保410-2","-","K","ok","",35.833673,139.538136],
+["三芳町","竹間沢小学校","大字竹間沢550-1","-","K","ok","",35.827495,139.544942],
+["三芳町","藤久保中学校","大字藤久保420-2","-","K","ok","",35.83445,139.540897],
+["三芳町","藤久保小学校","大字藤久保7233","-","K","ok","",35.84096,139.529908]
+].map(r=>({city:r[0],name:r[1],addr:r[2],chiku:r[3],kind:r[4],flood:r[5],tel:r[6],lat:r[7]||0,lng:r[8]||0}));
+
+const CITIES=["朝霞市","志木市","和光市","新座市","富士見市","ふじみ野市","三芳町"];
+const SRC={
+ "朝霞市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
+ "志木市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
+ "和光市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
+ "新座市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
+ "富士見市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
+ "ふじみ野市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
+ "三芳町":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。"
+};
+let city=CITIES[0], floodOnly=false;
+
+// 2点間の距離（m）ハバーサイン
+function distM(a,b,c,d){const R=6371000,r=x=>x*Math.PI/180;
+ const dlat=r(c-a),dlng=r(d-b),s=Math.sin(dlat/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dlng/2)**2;
+ return 2*R*Math.asin(Math.sqrt(s));}
+const fmtD=m=>m>=1000?(m/1000).toFixed(m<10000?1:0)+"km":Math.round(m/10)*10+"m";
+
+/* 東松山市 字・町名→地区（施設が建っていない町名でも最寄り地区を出すため。おおよその対応。正確な指定は市ハザードマップで確認）*/
+const HM_AZA={
+ // 松山地区（中心市街地）
+ "市ノ川":"松山","松葉町":"松山","松本町":"松山","松山町":"松山","御茶山町":"松山","六反町":"松山","六軒町":"松山",
+ "和泉町":"松山","新宿町":"松山","本町":"松山","材木町":"松山","神明町":"松山","松山":"松山",
+ "山崎町":"松山","箭弓町":"松山","若松町":"松山","加美町":"松山","幸町":"松山","美土里町":"松山","日吉町":"松山",
+ "五領町":"松山","上沼町":"松山","砂田町":"松山","旭町":"松山","元宿":"松山",
+ // 平野地区
+ "東平":"平野","野田":"平野","美原町":"平野","田原町":"平野",
+ // 大岡地区
+ "大谷":"大岡",
+ // 唐子地区
+ "新郷":"唐子","石橋":"唐子","下唐子":"唐子","上唐子":"唐子","神戸":"唐子","葛袋":"唐子","田木":"唐子","将軍沢":"唐子",
+ // 高坂・高坂丘陵地区
+ "高坂":"高坂","早俣":"高坂","正代":"高坂","毛塚":"高坂",
+ "白山台":"高坂丘陵","桜山台":"高坂丘陵","旗立台":"高坂丘陵","松風台":"高坂丘陵","西本宿":"高坂丘陵",
+ // 野本地区
+ "下野本":"野本","上野本":"野本","古凍":"野本","大黒部":"野本","宮鼻":"野本"
+};
+
+const KIND={K:["指定避難所","kind"],Q:["指定緊急のみ","kind"],H:["補助避難所","kind"],F:["福祉避難所","kind"],P:["指定緊急（公園・屋外）","kind"],G:["協定（ゴルフ場等）","kind"],C:["協定（車中泊）","kind"]};
+const FLOOD={ok:["水害 1階から○","p-ok"],up:["水害 上階へ","p-up"],no:["水害時 ×","p-ng"],"-":["水害 種別未掲載","p-cap"]};
+const HAZARD={}; // 公式URLが分かる市町だけ上書き。無ければGoogleでHM検索。
+const BASINWARN={
+ "吉見町":"吉見町は荒川・市野川で概ね全域が浸水。西部の避難所か、東部・中央は3階以上へ。",
+ "加須市":"加須市は利根川・荒川低地で広く深く浸水。屋外（公園・運動場）は水害×。建物の上階へ垂直避難か市外・高台へ。北川辺・大利根は特に深い。",
+ "久喜市":"久喜市は栗橋・鷲宮など利根川沿いが深く浸水。屋外は水害×が多い。上階へ垂直避難か浸水しない区域・市外へ。",
+ "幸手市":"幸手市は中川・権現堂川・倉松川沿いで広く浸水。屋外は水害×が多い。上階か浸水しない区域・市外へ。",
+ "五霞町":"五霞町は利根川・江戸川・中川に囲まれた低地（茨城県）で広く深く浸水。水害時は早めに町外・高台へ立ち退き避難を。",
+ "宮代町":"宮代町は大落古利根川・備前堀川沿いの低地が浸水。屋外より建物の上階へ。",
+ "杉戸町":"杉戸町は大落古利根川・中川沿いの低地が浸水。屋外より建物の上階へ。",
+ "蓮田市":"蓮田市は元荒川・綾瀬川沿いの低地が浸水。台地寄り・上階へ。",
+ "川島町":"川島町は四方を川に囲まれた低地。水害時は町外（東松山・坂戸・上尾方面の高台）へ立ち退き避難を。"
+};
+function cityCenter(c){return centroid(RAW.filter(s=>s.city===c&&s.lat&&s.lng));}
+function linksRow(centerLL){
+ const d=document.createElement("div");d.className="links";
+ const web=HAZARD[city]||`https://www.google.com/search?q=${encodeURIComponent(city+" ハザードマップ")}`;
+ const dz=centerLL?`https://disaportal.gsi.go.jp/maps/index.html?ll=${centerLL.lat},${centerLL.lng}&z=15`:`https://disaportal.gsi.go.jp/maps/`;
+ const gmap=centerLL?`https://www.google.com/maps/search/避難所/@${centerLL.lat},${centerLL.lng},15z`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(city+" 避難所")}`;
+ d.innerHTML=`<a class="lk" href="${web}" target="_blank" rel="noopener">🔎 ${city}の公式ハザードマップ</a>`+
+  `<a class="lk" href="${dz}" target="_blank" rel="noopener">🗺️ 重ねるハザードマップ${centerLL?"（この地点に表示）":""}</a>`+
+  `<a class="lk" href="${gmap}" target="_blank" rel="noopener">📍 Googleマップで避難所</a>`;
+ return d;
+}
+
+const z2h=s=>s.replace(/[Ａ-Ｚａ-ｚ０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0));
+const norm=s=>z2h(String(s||"")).replace(/[\s　]/g,"").replace(/丁目|番地|大字|字|埼玉県|比企郡/g,"").toLowerCase();
+const place=s=>norm(s).replace(/[0-9\-－ー―—()（）]/g,"");
+const placeHit=(addr,q)=>{const pa=place(addr),pq=place(q);return !!pq&&!!pa&&(pa===pq||pa.startsWith(pq));};
+const hit=(s,q)=>!q||norm(s.name).includes(q)||placeHit(s.addr,q)||norm(s.chiku).includes(q);
+const mapsLink=(c,a)=>`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c+a)}`;
+
+const tabsEl=document.getElementById("tabs"), q=document.getElementById("q"),
+ segEl=document.getElementById("seg"), out=document.getElementById("out"),
+ hintEl=document.getElementById("hint"), countEl=document.getElementById("count"), footEl=document.getElementById("foot");
+
+function buildTabs(){tabsEl.innerHTML="";CITIES.forEach(c=>{const b=document.createElement("button");
+ b.textContent=c;b.className=c===city?"on":"";b.onclick=()=>{city=c;render();};tabsEl.appendChild(b);});}
+document.getElementById("clr").onclick=()=>{q.value="";render();};
+q.addEventListener("input",render);
+const gpsBtn=document.getElementById("gps");
+gpsBtn.onclick=()=>{
+ if(!navigator.geolocation){ out.innerHTML='<div class="alert">この端末・ブラウザでは位置情報が使えません。地名で検索してください。</div>'; return; }
+ gpsBtn.classList.add("loading"); gpsBtn.textContent="📍 現在地を取得中…";
+ navigator.geolocation.getCurrentPosition(
+  pos=>{ gpsBtn.classList.remove("loading"); gpsBtn.textContent="📍 今いる場所から一番近い避難所"; renderGpsU(pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy); },
+  err=>{ gpsBtn.classList.remove("loading"); gpsBtn.textContent="📍 今いる場所から一番近い避難所"; segEl.innerHTML="";countEl.textContent="";
+   const msg=err.code===1?"位置情報が許可されませんでした。ブラウザ／端末の設定で許可してください。":err.code===3?"時間内に取得できませんでした。屋外などで再度お試しを。":"位置情報を取得できませんでした。";
+   out.innerHTML=`<div class="alert">⚠ ${msg}<br><span style="font-weight:400">※ファイルを直接開いた場合（file://）やhttp接続では使えません。https:// のページで開くか、地名検索をご利用ください。</span></div>`; },
+  {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+};
+function renderGpsU(lat,lng,acc){
+ out.innerHTML="";segEl.innerHTML="";
+ hintEl.innerHTML="<b>現在地から近い順</b>に全施設（全タブ横断）を表示しています。地名で探すときは上の検索を。";
+ countEl.textContent="現在地から近い順";
+ let list=RAW.filter(s=>s.lat&&s.lng).map(s=>{const o=Object.assign({},s);o._d=distM(lat,lng,s.lat,s.lng);return o;}).sort((a,b)=>a._d-b._d);
+ if(!list.length){ out.innerHTML='<div class="alert">避難所データがありません。</div>'; return; }
+ const best=list[0];
+ const gm=`https://www.google.com/maps/dir/?api=1&destination=${best.lat},${best.lng}`;
+ const dz=`https://disaportal.gsi.go.jp/maps/index.html?ll=${lat},${lng}&z=16`;
+ const banner=document.createElement("div");banner.className="gpsbest";
+ banner.innerHTML=`🚶 一番近い避難所：<b>${best.name}</b>（${best.city}・${KIND[best.kind][0]}）<br>現在地から約 <b>${fmtD(best._d)}</b>　<a href="${gm}" target="_blank" rel="noopener">▶ ここへ行く（ルート）</a>　<a href="${dz}" target="_blank" rel="noopener">この地点のハザードマップ</a>${acc?`<br><span style="color:#6b7787;font-size:12.5px">位置精度の目安：±${Math.round(acc)}m。直線距離での近い順です。</span>`:""}`;
+ out.appendChild(banner);
+ const LIM=15;
+ const G1=list.filter(s=>s.kind==="K"||s.kind==="H").slice(0,LIM);
+ const G2=list.filter(s=>s.kind==="Q"||s.kind==="P").slice(0,LIM);
+ const G3=list.filter(s=>s.kind==="F").slice(0,LIM);
+ const cols=document.createElement("div");cols.className="cols";
+ cols.appendChild(colDiv(`指定避難所（近い順 ${G1.length}）｜寝泊まり`,G1,"",true));
+ cols.appendChild(colDiv(`指定緊急避難場所（近い順 ${G2.length}）｜緊急の逃げ場`,G2,"",false));
+ cols.appendChild(colDiv(`福祉避難所（近い順 ${G3.length}）｜要配慮者・二次開設`,G3,"",false));
+ out.appendChild(cols);
+ footEl.innerHTML=`現在地から全タブ横断で近い順に表示しています。${SRC[city]?"<br>"+SRC[city]:""}`;
+}
+
+function pill(cls,txt){return txt?`<span class="pill ${cls}">${txt}</span>`:"";}
+function card(s,query,dist,near){
+ const c=document.createElement("div");c.className="card"+(query?" match":"")+(near?" match":"");
+ if(near) c.style.boxShadow="0 0 0 2px var(--accent) inset";
+ const k=KIND[s.kind], fl=FLOOD[s.flood];
+ const dp = (dist!=null && isFinite(dist)) ? `<span class="pill" style="background:#e8eef7;color:#2b5d8a;font-weight:700">${near?"最寄り ":""}${fmtD(dist)}</span>` : "";
+ c.innerHTML=`<div class="name">${s.name}<span class="kind">${k[0]}</span>${s.chiku&&s.chiku!=="-"?`<span class="kind" style="background:#eef;color:#447">${s.chiku}地区</span>`:""}</div>
+  <div class="addr">${s.city}${s.addr}　${s.tel?s.tel+"　":""}<a href="${mapsLink(s.city,s.addr)}" target="_blank" rel="noopener">地図</a>${(dist!=null&&isFinite(dist)&&s.lat)?` · <a href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}" target="_blank" rel="noopener">ここへ行く</a>`:""}</div>
+  <div class="row">${dp}${pill(fl[1],fl[0])}</div>`;
+ return c;
+}
+
+function centroid(arr){let la=0,ln=0,n=0;arr.forEach(s=>{if(s.lat&&s.lng){la+=s.lat;ln+=s.lng;n++;}});return n?{lat:la/n,lng:ln/n}:null;}
+
+function render(){
+ buildTabs();
+ const query=norm(q.value), raw=q.value.trim();
+ out.innerHTML="";segEl.innerHTML="";countEl.textContent="";
+ hintEl.innerHTML="<b>町名を入れる</b>と、その地点から<b>近い順</b>に並びます（例：山崎町）。色は<span style='color:var(--ok)'>水害1階○</span>／<span style='color:var(--warn)'>上階へ</span>／<span style='color:var(--ng)'>水害×</span>。";
+ const fb=document.createElement("button");fb.textContent="水害時に使える所のみ";fb.className=floodOnly?"on":"";
+ fb.onclick=()=>{floodOnly=!floodOnly;render();};segEl.appendChild(fb);
+
+ const inCity=RAW.filter(s=>s.city===city);
+ const floodOk=s=>s.flood==="ok"||s.flood==="up";
+
+ // 検索した町名→起点座標を解決
+ let origin=null, originLabel="", aliasNote="";
+ if(raw){
+  let m=inCity.filter(s=>s.lat&&(placeHit(s.addr,raw)||norm(s.name).includes(query)));
+  if(!m.length && city==="東松山市"){
+   const ac=HM_AZA[place(raw)];
+   if(ac){ m=inCity.filter(s=>s.lat&&s.chiku===ac); if(m.length) aliasNote=`「${raw}」はおおむね<b>${ac}地区</b>。${ac}地区のあたりから近い順で出します（正確な指定は東松山市ハザードマップで確認）。`; }
+  }
+  origin=centroid(m); if(origin) originLabel=raw;
+ }
+
+ // ===== 検索地点から近い順（種別ごと・指定避難所優先）=====
+ if(origin){
+  let list=inCity.filter(s=>!floodOnly||floodOk(s));
+  list.forEach(s=>s._d=(s.lat&&s.lng)?distM(origin.lat,origin.lng,s.lat,s.lng):Infinity);
+  list.sort((a,b)=>a._d-b._d);
+  if(aliasNote) out.appendChild(note(aliasNote));
+  if(BASINWARN[city]) out.appendChild(note(`⚠ ${BASINWARN[city]}`));
+  out.appendChild(linksRow(origin));
+  const G1=list.filter(s=>s.kind==="K"||s.kind==="H");
+  const G2=list.filter(s=>s.kind==="Q"||s.kind==="P");
+  const G3=list.filter(s=>s.kind==="F");
+  const G4=list.filter(s=>s.kind==="G"||s.kind==="C");
+  const nearK=G1.find(s=>isFinite(s._d));
+  if(nearK) out.appendChild(note(`<b>「${originLabel}」の最寄りの指定避難所${floodOnly?"（水害時に使える）":""}</b><br><b>${nearK.name}</b>（${nearK.addr}・約${fmtD(nearK._d)}）`));
+  countEl.textContent=`${city}内・「${originLabel}」から近い順`;
+  const cols=document.createElement("div");cols.className="cols";
+  cols.appendChild(colDiv(`指定避難所（${G1.length}）｜寝泊まり`,G1,query,true));
+  cols.appendChild(colDiv(`指定緊急避難場所（${G2.length+G4.length}）｜緊急の逃げ場`,G2.concat(G4),query,false));
+  cols.appendChild(colDiv(`福祉避難所（${G3.length}）｜要配慮者・二次開設`,G3,query,false));
+  out.appendChild(cols);
+  footEl.innerHTML=`「${originLabel}」付近からの直線距離（道のりではありません）。${SRC[city]}<br>※開設状況は災害ごとに変わります。最新情報に従ってください。`;
+  return;
+ }
+
+ // ===== 通常一覧（検索が空 or 地名として解決できない）=====
+ let list=inCity.filter(s=>hit(s,query));
+ if(floodOnly) list=list.filter(floodOk);
+ const fo={ok:0,up:1,"-":2,no:3}, ko={K:0,G:1,C:2,H:3,Q:4,P:5,F:6};
+ list.sort((a,b)=>(fo[a.flood]-fo[b.flood])||(ko[a.kind]-ko[b.kind])||a.name.localeCompare(b.name,"ja"));
+ if(!list.length){
+  const ml=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(city+raw+" 避難所")}`;
+  out.innerHTML=`<div class="empty">「${raw||"—"}」に該当する避難所がこの一覧にありません。<br>
+   <a href="${ml}" target="_blank" rel="noopener">地図で「${raw} 周辺の避難所」を探す</a></div>`;
+ }else{
+  countEl.textContent=`${list.length}件`+(floodOnly?"（水害時に使える所）":"");
+  if(BASINWARN[city]) out.appendChild(note(`⚠ ${BASINWARN[city]}`));
+  out.appendChild(linksRow(cityCenter(city)));
+  const G1=list.filter(s=>s.kind==="K"||s.kind==="H");
+  const G2=list.filter(s=>s.kind==="Q"||s.kind==="P");
+  const G3=list.filter(s=>s.kind==="F");
+  const G4=list.filter(s=>s.kind==="G"||s.kind==="C");
+  const cols=document.createElement("div");cols.className="cols";
+  cols.appendChild(colDiv(`指定避難所（${G1.length}）｜寝泊まり`,G1,query,false));
+  cols.appendChild(colDiv(`指定緊急避難場所（${G2.length+G4.length}）｜緊急の逃げ場`,G2.concat(G4),query,false));
+  cols.appendChild(colDiv(`福祉避難所（${G3.length}）｜要配慮者・二次開設`,G3,query,false));
+  out.appendChild(cols);
+ }
+ footEl.innerHTML=`${SRC[city]}<br>※この一覧は手元データの要約です。開設状況は災害ごとに変わります。実際の避難は各市町の防災行政無線・公式サイト・防災アプリの最新情報に従ってください。`;
+}
+function sec(t){const d=document.createElement("div");d.className="sec";d.textContent=t;return d;}
+function colDiv(title,arr,query,hiNear){
+ const d=document.createElement("div");d.className="col";
+ d.appendChild(sec(title));
+ if(!arr.length){d.appendChild(note("（該当なし）"));return d;}
+ arr.forEach((s,i)=>d.appendChild(card(s,query,s._d,hiNear&&i===0&&isFinite(s._d))));
+ return d;
+}
+function note(h){const d=document.createElement("div");d.className="note";d.innerHTML=h;return d;}
+render();
+</script>
+</body>
+</html>
