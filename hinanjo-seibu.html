@@ -30,6 +30,11 @@ main{padding:0 12px 40px}
 .note{background:var(--warnbg);color:#6b4b16;border-radius:8px;padding:8px 10px;font-size:12.5px;margin:8px 0}
 .alert{background:var(--ngbg);color:#8a2a20;border-radius:8px;padding:8px 10px;font-size:13px;margin:8px 0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin:8px 0}
+.share{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.share button{border:1px solid var(--line);background:#fff;color:var(--sub);font-size:12px;padding:4px 9px;border-radius:14px;cursor:pointer}
+.share button.line{background:#06c755;border-color:#06c755;color:#fff;font-weight:600}
+.share button.mail{color:var(--accent);border-color:var(--accent)}
+.sharebar{margin-top:8px}
 .card.match{box-shadow:0 0 0 2px var(--kindbg) inset}
 .name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .kind{font-size:11px;font-weight:600;background:var(--kindbg);color:var(--kind);border-radius:5px;padding:1px 6px}
@@ -407,11 +412,11 @@ const RAW = [
 
 const CITIES=["所沢市","飯能市","狭山市","入間市","日高市"];
 const SRC={
- "所沢市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
- "飯能市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
- "狭山市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
- "入間市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。",
- "日高市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（市町村公開分の統合）。水害○×は『洪水の指定緊急避難場所か否か』に基づく自動判定。水害‐は指定避難所のみで災害種別データ未掲載。上階避難の可否・協定避難先・電話番号・地区は未収録。最新は各市町村で確認を。"
+ "所沢市":"出典：国土地理院 指定緊急避難場所・指定避難所データ。水害○×は『洪水の指定緊急避難場所か否か』の自動判定。水害‐は指定避難所のみで種別データ未掲載。上階避難・協定避難先・電話・地区は未収録。最新は各市町村で確認を。",
+ "飯能市":"出典：国土地理院 指定緊急避難場所・指定避難所データ。水害○×は『洪水の指定緊急避難場所か否か』の自動判定。水害‐は指定避難所のみで種別データ未掲載。上階避難・協定避難先・電話・地区は未収録。最新は各市町村で確認を。",
+ "狭山市":"出典：国土地理院 指定緊急避難場所・指定避難所データ。水害○×は『洪水の指定緊急避難場所か否か』の自動判定。水害‐は指定避難所のみで種別データ未掲載。上階避難・協定避難先・電話・地区は未収録。最新は各市町村で確認を。",
+ "入間市":"出典：国土地理院 指定緊急避難場所・指定避難所データ。水害○×は『洪水の指定緊急避難場所か否か』の自動判定。水害‐は指定避難所のみで種別データ未掲載。上階避難・協定避難先・電話・地区は未収録。最新は各市町村で確認を。",
+ "日高市":"出典：国土地理院 指定緊急避難場所・指定避難所データ。水害○×は『洪水の指定緊急避難場所か否か』の自動判定。水害‐は指定避難所のみで種別データ未掲載。上階避難・協定避難先・電話・地区は未収録。最新は各市町村で確認を。"
 };
 let city=CITIES[0], floodOnly=false;
 
@@ -504,6 +509,7 @@ function renderGpsU(lat,lng,acc){
  const dz=`https://disaportal.gsi.go.jp/maps/index.html?ll=${lat},${lng}&z=16`;
  const banner=document.createElement("div");banner.className="gpsbest";
  banner.innerHTML=`🚶 一番近い避難所：<b>${best.name}</b>（${best.city}・${KIND[best.kind][0]}）<br>現在地から約 <b>${fmtD(best._d)}</b>　<a href="${gm}" target="_blank" rel="noopener">▶ ここへ行く（ルート）</a>　<a href="${dz}" target="_blank" rel="noopener">この地点のハザードマップ</a>${acc?`<br><span style="color:#6b7787;font-size:12.5px">位置精度の目安：±${Math.round(acc)}m。直線距離での近い順です。</span>`:""}`;
+ {const near=(f)=>list.find(f);const picks=[["指定避難所（寝泊まり）",near(s=>s.kind==="K"||s.kind==="H")],["指定緊急避難場所",near(s=>s.kind==="Q"||s.kind==="P")],["福祉避難所",near(s=>s.kind==="F")]].filter(p=>p[1]);const sumText=()=>`【現在地から近い避難先】\n現在地：https://www.google.com/maps/search/?api=1&query=${lat},${lng}\n\n`+picks.map(p=>`■${p[0]}\n`+shText(p[1],p[1]._d)).join("\n\n")+shFoot();const bar=shareRow("現在地から近い避難先",sumText);bar.classList.add("sharebar");const lb=document.createElement("div");lb.style.cssText="font-size:12px;color:var(--sub);margin-top:6px";lb.textContent="▼ 現在地と最寄りの避難先をまとめて送る";banner.appendChild(lb);banner.appendChild(bar);}
  out.appendChild(banner);
  const LIM=15;
  const G1=list.filter(s=>s.kind==="K"||s.kind==="H").slice(0,LIM);
@@ -517,6 +523,37 @@ function renderGpsU(lat,lng,acc){
  footEl.innerHTML=`現在地から全タブ横断で近い順に表示しています。${SRC[city]?"<br>"+SRC[city]:""}`;
 }
 
+/* ===== 共有（LINE・メール・端末の共有） ===== */
+function shText(s,dist){
+ const k=KIND[s.kind]?KIND[s.kind][0]:"", fl=FLOOD[s.flood]?FLOOD[s.flood][0]:"";
+ const map=(s.lat&&s.lng)?`https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`:mapsLink(s.city,s.addr);
+ let t=`【避難先】${s.name}（${k}）\n住所：${s.city}${s.addr}`;
+ if(s.tel) t+=`\n電話：${s.tel}`;
+ if(fl) t+=`\n水害：${fl}`;
+ if(dist!=null&&isFinite(dist)) t+=`\n現在地から約${fmtD(dist)}（直線）`;
+ t+=`\n地図：${map}`;
+ if(s.lat&&s.lng) t+=`\n地理院地図：${gsiLink(s)}`;
+ return t;
+}
+function gsiLink(s){return `https://maps.gsi.go.jp/#17/${s.lat}/${s.lng}/&base=std&ls=std&disp=1&vs=c1g1j0h0k0l0u0t0z0r0s0m0f0&d=m`;}
+function shFoot(){return `\n\n※開設状況は災害ごとに変わります。市町村の最新情報を確認してください。`;}
+function doLine(text){location.href="https://line.me/R/share?text="+encodeURIComponent(text);}
+function doMail(subj,text){location.href="mailto:?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(text);}
+function doNative(subj,text){navigator.share({title:subj,text:text}).catch(()=>{});}
+function doCopy(text,btn){
+ const ok=()=>{const o=btn.textContent;btn.textContent="✓ コピー済";setTimeout(()=>btn.textContent=o,1500);};
+ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(ok,()=>prompt("コピーしてください",text));}
+ else prompt("コピーしてください",text);
+}
+function shareRow(subj,getText){
+ const d=document.createElement("div");d.className="share";
+ const mk=(cls,label,fn)=>{const b=document.createElement("button");b.className=cls;b.textContent=label;b.onclick=e=>{e.stopPropagation();fn(b);};d.appendChild(b);};
+ mk("line","LINEで送る",()=>doLine(getText()));
+ mk("mail","✉ メール",()=>doMail(subj,getText()));
+ if(navigator.share) mk("","💬 SMS・他のアプリ",()=>doNative(subj,getText()));
+ mk("","コピー",b=>doCopy(getText(),b));
+ return d;
+}
 function pill(cls,txt){return txt?`<span class="pill ${cls}">${txt}</span>`:"";}
 function card(s,query,dist,near){
  const c=document.createElement("div");c.className="card"+(query?" match":"")+(near?" match":"");
@@ -524,8 +561,9 @@ function card(s,query,dist,near){
  const k=KIND[s.kind], fl=FLOOD[s.flood];
  const dp = (dist!=null && isFinite(dist)) ? `<span class="pill" style="background:#e8eef7;color:#2b5d8a;font-weight:700">${near?"最寄り ":""}${fmtD(dist)}</span>` : "";
  c.innerHTML=`<div class="name">${s.name}<span class="kind">${k[0]}</span>${s.chiku&&s.chiku!=="-"?`<span class="kind" style="background:#eef;color:#447">${s.chiku}地区</span>`:""}</div>
-  <div class="addr">${s.city}${s.addr}　${s.tel?s.tel+"　":""}<a href="${mapsLink(s.city,s.addr)}" target="_blank" rel="noopener">地図</a>${(dist!=null&&isFinite(dist)&&s.lat)?` · <a href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}" target="_blank" rel="noopener">ここへ行く</a>`:""}</div>
+  <div class="addr">${s.city}${s.addr}　${s.tel?s.tel+"　":""}<a href="${mapsLink(s.city,s.addr)}" target="_blank" rel="noopener">地図</a>${s.lat?` · <a href="${gsiLink(s)}" target="_blank" rel="noopener">地理院地図</a>`:""}${(dist!=null&&isFinite(dist)&&s.lat)?` · <a href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}" target="_blank" rel="noopener">ここへ行く</a>`:""}</div>
   <div class="row">${dp}${pill(fl[1],fl[0])}</div>`;
+ c.appendChild(shareRow(`避難先：${s.name}`,()=>shText(s,dist)+shFoot()));
  return c;
 }
 
