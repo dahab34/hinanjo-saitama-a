@@ -9,6 +9,7 @@ DETAIL=[
  ('鴻巣市','市のハザードマップ・避難所一覧より。丁目ごとの避難先、補助避難所、駐車場、要配慮者利用施設の一覧',[('鴻巣版で開く',K)]),
  ('北本市','市の避難所一覧より。丁目・地区名から避難先が分かる',[('鴻巣版で開く',K)]),
  ('川島町','町の避難所一覧・広域避難場所より。浸水しない階、駐車場、町外の避難先',[('鴻巣版で開く',K)]),
+ ('桶川市','市の公式の避難所一覧より。全23施設の電話番号、福祉避難所',[('鴻巣版で開く',K)]),
  ('吉見町','町のハザードマップより。水害時に使える階（3階以上など）、電話番号、地区',[('鴻巣版で開く',K),('東松山版で開く',H)]),
  ('加須市','市の水害時避難行動マップより。地域別の水害時避難場所（上階避難）、警戒レベル別タイムライン',[('鴻巣版で開く',K),('久喜版で開く',Q)]),
  ('久喜市','市のハザードマップ（令和5年3月版）より。全施設の洪水時に使える階（2階以上・3階以上など）、一時避難場所、協定締結先',[('久喜版で開く',Q)]),
@@ -38,7 +39,7 @@ def make_index(areas, facs, asof_s, n_all):
     return f'''<!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>避難所さがし 埼玉県＋周辺</title>
+<title>埼玉 避難所ナビ</title>
 <style>
 :root{{--bg:#f6f7f9;--card:#fff;--ink:#1c2530;--sub:#5b6573;--line:#e3e7ec;--accent:#2b5d8a;--accentbg:#eaf1f8;--star:#b6731a;--starbg:#fdf1dc}}
 *{{box-sizing:border-box}}
@@ -82,7 +83,7 @@ h2{{font-size:15px;margin:22px 0 4px}}
 .foot{{color:var(--sub);font-size:12px;margin-top:22px;line-height:1.7}}
 </style></head>
 <body><div class="wrap">
-<h1>避難所さがし</h1>
+<h1>埼玉 避難所ナビ</h1>
 <div class="meta">埼玉県全域＋周辺（群馬・千葉・茨城）{len(P)}市町村・{n_all:,}施設</div>
 <div class="badge">データ：{asof_s}・毎月自動更新</div>
 

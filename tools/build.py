@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""国土地理院の公開GeoJSONを取得し、9エリア版の避難所さがしを再生成する。
+"""国土地理院の公開GeoJSONを取得し、9エリア版の「埼玉 避難所ナビ」を再生成する。
 GitHub Actions から月1回実行。件数が大きく減った場合は更新しない（安全装置）。"""
 import json, re, os, sys, urllib.request, email.utils, datetime
 from collections import defaultdict, Counter
@@ -104,7 +104,7 @@ def main():
         h=re.sub(r'const RAW = \[.*?\]\.map\(',lambda _:'const RAW = ['+raw+'].map(',tpl,count=1,flags=re.S)
         h=re.sub(r'const CITIES=\[[^\]]*\];',lambda _:'const CITIES=['+','.join(esc(c) for c in cities)+'];',h,count=1)
         h=re.sub(r'const SRC=\{.*?\n\};',lambda _:'const SRC={\n '+',\n '.join(f'{esc(c)}:{esc(NOTE)}' for c in cities)+'\n};',h,count=1,flags=re.S)
-        h=h.replace('避難所さがし 東松山営業所版',f'避難所さがし {area}版').replace('避難所さがし　東松山営業所版',f'避難所さがし　{area}版')
+        h=h.replace('避難所さがし 東松山営業所版',f'埼玉 避難所ナビ｜{area}').replace('避難所さがし　東松山営業所版',f'埼玉 避難所ナビ｜{area}')
         h=deeplink(h); fn=os.path.join(ROOT,f'hinanjo-{slug}.html'); open(fn,'w',encoding='utf-8').write(h); patch(fn)
         idx.append((area,f'hinanjo-{slug}.html',len(rows),cities)); n_all+=len(rows)
     open(os.path.join(ROOT,'hinanjo-areas.html'),'w',encoding='utf-8').write(make_index(idx,facs,asof_s,n_all))
