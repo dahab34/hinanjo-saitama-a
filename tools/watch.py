@@ -19,6 +19,11 @@ PDFS=[
  ('吉見町 防災マップ（避難所）','https://www.town.yoshimi.saitama.jp/material/files/group/2/bousai_P07-P08.pdf',None),
  ('川島町 防災マップ（避難所）','https://www.town.kawajima.saitama.jp/secure/1515/P10-11.pdf',None),
  ('桶川市 避難場所一覧','https://www.city.okegawa.lg.jp/material/files/group/16/3hinannbasho.pdf',None),
+ ('久喜市 避難所・避難場所一覧','https://www.city.kuki.lg.jp/_res/projects/default_project/_page_/001/007/443/1007443_021.pdf',None),
+ ('幸手市 洪水ハザードマップ','https://www.city.satte.lg.jp/material/files/group/39/satte_kouzui_map.pdf',None),
+ ('幸手市 地震ハザードマップ','https://www.city.satte.lg.jp/material/files/group/39/satte_jishin_map.pdf',None),
+ ('杉戸町 洪水ハザードマップ','https://www.town.sugito.lg.jp/uploaded/attachment/13861.pdf',None),
+ ('宮代町 避難所一覧','https://www.town.miyashiro.lg.jp/cmsfiles/contents/0000025/25603/P07-P08_hinanjoitiranzentaisakuinzu.pdf',None),
  ('久喜市 ハザードマップ（全ページ）','https://www.city.kuki.lg.jp/_res/projects/default_project/_page_/001/007/443/r5.3hm-zenpeji.pdf',None),
 ]
 WATCHED=sorted({c for v in TOOLS.values() for c in v})

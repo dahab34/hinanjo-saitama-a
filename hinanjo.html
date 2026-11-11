@@ -1,12 +1,1464 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>避難所さがし エリア索引（埼玉県＋周辺）</title>
-<style>body{margin:0;background:#f6f7f9;color:#1c2530;font-family:-apple-system,"Noto Sans JP","Yu Gothic",sans-serif;font-size:15px;line-height:1.6}
-.wrap{max-width:760px;margin:0 auto;padding:16px} h1{font-size:18px} .lead{color:#5b6573;font-size:13px}
-ul{list-style:none;padding:0} li{background:#fff;border:1px solid #e3e7ec;border-radius:12px;margin:8px 0;padding:12px 14px}
-li a{font-weight:700;color:#2b5d8a;text-decoration:none;font-size:16px} .m{display:block;color:#5b6573;font-size:12px;margin-top:4px}
-.src{color:#5b6573;font-size:12px;margin-top:16px}</style></head>
-<body><div class="wrap"><h1>避難所さがし｜エリア索引</h1>
-<p class="lead">埼玉県全域（63市町村）＋隣接する群馬・千葉・茨城の周辺自治体（計70市町村・3,920施設）を9エリアに分割。各エリアをタップで開いてください。出典：国土地理院 指定緊急避難場所・指定避難所データ。</p>
-<ul><li><a href="hinanjo-saitama-south.html">避難所さがし さいたま・南部版</a><span class="m">650件・4市町村<br>さいたま市／川口市／蕨市／戸田市</span></li><li><a href="hinanjo-nanseibu.html">避難所さがし 南西部版</a><span class="m">241件・7市町村<br>朝霞市／志木市／和光市／新座市／富士見市／ふじみ野市／三芳町</span></li><li><a href="hinanjo-kenou.html">避難所さがし 県央版</a><span class="m">267件・5市町村<br>上尾市／桶川市／北本市／鴻巣市／伊奈町</span></li><li><a href="hinanjo-toubu-noda.html">避難所さがし 東部・千葉野田版</a><span class="m">512件・8市町村<br>春日部市／草加市／越谷市／八潮市／三郷市／吉川市／松伏町／野田市</span></li><li><a href="hinanjo-tone-goka.html">避難所さがし 利根・茨城五霞版</a><span class="m">513件・10市町村<br>行田市／加須市／羽生市／久喜市／蓮田市／幸手市／白岡市／宮代町／杉戸町／五霞町</span></li><li><a href="hinanjo-kawagoe-hiki.html">避難所さがし 川越比企版</a><span class="m">498件・14市町村<br>川越市／東松山市／坂戸市／鶴ヶ島市／毛呂山町／越生町／滑川町／嵐山町／小川町／川島町／吉見町／鳩山町／ときがわ町／東秩父村</span></li><li><a href="hinanjo-seibu.html">避難所さがし 西部版</a><span class="m">299件・5市町村<br>所沢市／飯能市／狭山市／入間市／日高市</span></li><li><a href="hinanjo-hokubu-gunma.html">避難所さがし 北部・群馬隣接版</a><span class="m">757件・12市町村<br>熊谷市／本庄市／深谷市／美里町／神川町／上里町／寄居町／太田市／藤岡市／千代田町／大泉町／邑楽町</span></li><li><a href="hinanjo-chichibu.html">避難所さがし 秩父版</a><span class="m">183件・5市町村<br>秩父市／横瀬町／皆野町／長瀞町／小鹿野町</span></li></ul>
-<p class="src">※種別・水害可否はGSIデータからの自動判定です。上階避難の判断・協定避難先・電話番号などは含みません。GPS・共有ボタンは https:// で開いたときに動作します。</p>
-</div></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>避難所さがし 鴻巣営業所版</title>
+<style>
+  :root{
+    --ink:#16202b; --ink2:#46586a; --line:#d8dee6; --bg:#f4f6f9; --card:#ffffff;
+    --slate:#1f2d3d; --slate2:#33465b;
+    --flood:#1666b0; --floodbg:#e7f1fb;
+    --quake:#0f7d6b; --quakebg:#e3f4f0;
+    --fire:#b65a12; --firebg:#fdeede;
+    --ng:#c1342d; --ngbg:#fbe9e8;
+    --warn:#b8860b; --warnbg:#fdf6e0;
+    --hi:#fff2cf;
+    --r:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+    color:var(--ink); background:var(--bg); line-height:1.55; -webkit-text-size-adjust:100%;}
+  .wrap{max-width:680px; margin:0 auto; padding:0 14px 64px;}
+  header.top{background:linear-gradient(180deg,var(--slate),var(--slate2)); color:#fff;
+    padding:18px 16px 16px; border-radius:0 0 18px 18px; margin:0 -14px 14px;}
+  header.top h1{margin:0; font-size:19px; letter-spacing:.02em;}
+  header.top p{margin:6px 0 0; font-size:12.5px; color:#c7d3df;}
+  .tabs{display:flex; gap:6px; margin:14px 0 10px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
+  .tab{flex:0 0 auto; border:1px solid var(--line); background:var(--card); color:var(--ink2);
+    padding:9px 14px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer;}
+  .tab.active{background:var(--slate); color:#fff; border-color:var(--slate);}
+  .search{display:flex; gap:8px; margin:4px 0 12px;}
+  .search input{flex:1; min-width:0; font-size:16px; padding:12px 14px; border:1px solid var(--line);
+    border-radius:var(--r); background:var(--card);}
+  .search button{font-size:14px; padding:0 14px; border:none; border-radius:var(--r); background:var(--slate); color:#fff; font-weight:600;}
+  .hint{font-size:12.5px; color:var(--ink2); margin:-4px 0 12px;}
+  .seg{display:flex; gap:6px; margin:0 0 12px; flex-wrap:wrap;}
+  .seg button{font-size:13px; padding:7px 12px; border:1px solid var(--line); background:var(--card);
+    color:var(--ink2); border-radius:999px; font-weight:600;}
+  .seg button.on{background:var(--flood); color:#fff; border-color:var(--flood);}
+  .note{font-size:12.5px; background:var(--warnbg); border:1px solid #ecdca0; color:#6b5512;
+    padding:10px 12px; border-radius:10px; margin:0 0 12px;}
+  .note b{color:#5a4710;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:13px 14px; margin:0 0 10px;}
+  .card.match{border-color:#bcd6ef; box-shadow:0 0 0 2px #e7f1fb inset;}
+  .name{font-size:16px; font-weight:700; margin:0 0 2px; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+  .kind{font-size:11px; font-weight:700; padding:2px 7px; border-radius:6px; background:#eef2f6; color:var(--ink2);}
+  .addr{font-size:13px; color:var(--ink2); margin:0 0 8px;}
+  .addr a{color:var(--flood); text-decoration:none;}
+  .row{display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 0;}
+  .pill{font-size:12px; font-weight:600; padding:3px 9px; border-radius:999px; white-space:nowrap;}
+  .p-flood{background:var(--floodbg); color:var(--flood);}
+  .p-quake{background:var(--quakebg); color:var(--quake);}
+  .p-fire{background:var(--firebg); color:var(--fire);}
+  .p-ng{background:var(--ngbg); color:var(--ng);}
+  .p-warn{background:var(--warnbg); color:var(--warn);}
+  .p-cap{background:#eef2f6; color:var(--ink2);}
+  .floor3{background:var(--ngbg); color:var(--ng);}
+  .floor1{background:var(--quakebg); color:var(--quake);}
+  .floor2{background:var(--warnbg); color:var(--warn);}
+  .area{font-size:12.5px; color:var(--ink2); margin-top:8px; padding-top:8px; border-top:1px dashed var(--line);}
+  .area .hl{background:var(--hi); padding:0 3px; border-radius:3px; font-weight:700; color:var(--ink);}
+  .sec{font-size:13px; font-weight:700; color:var(--ink2); margin:18px 0 8px; padding-bottom:6px; border-bottom:2px solid var(--line);}
+  .empty{font-size:13.5px; color:var(--ink2); background:var(--card); border:1px dashed var(--line); border-radius:var(--r); padding:18px 14px; text-align:center;}
+  .alert{background:var(--ngbg); border:1px solid #e6b5b1; color:#7a201b; font-size:13px; padding:11px 12px; border-radius:10px; margin:0 0 10px; font-weight:600;}
+  footer{font-size:11.5px; color:var(--ink2); margin-top:22px; line-height:1.7;}
+  footer a{color:var(--flood);}
+  .count{font-size:12.5px; color:var(--ink2); margin:0 0 10px;}
+details.help{margin:8px 0 0;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+details.help summary{padding:9px 12px;font-size:13.5px;font-weight:700;color:var(--flood);cursor:pointer;list-style:none}
+details.help summary::-webkit-details-marker{display:none}
+details.help summary::before{content:"ⓘ "}
+details.help[open] summary{border-bottom:1px solid var(--line)}
+.helpbody{padding:8px 12px;font-size:12.8px;line-height:1.6}
+.helpbody p{margin:6px 0}.helpbody u{text-decoration:none;color:var(--flood);font-weight:700}
+.helpbody .src2{color:#6b7787;font-size:11.5px;margin-top:8px}
+.links{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 10px}
+.links a.lk{flex:0 0 auto;font-size:12px;border:1px solid var(--line);background:var(--card);color:var(--flood);border-radius:14px;padding:6px 11px;text-decoration:none;white-space:nowrap}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 14px;align-items:start}
+.col{min-width:0}
+.col .sec{margin-top:0}
+.wrap{max-width:1180px}
+#out{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px 14px;align-items:start}
+#out>.sec,#out>.note,#out>.alert,#out>.empty,#out>.links,#out>.cols,#out>button,#out>.tl{grid-column:1/-1}
+@media(max-width:560px){
+ #out{display:block}
+ .cols{grid-template-columns:1fr}
+}
+.datasrc{max-width:1180px;margin:12px auto 30px;padding:0 14px;font-size:11.5px;color:#6b7787;line-height:1.7}.datasrc a{color:inherit}
+.gpsbtn{display:block;width:100%;margin:8px 0 2px;padding:13px 16px;font-size:16px;font-weight:700;color:#fff;background:var(--quake,#1f6feb);border:none;border-radius:10px;cursor:pointer}
+.gpsbtn:active{filter:brightness(.92)}
+.gpsbtn.loading{background:#888}
+.gpsbest{background:var(--quakebg,#e7f0ff);border:2px solid var(--quake,#1f6feb);border-radius:10px;padding:12px 14px;margin:6px 0 10px;font-size:15px;line-height:1.6}
+.gpsbest b{font-size:17px}
+.tl{margin:2px 0 8px}
+.tlgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 14px;align-items:start}
+@media(max-width:560px){.tlgrid{grid-template-columns:1fr}}
+.tllv{min-width:0}
+.tlhead{font-size:12.8px;color:var(--ink2);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:0 0 12px;line-height:1.7}
+.tllv{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 14px;background:var(--card)}
+.tllv .bar{display:flex;align-items:center;gap:10px;padding:10px 13px;color:#fff;font-weight:800}
+.tllv .bar .lvno{font-size:20px;line-height:1;background:rgba(255,255,255,.22);border-radius:8px;padding:4px 9px}
+.tllv .bar .lvnm{font-size:15px}
+.tllv .bar .lvwhen{margin-left:auto;font-size:11.5px;font-weight:600;opacity:.95;text-align:right;max-width:48%}
+.tllv.l3 .bar{background:#c1342d}
+.tllv.l4 .bar{background:#7a2c8f}
+.tllv.l5 .bar{background:#1b1b1b}
+.tlbody{padding:6px 13px 12px}
+.tlarea{padding:9px 0;border-top:1px dashed var(--line)}
+.tlarea:first-child{border-top:none}
+.tlarea .an{font-size:13.5px;font-weight:800;color:var(--ink);margin:0 0 5px}
+.tlarea .ap{display:flex;flex-wrap:wrap;gap:6px}
+.tlarea .ap a{font-size:12.5px;text-decoration:none;color:var(--ink);background:#eef2f6;border:1px solid var(--line);border-radius:8px;padding:5px 9px;line-height:1.4}
+.tlarea .ap a:active{filter:brightness(.95)}
+.tlself{background:#fff7e6;border-color:#ecdca0;color:#6b5512}
+.share{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.share button{border:1px solid #d5dbe3;background:#fff;color:#5b6573;font-size:12px;padding:4px 9px;border-radius:14px;cursor:pointer}
+.share button.line{background:#06c755;border-color:#06c755;color:#fff;font-weight:600}
+.share button.mail{color:#2b5d8a;border-color:#2b5d8a}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>避難所さがし　鴻巣営業所版</h1>
+    <p>鴻巣市・北本市・吉見町・川島町・加須市・桶川市／地区名・住所・施設名で検索、町名から近い順</p>
+  </header>
+  <details class="help"><summary>避難所の種類と、どんな時に使うか</summary>
+  <div class="helpbody">
+   <p><b>指定緊急避難場所</b>＝<u>今すぐ危険から逃げる場所</u>。命を守るため緊急に避難。洪水・土砂・地震など<b>災害種別ごと</b>に指定。屋外（公園・グラウンド・駐車場）や堅牢な建物。</p>
+   <p><b>指定避難所</b>＝<u>災害後に寝泊まりする施設</u>。家に戻れないとき一定期間 生活（学校・体育館・公民館）。</p>
+   <p><b>福祉避難所</b>＝<u>要配慮者向け</u>。高齢者・障害者など配慮が必要な人を受け入れ。<b>二次的に開設</b>（最初から開いてはいません）。</p>
+   <p><b>補助避難所</b>＝指定避難所が満員のときの予備。<b>協定</b>＝ゴルフ場・駐車場など民間と協定した一時避難先。</p>
+   <p class="src2">※指定緊急避難場所と指定避難所は別物（同じ建物が両方を兼ねることも、別々のことも）。出典：国土地理院。</p>
+  </div></details>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="search">
+    <input id="q" type="search" placeholder="地区名や施設名（例：中央3、本町、吹上、中山）" autocomplete="off">
+    <button id="clr" type="button">消去</button>
+  </div>
+  <button id="gps" type="button" class="gpsbtn">📍 今いる場所から一番近い避難所</button>
+  <div class="hint" id="hint"></div>
+  <div class="seg" id="seg"></div>
+  <div id="dynNote"></div>
+  <div class="count" id="count"></div>
+  <div id="out"></div>
+
+  <footer id="foot"></footer>
+  <div class="datasrc">避難所データ出典：<a href="https://hinanmap.gsi.go.jp/hinanjocp/hinanbasho/koukaidate.html" target="_blank" rel="noopener">国土地理院 指定緊急避難場所・指定避難所データ（公開日一覧）</a>。<b>このツール作成：2026年6月</b>。情報は古くなります—最新の指定状況・公開日は各市町村および国土地理院で確認を。桶川市は市公式の一覧（電話番号つき）、北本市は丁目単位の避難対象地域を反映。</div>
+</div>
+
+<script>
+/* ============ データ ============ */
+
+// 鴻巣市
+const konosuShitei = [
+ ["鴻巣東小学校","本町6-4-56","048-541-1118",1060,"1階以上",1060,22],
+ ["鴻巣南小学校","本町8-7-23","048-541-1107",743,"1階以上",743,28],
+ ["馬室小学校","滝馬室555","048-541-0578",639,"1階以上",638,40],
+ ["田間宮小学校","糠田2985","048-596-0617",807,"3階以上",279,28],
+ ["箕田小学校","箕田408","048-596-0318",752,"3階以上",175,10],
+ ["旧笠原小学校","笠原1613","048-541-1661",572,"2階以上",256,20],
+ ["旧常光小学校","下谷369","048-541-5739",550,"2階以上",244,20],
+ ["鴻巣北小学校","神明3-18-10","048-596-5239",897,"1階以上",897,30],
+ ["松原小学校","原馬室2425","048-542-8450",862,"1階以上",862,38],
+ ["赤見台第一小学校","赤見台4-19-1","048-596-1688",770,"3階以上",173,22],
+ ["赤見台第二小学校","赤見台2-6-1","048-596-6571",897,"2階以上",430,24],
+ ["鴻巣中央小学校","中央30-1","048-543-7111",1016,"2階以上",469,26],
+ ["吹上小学校","南1-10-5","048-548-0132",1071,"3階以上",368,73],
+ ["小谷小学校","小谷1890-1","048-548-1004",566,"3階以上",167,28],
+ ["下忍小学校","鎌塚10","048-548-2300",829,"2階以上",404,15],
+ ["大芦小学校","大芦923-1","048-548-6555",953,"3階以上",336,30],
+ ["屈巣小学校","屈巣4515-1","048-569-0038",425,"2階以上",202,22],
+ ["共和小学校","新井194-2","048-569-0036",422,"1階以上",422,9],
+ ["広田小学校","広田3156-5","048-569-0026",428,"1階以上",428,19],
+].map(r=>({name:r[0],addr:r[1],tel:r[2],quake:r[3],floor:r[4],fc:r[5],park:r[6]}));
+
+const konosuHojo = [
+ ["鴻巣中学校","東2-4-62","048-541-0272",1253,"1階以上",1253,25],
+ ["鴻巣北中学校","箕田4280","048-596-3428",1271,"2階以上",626,29],
+ ["鴻巣西中学校","大間1161","048-542-4261",1143,"3階以上",269,20],
+ ["鴻巣南中学校","原馬室3685","048-542-2861",1088,"1階以上",1088,35],
+ ["赤見台中学校","赤見台4-25-1","048-596-6002",1203,"3階以上",413,23],
+ ["吹上中学校","吹上富士見1-6-1","048-548-0051",1127,"3階以上",373,54],
+ ["吹上北中学校","鎌塚550","048-548-0081",1116,"2階以上",546,20],
+ ["川里中学校","関新田1560-1","048-569-0009",928,"2階以上",361,36],
+ ["県立鴻巣高等学校","大間1020","048-541-0234",2608,"1階以上",2608,28],
+ ["県立鴻巣女子高等学校","天神1-1-72","048-541-0669",855,"1階以上",855,32],
+ ["県立吹上秋桜高等学校","前砂907-1","048-548-5811",270,"3階以上",270,90],
+ ["市民活動センター（エルミこうのすアネックス3階）","本町1-2-1","048-577-3512",270,"1階以上",270,795],
+ ["鴻巣市立総合体育館","鴻巣864-1","048-543-0101",659,"2階以上",196,272],
+ ["コスモスアリーナふきあげ","明用636-1","048-548-3112",608,"1階以上",608,500],
+].map(r=>({name:r[0],addr:r[1],tel:r[2],quake:r[3],floor:r[4],fc:r[5],park:r[6]}));
+
+const konosuFukushi = [
+ ["総合福祉センター","箕田4211-1","048-597-2100"],
+ ["高齢者福祉センター白雲荘","原馬室2917-1","048-543-0355"],
+ ["高齢者福祉センターコスモスの家","吹上本町5丁目4-7","048-548-4807"],
+ ["高齢者福祉センターひまわり荘","関新田1300-1","048-569-2828"],
+ ["つつみ学園","大間829","048-541-0169"],
+ ["共和こども交流の家","関新田220-1","048-569-2310"],
+ ["吹上福祉活動センター","鎌塚57-1","048-549-2288"],
+ ["コミュニティふれあいセンター","登戸449","048-596-3322"],
+ ["市民センター","赤見台1丁目15-5","048-596-6677"],
+ ["本町コミュニティセンター","本町7丁目3-26","048-543-1031"],
+ ["中央公民館","本町3丁目12-18","048-542-8403"],
+ ["箕田公民館・箕田児童センター","稲荷町26-32","048-596-0602"],
+ ["笠原公民館・笠原児童センター","笠原791-1","048-541-0261"],
+ ["常光公民館・常光児童センター","下谷196-1","048-541-2005"],
+ ["あたご公民館・あたご児童センター","原馬室3460-1","048-543-2665"],
+ ["田間宮生涯学習センター・児童センター","登戸149","048-596-0137"],
+ ["吹上生涯学習センター・児童センター","吹上富士見1-1-1","048-548-4726"],
+ ["川里生涯学習センター・児童センター","広田3141-1","048-569-1111"],
+ ["鴻巣集会所","箕田4173-4","048-597-1045"],
+ ["吹上ふれあいセンター","下忍3939-2","048-548-5620"],
+ ["川里ふれあいセンター","広田3517-3","048-569-1402"],
+ ["川里農業研修センター","関新田1800","048-569-1763"],
+ ["鴻巣児童センター","本町3丁目12-24","048-541-0442"],
+ ["北新宿生涯学習センター・児童センター","北新宿943","048-501-7122"],
+].map(r=>({name:r[0],addr:r[1],tel:r[2]}));
+
+// 鴻巣市 指定緊急避難場所（公園・グラウンド29か所／全て地震○）
+// kozui: "ok"=荒川・利根川とも可 / "tone"=利根川氾濫時のみ可 / "no"=水害不可
+const konosuKinkyu = [
+ ["上谷総合公園","上谷707","no"],["糠田運動場","糠田1073-1","no"],["赤見台近隣公園","赤見台3-4","no"],
+ ["鴻巣公園","本町8-3003-1","ok"],["せせらぎ公園","中央28","no"],["上生出塚1号公園","生出塚2-785-372","no"],
+ ["ひばり野中央公園","ひばり野1-286-91","no"],["宮地公園","宮地5-35","ok"],["東裏1号公園","東3-72","tone"],
+ ["東町公園","東1-37","ok"],["あじさい公園","赤見台2-11-1","no"],["人形1丁目2号公園","人形1-3127-1","ok"],
+ ["中央児童公園","本町3-241","ok"],["氷川町2号公園","氷川町30","ok"],["さつき公園","赤見台4-7","no"],
+ ["東裏2号公園","東3-1","ok"],["氷川町1号公園","氷川町4","ok"],["はぎ公園","ひばり野2-13-69","no"],
+ ["荒川総合運動公園","大芦2546-1","no"],["荒川パノラマ公園","大芦1366","ok"],["富士見公園","吹上富士見4-777-59","no"],
+ ["新宿第1公園","新宿1-228","no"],["本町せせらぎ公園","吹上本町2-238-2","tone"],["川里中央公園","関新田1780-1","no"],
+ ["あかぎ公園","赤城台212-51","no"],["ふれあい公園","北根821-1","no"],["赤見台中央公園","赤見台1-8-2","no"],
+ ["しいのき公園","赤見台3-18-2","no"],["すずかけ公園","赤見台4-31-2","no"],
+].map(r=>({name:r[0],addr:r[1],kozui:r[2]}));
+
+// 鴻巣市 医療救護所
+const konosuIryo = [
+ ["鴻巣保健センター","中央2-1","048-543-1561"],
+ ["吹上保健センター","吹上498","048-548-6252"],
+ ["川里保健センター","関新田1281-1","048-569-3141"],
+].map(r=>({name:r[0],addr:r[1],tel:r[2]}));
+
+// 鴻巣市 災害対策本部・活動拠点・応援部隊拠点
+const konosuKyoten = [
+ ["災害対策本部（新館）","中央1-1","048-541-1321"],
+ ["第1代替施設（本庁舎）","中央1-1","048-541-1321"],
+ ["第2代替施設（クレアこうのす）","中央29-1","048-540-0540"],
+ ["吹上支所（地域活動拠点）","吹上富士見1-1-1","048-548-1211"],
+ ["川里支所（地域活動拠点）","広田3141-1","048-569-1111"],
+ ["埼玉県消防学校（応援部隊拠点）","袋30","048-548-5411"],
+ ["陸上競技場（応援部隊拠点）","鴻巣634-2","048-541-7700"],
+].map(r=>({name:r[0],addr:r[1],tel:r[2]}));
+
+// 鴻巣市 要配慮者利用施設（浸水深つき）cat:老/障/児/医/幼  depth code:外/<0.5/0.5-1/1-2/2-5（荒川等,利根川等）
+const konosuYohairyo = [
+ // 老人福祉施設
+ ["老","馬室たんぽぽ翔裕園","原馬室3335","外","外"],["老","翔裕園","上谷687-1","<0.5","<0.5"],
+ ["老","吹上苑","下忍4461","2-5","<0.5"],["老","川里苑","屈巣5158","1-2","0.5-1"],
+ ["老","こうのすタンポポ翔裕園","郷地1746-1","1-2","1-2"],["老","鴻巣まきば園","前砂517-1","2-5","0.5-1"],
+ ["老","フラワーパレス","市ノ縄250-1","1-2","0.5-1"],["老","こうのとり","八幡田868-1","<0.5","外"],
+ ["老","こうのすナーシングホーム共生園","下谷409-1","0.5-1","外"],["老","秋桜","前砂980-1","2-5","<0.5"],
+ ["老","小松の里","小松2-8-12","外","外"],["老","鴻巣市社会福祉協議会","箕田4211-1","2-5","1-2"],
+ ["老","こうのすケアセンターそよ風","天神4-32-1","<0.5","外"],["老","介護のさくら","宮前588-2","<0.5","外"],
+ ["老","ふれあいデイサービス","上谷2231-1","<0.5","外"],["老","ソレアード鴻巣","上谷141-1","<0.5","外"],
+ ["老","みなけあデイサービスセンター","上谷2231","<0.5","外"],["老","彩香らんど","箕田270-1","2-5","<0.5"],
+ ["老","友愛あさひな","登戸330","2-5","<0.5"],["老","マリ子の家","宮地5-14-14","<0.5","<0.5"],
+ ["老","あかね雲吹上苑","吹上本町5-5-2","2-5","外"],["老","ニパータ","鎌塚250-2","1-2","<0.5"],
+ ["老","さくらの里","大芦1800-1","2-5","<0.5"],["老","茶話本舗デイサービス鴻巣","箕田3811-3","外","外"],
+ ["老","デイサービスセンターかんげんとう","赤見台1-8-7","1-2","<0.5"],["老","さくらんぼ","箕田3916-7","外","外"],
+ ["老","佐藤接骨院リハビリデイサービス","東1-2-24","外","外"],["老","介護予防フィットネスあゆみ","神明1-5-13","外","外"],
+ ["老","慈しみの幸望庵","三ツ木341-1","2-5","外"],["老","バランスリハビリデイサービス","吹上富士見4-5-4","2-5","0.5-1"],
+ ["老","グループホーム楽々荘","下谷1448-1","<0.5","外"],["老","グループホームパンジー","上谷43-1","<0.5","外"],
+ ["老","コスモス吹上","吹上本町1-11-8","2-5","<0.5"],["老","愛の家グループホーム鴻巣","登戸309-1","2-5","<0.5"],
+ ["老","グループホームみんなの家鴻巣","大芦1499-1","2-5","<0.5"],["老","くすの木","屈巣2187-1","0.5-1","<0.5"],
+ ["老","ウェルガーデンコスモス","袋303-2","1-2","<0.5"],["老","ふきあげ翔裕館","北新宿891","2-5","外"],
+ ["老","ココファン鴻巣","本町5-6-18","外","外"],["老","風の街","吹上富士見3-1-1","2-5","<0.5"],
+ ["老","グループホーム彩香らんど","登戸256-1","2-5","<0.5"],["老","ふくしのまち","滝馬室923-2","外","外"],
+ // 児童福祉施設（保育所等）
+ ["児","鴻巣保育所","東1-8-7","外","外"],["児","馬室保育所","滝馬室1152-1","外","外"],
+ ["児","生出塚保育所","生出塚2-7-1","1-2","<0.5"],["児","富士見保育所","富士見町8-16","外","外"],
+ ["児","登戸保育所","登戸612","2-5","1-2"],["児","鎌塚保育所","鎌塚2-11-33","1-2","外"],
+ ["児","吹上富士見保育所","吹上富士見4-8-18","2-5","<0.5"],["児","川里ひまわり保育園","関新田1261-1","1-2","1-2"],
+ ["児","寺谷保育園","寺谷335-1","1-2","<0.5"],["児","まごやま保育園","栄町7-24","外","外"],
+ ["児","どんぐり保育園","糠田1531-2","2-5","0.5-1"],["児","ひかりっこ保育園","上谷1950-1","<0.5","<0.5"],
+ ["児","大芦保育園","大芦1616-2","2-5","<0.5"],["児","中央たんぽぽ保育園","吹上富士見1-14-25","2-5","0.5-1"],
+ ["児","どんぐりっこ保育園","糠田2801","2-5","0.5-1"],
+ // 障がい福祉施設
+ ["障","つつみ学園","大間829-3","1-2","外"],["障","ルピナス鴻巣ホーム","笠原177-1","1-2","1-2"],
+ ["障","あしたば第一作業所","箕田4265-1","2-5","1-2"],["障","川里ポプラ館","関新田1277-2","1-2","1-2"],
+ ["障","あしたば第二作業所","原馬室3116-2","外","外"],["障","吹上太陽の家","鎌塚57-1","2-5","<0.5"],
+ ["障","メリーハーモニー","下忍3100-1","1-2","<0.5"],["障","夢の実","本町5-2-41","外","外"],
+ ["障","夢の実ハウス","八幡田868-1","<0.5","外"],["障","コスモス工房","氷川町28-9","外","外"],
+ ["障","コスモス共同作業所","本町5-2-4","外","外"],["障","ケアセンターかるぽす","吹上富士見2-2-14","2-5","<0.5"],
+ ["障","こぽす","宮前91-2","<0.5","外"],["障","夢工房翔裕園","下谷41","<0.5","外"],
+ ["障","鴻巣職業訓練センター","鴻巣1183-2","1-2","1-2"],["障","イリス（ほか）","ひばり野1-32-8","1-2","1-2"],
+ ["障","グループホームあおぞら（ほか）","加美2-8-34","外","外"],["障","グループホームノアの家（ほか）","袋1749-10","1-2","<0.5"],
+ ["障","ケアホームひとつぶ（ほか）","鎌塚40-1","2-5","<0.5"],["障","風の家1・2","吹上富士見3-1-1","2-5","<0.5"],
+ ["障","グループホームほのぼの","本町5-2-6","外","外"],["障","グループホームほのぼのⅡ","逆川2-2-7","外","外"],
+ // 医療提供施設
+ ["医","鴻巣第一クリニック","大間776-1","0.5-1","外"],["医","鴻巣外科胃腸科","鴻巣1195-1","0.5-1","0.5-1"],
+ ["医","埼玉県済生会鴻巣病院","八幡田849","外","外"],["医","はやしだ産婦人科医院","鴻巣1005-2","1-2","1-2"],
+ ["医","村越外科胃腸科肛門科","吹上本町1-4-13","2-5","<0.5"],
+ // 幼稚園
+ ["幼","英和幼稚園","東1-1-27","外","外"],["幼","エンゼル幼稚園","加美1-2-34","外","外"],
+ ["幼","鴻巣幼稚園","本町6-3-4","外","外"],["幼","鴻巣ひかり幼稚園","上谷1950-1","<0.5","<0.5"],
+ ["幼","箕田幼稚園","箕田327-3","2-5","0.5-1"],["幼","まむろ幼稚園","原馬室4113","外","外"],
+ ["幼","鴻巣松原幼稚園","原馬室3747","外","外"],["幼","大芦幼稚園","大芦1616-2","2-5","<0.5"],
+ ["幼","吹上中央幼稚園","吹上富士見1-14-25","2-5","0.5-1"],
+].map(r=>({cat:r[0],name:r[1],addr:r[2],ara:r[3],tone:r[4]}));
+
+// 鴻巣 8地区 → その地区の指定・補助避難所（地域別防災マップより）
+const KONOSU_CHIKU={
+ "鴻巣地区":["鴻巣東小学校","鴻巣南小学校","鴻巣中央小学校","鴻巣中学校","県立鴻巣女子高等学校"],
+ "箕田・赤見台地区":["箕田小学校","鴻巣北小学校","赤見台第一小学校","赤見台第二小学校","鴻巣北中学校","赤見台中学校"],
+ "田間宮地区":["田間宮小学校","鴻巣西中学校","県立鴻巣高等学校"],
+ "馬室地区":["馬室小学校","松原小学校","鴻巣南中学校"],
+ "笠原地区":["旧笠原小学校"],
+ "常光地区":["旧常光小学校"],
+ "川里地区":["屈巣小学校","共和小学校","広田小学校","川里中学校"],
+ "吹上地区":["吹上小学校","小谷小学校","下忍小学校","大芦小学校","吹上中学校","吹上北中学校","県立吹上秋桜高等学校"],
+};
+// 字（数字なし）→地区
+const KONOSU_AZA={
+ "本町":"鴻巣地区","中央":"鴻巣地区","宮地":"鴻巣地区","人形":"鴻巣地区","東":"鴻巣地区","天神":"鴻巣地区","生出塚":"鴻巣地区","上生出塚":"鴻巣地区","加美":"鴻巣地区","ひばり野":"鴻巣地区","雷電":"鴻巣地区","本宮町":"鴻巣地区",
+ "箕田":"箕田・赤見台地区","赤見台":"箕田・赤見台地区","川面":"箕田・赤見台地区","三ツ木":"箕田・赤見台地区","愛の町":"箕田・赤見台地区","中井":"箕田・赤見台地区","すみれ野":"箕田・赤見台地区","稲荷町":"箕田・赤見台地区","寺谷":"箕田・赤見台地区","八幡田":"箕田・赤見台地区","市ノ縄":"箕田・赤見台地区","神明":"箕田・赤見台地区","北中丸":"箕田・赤見台地区",
+ "宮前":"田間宮地区","糠田":"田間宮地区","登戸":"田間宮地区","大間":"田間宮地区","緑町":"田間宮地区","堤町":"田間宮地区","幸町":"田間宮地区","栄町":"田間宮地区","北中野":"田間宮地区",
+ "滝馬室":"馬室地区","原馬室":"馬室地区","松原":"馬室地区","小松":"馬室地区","氷川町":"馬室地区","逆川":"馬室地区",
+ "笠原":"笠原地区","安養寺":"笠原地区","郷地":"笠原地区",
+ "常光":"常光地区","上谷":"常光地区","西中曽根":"常光地区","下谷":"常光地区",
+ "屈巣":"川里地区","共和":"川里地区","広田":"川里地区","関新田":"川里地区","新井":"川里地区","赤城":"川里地区","赤城台":"川里地区","北根":"川里地区","境":"川里地区","上会下":"川里地区",
+ "吹上本町":"吹上地区","吹上富士見":"吹上地区","吹上":"吹上地区","南":"吹上地区","鎌塚":"吹上地区","下忍":"吹上地区","前砂":"吹上地区","袋":"吹上地区","榎戸":"吹上地区","大芦":"吹上地区","小谷":"吹上地区","新宿":"吹上地区","北新宿":"吹上地区","明用":"吹上地区","筑波":"吹上地区","三丁免":"吹上地区",
+};
+function resolveChiku(raw){
+  const pq=place(raw); if(!pq) return null;
+  let best=null,len=0;
+  for(const k in KONOSU_AZA){ const nk=norm(k);
+    if(pq===nk || pq.startsWith(nk)){ if(nk.length>len){best=KONOSU_AZA[k]; len=nk.length;} } }
+  return best;
+}
+// 北本：公式の避難対象地域（西○表記）に無い旧大字 → 最寄り候補の広域避難所
+const KITAMOTO_ALIAS={
+ "石戸宿":{to:["西中学校","石戸小学校"],note:"西部の大字。行政区で細分されるため最寄り候補を表示します。"},
+ "下石戸下":{to:["西中学校","石戸小学校"],note:"西部の大字。行政区で細分されるため最寄り候補を表示します。"},
+ "下石戸":{to:["石戸小学校","西中学校"],note:"西部の大字。行政区で細分されるため最寄り候補を表示します。"},
+ "高尾":{to:["北本中学校","西小学校"],note:"行政区で細分されるため最寄り候補を表示します。"},
+ "花ノ木":{to:["文化センター","北本中学校"],note:"行政区で細分されるため最寄り候補を表示します。"},
+ "朝日":{to:["北本市体育センター"],note:"朝日＝ワコーレ地区で、割り当ては体育センターです（※体育センターは洪水では使えません。下の警告を確認）。"},
+ "北中丸":{to:["東小学校","中丸東小学校"],note:"北中丸は中丸地区寄り。最寄り候補として中丸の小学校を表示します。"},
+};
+function resolveKitaAlias(raw){
+  const pq=place(raw); if(!pq) return null;
+  let best=null,len=0;
+  for(const k in KITAMOTO_ALIAS){ const nk=norm(k);
+    if(pq===nk || pq.startsWith(nk)){ if(nk.length>len){best=KITAMOTO_ALIAS[k]; len=nk.length;} } }
+  return best;
+}
+// 北本：避難対象地域に出てくる通称（団地・マンション名）→ おおよその実住所（目安）。割り当て先は公式どおり。
+const KITAMOTO_NICK={
+ "ハイデンス":"二ツ家4丁目あたり","マリオン":"二ツ家3丁目あたり","二ツ家団地":"二ツ家1丁目あたり",
+ "ワコーレ":"東7〜9（古市場寄り）","アトレ":"宮内2〜3丁目あたり",
+ "深井第":"深井・東間5〜8丁目あたり","サンマンション":"東間5〜8・深井あたり","スカイハイツ":"東間5〜8・深井あたり",
+ "台原":"西2丁目あたり","三菱":"西2丁目あたり","京王":"西2丁目・下石戸下あたり",
+ "南団地":"下石戸下あたり","東原団地":"下石戸下あたり",
+ "アースドリーム":"市西部（西3〜20のうち）","ハイムタウン":"市西部（西3〜20のうち）",
+ "第3チサン":"荒井1丁目あたり","チサン":"荒井1丁目あたり","グリーンハイツ":"栄1〜5丁目あたり",
+};
+function resolveKitaNick(raw){
+  const q=norm(raw); if(!q) return null;
+  let best=null,len=0;
+  for(const k in KITAMOTO_NICK){ const nk=norm(k);
+    if(nk.includes(q)||q.includes(nk)){ if(nk.length>len){best={nick:k,loc:KITAMOTO_NICK[k]}; len=nk.length;} } }
+  return best;
+}
+
+// 北本市 広域避難所（避難対象地域の目安つき）+ 指定緊急避難場所の災害種別適否
+// suit: [洪水, 地震, 火災, 内水]  ○=true ×=false  (校舎本体の指定。グラウンドは別途○)
+const kitamoto = [
+ {name:"東小学校",addr:"中丸6-65",areas:["中丸6","中丸7","二ツ家1","二ツ家2","二ツ家3","二ツ家4","ハイデンス","マリオン","二ツ家団地"],raw:"中丸6・7丁目、二ツ家1～4丁目、ハイデンス、マリオン、二ツ家団地",suit:[1,1,0,1]},
+ {name:"中丸東小学校",addr:"中丸10-270",areas:["中丸1","中丸2","中丸3","中丸4","中丸5","中丸8","中丸9","東3"],raw:"中丸1～5・8・9丁目、東3",suit:[1,1,0,1]},
+ {name:"東中学校",addr:"山中2-128",areas:["本宿1","本宿2","本宿3","本宿4","本宿5","本宿6","本宿7","本宿8","山中1","山中2","東4"],raw:"本宿1～8丁目、山中1・2丁目、東4",suit:[1,1,0,1]},
+ {name:"中丸小学校",addr:"宮内7-145",areas:["北本1","北本2","北本3","北本4","宮内1","東11","東19"],raw:"北本1～4丁目、宮内1丁目、東11、東19",suit:[1,1,0,1]},
+ {name:"北本市体育センター",addr:"古市場1-156",areas:["東7","東8","東9","ワコーレ"],raw:"東7・8・9、ワコーレ",suit:[0,1,0,0]},
+ {name:"宮内中学校",addr:"宮内4-322",areas:["東間1","東間2","東間3","東間4","宮内2","宮内3","東10","アトレ"],raw:"東間1～4丁目、宮内2・3丁目、東10、アトレ",suit:[0,1,0,0]},
+ {name:"北小学校",addr:"深井4-45",areas:["東間5","東間6","東間7","東間8","深井第1","深井第2","深井第3","サンマンション","スカイハイツ"],raw:"東間5～8丁目、深井第1～第3、サンマンション、スカイハイツ",suit:[1,1,0,1]},
+ {name:"北本中学校",addr:"本町1-1-1",areas:["中央3","中央4","西高尾1","西高尾2","西高尾3","西高尾5","西高尾6","西高尾7"],raw:"中央3・4丁目、西高尾1～3・5～7丁目",suit:[1,1,0,1]},
+ {name:"文化センター",addr:"本町1-2-1",areas:["本町1","本町2","本町3","本町4","中央1","中央2","緑1","緑2"],raw:"本町1～4丁目、中央1・2丁目、緑1・2丁目",suit:[1,1,0,1]},
+ {name:"南小学校",addr:"緑3-387",areas:["東5","東22","台原","西2","三菱","京王","南団地","東原団地"],raw:"東5・22、台原、西2、三菱、京王、南団地、東原団地",suit:[1,1,0,1]},
+ {name:"西小学校",addr:"本町7-3",areas:["本町5","本町6","本町7","本町8","西高尾4","西高尾8","西19"],raw:"本町5～8丁目、西高尾4・8丁目、西19",suit:[1,1,0,1]},
+ {name:"栄市民活動交流センター",addr:"栄1",areas:["栄1","栄2","栄3","栄4","栄5","グリーンハイツ"],raw:"栄1～5、グリーンハイツ",suit:[1,1,0,1]},
+ {name:"石戸小学校",addr:"荒井2-320",areas:["西4","西5","西11","西14","西16","西17","西18","第3チサン"],raw:"西4・5・11・14・16・17-1・17-2・18、第3チサン",suit:[1,1,0,1]},
+ {name:"西中学校",addr:"石戸9-210",areas:["西3","西6","西7","西8","西9","西10","西12","西13","西15","西20","ハイムタウン","アースドリーム"],raw:"西3・6～10・12・13・15・20、ハイムタウン、アースドリーム",suit:[1,1,0,1]},
+];
+
+// 川島町
+const kawajimaFlood = [ // 水害時の指定緊急避難場所（これだけが水害時に開設）
+ ["中山小学校","中山1333"],["伊草小学校","伊草238-1"],["旧出丸小学校","上大屋敷100"],
+ ["つばさ南小学校・川島中学校","白井沼230"],["西中学校","中山270-1"],["川島町地域活動センターイースト（2階・武道館）","下八ツ林923"],
+].map(r=>({name:r[0],addr:r[1]}));
+const kawajimaFloodClosed = ["旧つばさ南小学校","旧つばさ北小学校","旧小見野小学校"]; // 水害時は開設しない
+// 川島 町協定締結の町外避難場所（洪水のおそれ段階で早めに町外へ。所在地は他市町）
+const kawajimaSoto = [
+ ["埼玉県こども動物自然公園","東松山市岩殿554","約800台"],["上尾運動公園","上尾市愛宕3-28-30","約200台"],
+ ["鶴ヶ島グリーンパーク","鶴ヶ島市太田ヶ谷1211","約270台"],["国営武蔵丘陵森林公園","滑川町山田1920","約400台"],
+ ["ヘイワールド","北本市深井6-87","約850台"],["COEDOクラフトビール醸造所","東松山市大谷1352","約500台"],
+ ["第一プラザ坂戸1000","坂戸市塚越1300","約670台"],["D'STATION坂戸店","坂戸市塚越1446-1","約930台"],
+ ["エスタディオ東松山店","東松山市石橋1687-2","約700台"],["ノア東松山店","滑川町羽尾3001-2","約700台"],
+ ["パーラーEX滑川店","滑川町羽尾225-1","約600台"],["埼玉県立松山女子高校","東松山市和泉町2-22","約20台"],
+ ["山村学園短期大学","鳩山町石坂604","約50台"],["大東文化大学東松山キャンパス","東松山市旗立台3","約30台"],
+ ["みどりの郷あすか東松山","東松山市大谷1538-1","福祉避難所"],["みどりの郷おすか鶴ヶ島デイセンター","鶴ヶ島市脚折1468-1","福祉避難所"],
+].map(r=>({name:r[0],addr:r[1],cap:r[2]}));
+const kawajimaQuake = [ // 地震・大規模火災の指定避難所
+ ["中山小学校","中山1333"],["伊草小学校","伊草238-1"],["つばさ南小学校（旧三保谷小）","白井沼945"],
+ ["旧出丸小学校","上大屋敷100"],["つばさ北小学校（旧八ッ保小）","畑中31"],["旧小見野小学校","谷中99"],
+ ["川島中学校","白井沼230"],["西中学校","中山270-1"],["川島町民体育館","下八ツ林923"],
+ ["コミュニティセンター","下八ツ林923"],["川島町民会館","下八ツ林926-1"],
+].map(r=>({name:r[0],addr:r[1]}));
+const kawajimaParking = [ // 町協定の一時駐車場避難（建物内不可・駐車場のみ）
+ ["オータ川島店","大字戸守382-1"],["GLP川島","大字上伊草888-1"],["プロロジスパーク川島","かわじま2-1-78"],
+].map(r=>({name:r[0],addr:r[1]}));
+
+// 吉見町（防災ハザードマップ令和3年3月版 P7-8 全44か所）
+// kozui: "ok"=1階から可 / "3f"=3階以上のみ / "no"=水害時不可
+// types: 指定避難所/補助避難所/福祉避難所（全件が指定緊急避難場所）
+const yoshimi = [
+ ["東第一小学校","東野5-20-1","54-1510",1,"3f",0,"3-B-4",["指定"],0],
+ ["東公民館","蚊斗谷132","54-4655",1,"no",0,"5-C-1",["補助"],0],
+ ["東第二小学校","江和井1555","54-1530",1,"3f",0,"5-D-2",["指定"],0],
+ ["荒川荘","大串2843","54-4768",1,"no",0,"5-C-3",["福祉"],0],
+ ["東野ふれあいセンター","東野5-15-7","",1,"no",0,"3-B-4",["補助"],0],
+ ["南小学校","久保田942-2","54-1504",1,"3f",0,"4-E-2",["指定"],0],
+ ["吉見中学校","下細谷1","54-1525",1,"3f",0,"2-E-3",["指定"],0],
+ ["吉見町役場","下細谷411","54-1511",1,"3f",0,"2-F-4",[],0],
+ ["勤労福祉センター","下細谷1210","",1,"no",0,"2-F-3",[],0],
+ ["保健センター","下細谷1212","54-3120",1,"no",0,"2-F-3",["福祉"],0],
+ ["悠友館","下細谷1213","53-0526",1,"no",0,"2-F-3",["指定","福祉"],0],
+ ["吉見町福祉会館","下細谷1216-1","54-5228(社協)",1,"no",0,"2-F-3",["福祉"],0],
+ ["西小学校","和名50","54-1509",1,"ok",1,"2-D-3",["指定"],0],
+ ["西が丘小学校","南吉見2074-3","54-7577",1,"ok",0,"2-C-4",["指定","福祉"],0],
+ ["西公民館","北吉見2823","54-4545",0,"ok",1,"2-D-3",["指定"],0],
+ ["西部ふれあいセンター","北吉見1717-1","",1,"ok",1,"2-B-3",["指定","補助"],0],
+ ["埋蔵文化財センター","北吉見321","54-9111",1,"ok",0,"2-B-4",[],0],
+ ["フレンドシップハイツよしみ","黒岩602","54-2030",1,"ok",0,"2-D-2",["補助"],0],
+ ["北小学校","地頭方441","54-1500",1,"3f",0,"2-F-1",["指定"],0],
+ ["町民体育館","中新井493-1","54-5625",1,"no",0,"2-F-3",["指定"],0],
+ ["B&G海洋センター体育館","中新井497","",1,"no",0,"2-F-3",["補助"],0],
+ ["吉見町民会館（フレサよしみ）","中新井508","53-1331",1,"no",0,"2-F-2",["補助"],0],
+ ["よしみけやき保育所","中新井467","54-1766",1,"no",0,"2-E-2",["福祉"],0],
+ ["ふれあい広場","小新井142","54-5625",1,"no",0,"2-E-2",[],1],
+ ["道の駅いちごの里よしみ","久保田1737","53-1530",1,"no",0,"2-F-4",[],0],
+ ["東部街区第1公園","東野2-11","",1,"no",0,"3-A-4",[],1],
+ ["東部街区第2公園","東野3-12","",1,"no",0,"3-B-4",[],1],
+ ["東部街区第4公園","東野6-4","",1,"no",0,"3-B-4",[],1],
+ ["東部街区第5公園","東野5-21","",1,"no",0,"3-B-4",[],1],
+ ["東部街区第6公園","東野4-12","",1,"no",0,"5-A-1",[],1],
+ ["東部街区第3公園（成城台公園）","東野5-4-1","",1,"no",0,"3-B-4",[],1],
+ ["東部街区第7公園（柿の木台公園）","東野5-30","",1,"no",0,"5-B-1",[],1],
+ ["永府公園","西吉見604-1","",1,"no",0,"4-C-2",[],1],
+ ["大沼下公園","長谷509-7","",1,"no",0,"2-C-1",[],1],
+ ["想いの森公園","長谷1839","",1,"no",0,"2-B-2",[],1],
+ ["八幡公園","長谷1931","",1,"no",0,"2-B-1",[],1],
+ ["越中公園","長谷1953","",1,"no",0,"2-B-2",[],1],
+ ["前山公園","田甲1235","",1,"no",0,"2-D-1",[],1],
+ ["さくら台公園","北吉見3940-23","",1,"no",0,"2-B-3",[],1],
+ ["南吉見公園","北吉見3933-1","",1,"no",0,"2-C-3",[],1],
+ ["天王山自然公園","北吉見1670","",1,"no",0,"2-C-3",[],1],
+ ["六の谷公園","長谷726","",1,"no",0,"2-C-2",[],1],
+ ["御所団地公園","御所246-1","",1,"no",0,"2-D-3",[],1],
+ ["吉見ヶ丘公園","久保田1887-27","",1,"no",0,"4-F-1",[],1],
+].map(r=>({name:r[0],addr:r[1],tel:r[2],jishin:r[3],kozui:r[4],dosha:r[5],coord:r[6],types:r[7],park:r[8]}));
+
+/* 加須市（国土地理院 指定緊急避難場所・指定避難所データ）
+   bt: school=学校(建物あり) bldg=指定避難所の建物 out=屋外(公園・運動用地) welfare=福祉施設 hotel=協定宿泊 other=その他
+   kz: no=洪水の指定緊急ではない（屋外は水害×）／-=指定避難所のみで災害種別データ未掲載
+   ※加須は利根川・荒川低地。屋外の緊急避難場所は水害時×。水害時は建物上階へ垂直避難 or 市外・高台へ広域避難。*/
+const kazo = [
+ ["ファミリーグラウンド","阿佐間769","out",1,"no"],
+ ["加須南小学校","下高柳1991","school",1,"no"],
+ ["樋遣川小学校","下樋遣川427","school",1,"no"],
+ ["加須東中学校","花崎1-22-1","school",0,"no"],
+ ["花崎北公園","花崎北2-1","out",1,"no"],
+ ["花崎北小学校","花崎北3-1","school",1,"no"],
+ ["騎西総合公園","外川355","out",1,"no"],
+ ["騎西城山公園","外川457-1","out",1,"no"],
+ ["大利根東小学校","旗井807","school",1,"no"],
+ ["騎西中学校","騎西1001","school",0,"no"],
+ ["騎西小学校","騎西52-3","school",1,"no"],
+ ["玉敷公園","騎西535-1","out",1,"no"],
+ ["騎西中央公園","騎西961","out",1,"no"],
+ ["久下公園","久下1-23","out",1,"no"],
+ ["加須北部公園","古川2-6-1","out",1,"no"],
+ ["北川辺東小学校","向古河54","school",1,"no"],
+ ["鴻茎小学校","鴻茎1596-2","school",1,"no"],
+ ["藤ノ木公園","鴻茎3208-1","out",1,"no"],
+ ["原道小学校","細間699","school",1,"no"],
+ ["志多見小学校","志多見633","school",1,"no"],
+ ["高柳小学校","上高柳889","school",1,"no"],
+ ["田ケ谷サン・スポーツランド","上崎1850-1","out",1,"no"],
+ ["種足ふれあいの森","上種足937-1","out",1,"no"],
+ ["加須北中学校","上樋遣川4128","school",0,"no"],
+ ["大利根西部公園","新利根1-4-1","out",1,"no"],
+ ["加須はなさき公園","水深1722","out",1,"no"],
+ ["古宮公園","正能4","out",1,"no"],
+ ["豊野小学校","生出313-1","school",1,"no"],
+ ["けやき公園","西ノ谷800","out",1,"no"],
+ ["大越小学校","大越2115","school",1,"no"],
+ ["水深小学校","大室165","school",1,"no"],
+ ["種足小学校","中種足123","school",1,"no"],
+ ["ふるさと広場","中種足1230-1","out",1,"no"],
+ ["田ヶ谷小学校","内田ケ谷447-3","school",1,"no"],
+ ["加須平成中学校","南大桑1860","school",1,"no"],
+ ["大桑小学校","南大桑3388-1","school",1,"no"],
+ ["加須西中学校","馬内1","school",0,"no"],
+ ["北川辺西小学校","麦倉1189","school",1,"no"],
+ ["北川辺中学校","麦倉3705","school",1,"no"],
+ ["埼玉県立不動岡高等学校","不動岡1-7-45","school",1,"no"],
+ ["不動岡小学校","不動岡798","school",1,"no"],
+ ["豊野台公園","豊野台2-725-3","out",1,"no"],
+ ["大利根中学校","北下新井1705-1","school",0,"no"],
+ ["元和小学校","北下新井521-1","school",1,"no"],
+ ["大利根運動公園","北下新井684-1","out",0,"no"],
+ ["埼玉県水産研究所","北小浜1060-1","other",1,"no"],
+ ["昭和中学校","北小浜70","school",0,"no"],
+ ["三俣小学校","北小浜850","school",1,"no"],
+ ["加須小学校","本町4-25","school",1,"no"],
+ ["礼羽小学校","礼羽560","school",1,"no"],
+ ["十善病院介護医療院","愛宕1-9-16","welfare",0,"-"],
+ ["ケアビレッジシャローム","岡古井73","welfare",0,"-"],
+ ["加須市民体育館","下三俣590","bldg",0,"-"],
+ ["加須市環境浄化センター","花崎2046","bldg",0,"-"],
+ ["騎西総合体育館（ふじアリーナ）","外川355","bldg",0,"-"],
+ ["ショートステイひまわり","騎西433-1","welfare",0,"-"],
+ ["グループホーム 加須ひばりの里","久下1625-1","welfare",0,"-"],
+ ["久下けやきハウス","久下3-6-1","welfare",0,"-"],
+ ["別邸 暁（介護老人福祉施設）","琴寄270-3","welfare",0,"-"],
+ ["ショートステイ藤の里","鴻茎2168-1","welfare",0,"-"],
+ ["グループホーム藤の里","鴻茎2168-2","welfare",0,"-"],
+ ["ショートステイ藤の里II","鴻茎2170","welfare",0,"-"],
+ ["騎西文化・学習センター（キャッスルきさい）","根古屋633-10","bldg",0,"-"],
+ ["多賀谷寿光園","上崎2037-1","welfare",0,"-"],
+ ["虹の園","上崎2047-1","welfare",0,"-"],
+ ["田ケ谷総合センター","上崎2080-1","bldg",0,"-"],
+ ["加須文化・学習センター（パストラルかぞ）","上三俣2255","bldg",0,"-"],
+ ["埼玉県立騎西特別支援学校","上種足888-1","welfare",0,"-"],
+ ["埼玉中央学園","上種足894-1","welfare",0,"-"],
+ ["万葉の郷","新川通105-1","welfare",0,"-"],
+ ["ふれ愛の郷","新川通179-1","welfare",0,"-"],
+ ["あいせんハイム","水深869-17","welfare",0,"-"],
+ ["愛泉苑","水深869-2","welfare",0,"-"],
+ ["川口コミュニティセンター","川口2-12-1","bldg",0,"-"],
+ ["グループホーム つくしんぼ","多門寺158-2","welfare",0,"-"],
+ ["利根川いこいの里","大越1933-1","welfare",0,"-"],
+ ["グループホーム 藤の里大越","大越3386-1","welfare",0,"-"],
+ ["加須センターホテル","中央1-7-50","hotel",0,"-"],
+ ["市民プラザかぞ","中央2-4-17","bldg",0,"-"],
+ ["加須第一ホテル","中央2-9-11","hotel",0,"-"],
+ ["南篠崎コミュニティセンター","南篠崎2-1-6","bldg",0,"-"],
+ ["加須コミュニティセンター","南町3-51","bldg",0,"-"],
+ ["加須クリーンセンター","馬内1790","bldg",0,"-"],
+ ["開智未来中学・高等学校","麦倉1238","school",0,"-"],
+ ["北埼玉ヘルスケアビレッジ","麦倉191","welfare",0,"-"],
+ ["グループホーム 麦倉ひばりの里","麦倉2116-2","welfare",0,"-"],
+ ["みずほの里","平永142","welfare",0,"-"],
+ ["三俣コミュニティセンター（三俣公民館）","北小浜780-1","bldg",0,"-"],
+ ["あけぼの園","北小浜800-1","welfare",0,"-"],
+ ["グループホーム明日葉かぞ・こもれび","北小浜821-3","welfare",0,"-"],
+ ["ライゼ清輝苑","陽光台2-883-75","welfare",0,"-"],
+ ["加須清輝苑","陽光台2-883-78","welfare",0,"-"],
+].map(r=>({name:r[0],addr:r[1],bt:r[2],jishin:r[3],kozui:r[4]}));
+
+/* ============ ユーティリティ ============ */
+const z2h = s => s.replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0));
+const norm = s => z2h((s||"")).replace(/[\s　]/g,"").replace(/丁目|番地|番|号|大字|字|埼玉県|比企郡|鴻巣市|北本市|吉見町|川島町|加須市/g,"").toLowerCase();
+// 地名（字）部分だけ取り出す：数字・ハイフン等を除去（例「鎌塚10」→「鎌塚」「鎌塚3丁目」→「鎌塚」）
+const place = s => norm(s).replace(/[0-9\-－ー―—\(\)（）]/g,"");
+// 住所ヒット：字名の前方一致（「本町」は「吹上本町」を拾わない／「鎌塚3」は「鎌塚10」を拾う）
+const placeHit = (addr,q)=>{
+  const pa=place(addr), pq=place(q);
+  return !!pq && !!pa && (pa===pq || pa.startsWith(pq));
+};
+// 名称 or 住所のどちらかに一致
+const hit = (s,q)=> !q || norm(s.name).includes(q) || placeHit(s.addr,q);
+const mapsLink = (city,addr)=>`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(city+addr)}`;
+// 該当なし時の案内（最寄りを地図で探す導線つき）
+const emptyMsg = (cityName,raw)=>{
+  const ml=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((cityName==="要配慮者施設"?"鴻巣市":cityName)+raw+" 避難所")}`;
+  return `<div class="empty">「${raw||"—"}」に該当する避難所はこの一覧にありません。<br>
+   この地区に避難所が無いか、字名が公式の表記と違う可能性があります。<br>
+   <a href="${ml}" target="_blank" rel="noopener">地図で「${raw} 周辺の避難所」を探す</a></div>`;
+};
+const floorClass = f => f.startsWith("3")?"floor3":f.startsWith("2")?"floor2":"floor1";
+
+/* ============ 状態 ============ */
+const CITIES=["鴻巣市","北本市","吉見町","川島町","加須市","桶川市","要配慮者施設"];
+let city="鴻巣市", floodMode=false, showParks=false, yhCat="all", timelineMode=false; // 水害トグル / 吉見の公園表示 / 要配慮者カテゴリ / 加須レベル別
+const out=document.getElementById("out");
+const q=document.getElementById("q");
+const segEl=document.getElementById("seg");
+const hintEl=document.getElementById("hint");
+const countEl=document.getElementById("count");
+const dynNote=document.getElementById("dynNote");
+
+/* タブ */
+const tabsEl=document.getElementById("tabs");
+CITIES.forEach(c=>{
+  const b=document.createElement("button"); b.className="tab"+(c===city?" active":""); b.textContent=c;
+  b.onclick=()=>{city=c; [...tabsEl.children].forEach(x=>x.classList.toggle("active",x.textContent===c)); q.value="";
+    floodMode=false; showParks=false; timelineMode=false; render();};
+  tabsEl.appendChild(b);
+});
+
+q.addEventListener("input",render);
+document.getElementById("clr").onclick=()=>{q.value="";render();};
+
+/* 現在地から最寄り（GPS） */
+const gpsBtn=document.getElementById("gps");
+gpsBtn.onclick=()=>{
+  if(!navigator.geolocation){ out.innerHTML=""; dynNote.innerHTML='<div class="alert">この端末・ブラウザでは位置情報が使えません。地名で検索してください。</div>'; return; }
+  gpsBtn.classList.add("loading"); gpsBtn.textContent="📍 現在地を取得中…";
+  navigator.geolocation.getCurrentPosition(
+    pos=>{ gpsBtn.classList.remove("loading"); gpsBtn.textContent="📍 今いる場所から一番近い避難所"; renderGps(pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy); },
+    err=>{ gpsBtn.classList.remove("loading"); gpsBtn.textContent="📍 今いる場所から一番近い避難所"; out.innerHTML=""; segEl.innerHTML=""; countEl.textContent="";
+      const msg = err.code===1 ? "位置情報が許可されませんでした。ブラウザ／端末の設定で位置情報を許可してください。"
+                : err.code===3 ? "時間内に取得できませんでした。屋外など電波の良い場所で、もう一度お試しください。"
+                : "位置情報を取得できませんでした。";
+      dynNote.innerHTML=`<div class="alert">⚠ ${msg}<br><span style="font-weight:400">※ファイルを直接開いた場合（file://）やhttp接続では位置情報が使えません。https:// のページで開くか、上の地名検索をご利用ください。</span></div>`; },
+    {enableHighAccuracy:true, timeout:10000, maximumAge:60000});
+};
+function renderGps(lat,lng,acc){
+  out.innerHTML=""; dynNote.innerHTML=""; segEl.innerHTML="";
+  hintEl.innerHTML="<b>現在地から近い順</b>に全施設（全タブ横断）を表示しています。地名で探すときは上の検索を。";
+  countEl.textContent="現在地から近い順";
+  let list=GEO.filter(s=>s.lat&&s.lng).map(s=>{const o=Object.assign({},s); o._d=distM(lat,lng,s.lat,s.lng); return o;}).sort((a,b)=>a._d-b._d);
+  if(!list.length){ dynNote.innerHTML='<div class="alert">避難所データがありません。</div>'; return; }
+  const best=list[0];
+  const gm=`https://www.google.com/maps/dir/?api=1&destination=${best.lat},${best.lng}`;
+  const dz=`https://disaportal.gsi.go.jp/maps/index.html?ll=${lat},${lng}&z=16`;
+  dynNote.innerHTML=`<div class="gpsbest">🚶 一番近い避難所：<b>${best.name}</b>（${best.city}・${KMAPg[best.kind]||""}）<br>現在地から約 <b>${fmtD(best._d)}</b>　<a href="${gm}" target="_blank" rel="noopener">▶ ここへ行く（ルート）</a>　<a href="${dz}" target="_blank" rel="noopener">この地点のハザードマップ</a>${acc?`<br><span style="color:#6b7787;font-size:12.5px">位置精度の目安：±${Math.round(acc)}m。直線距離での近い順です。</span>`:""}</div>`;
+  const LIM=15;
+  const G1=list.filter(s=>s.kind==="K"||s.kind==="H").slice(0,LIM);
+  const G2=list.filter(s=>s.kind==="Q"||s.kind==="P").slice(0,LIM);
+  const G3=list.filter(s=>s.kind==="F").slice(0,LIM);
+  const cols=document.createElement("div"); cols.className="cols";
+  cols.appendChild(colDivN(`指定避難所（近い順 ${G1.length}）｜寝泊まり`,G1,true));
+  cols.appendChild(colDivN(`指定緊急避難場所（近い順 ${G2.length}）｜緊急の逃げ場`,G2,false));
+  cols.appendChild(colDivN(`福祉避難所（近い順 ${G3.length}）｜要配慮者・二次開設`,G3,false));
+  out.appendChild(cols);
+  renderFoot();
+}
+
+/* ============ 描画 ============ */
+function render(){
+  const query=norm(q.value), raw=q.value.trim();
+  out.innerHTML=""; dynNote.innerHTML=""; segEl.innerHTML=""; countEl.textContent="";
+  if(city==="桶川市"){
+    if(raw){ const r=resolveOrigin(city,raw); if(r){ renderNearest(city,raw,r); renderFoot(); return; } }
+    renderOkegawa(query); renderFoot(); return;
+  }
+  if(city!=="要配慮者施設" && raw){
+    const r=resolveOrigin(city,raw);
+    if(r){ renderNearest(city,raw,r); renderFoot(); return; }
+  }
+  if(city==="北本市") renderKitamoto(query);
+  else if(city==="鴻巣市") renderKonosu(query);
+  else if(city==="川島町") renderKawajima(query);
+  else if(city==="加須市") renderKazo(query);
+  else if(city==="要配慮者施設") renderYohairyo(query);
+  else renderYoshimi(query);
+  renderFoot();
+}
+
+function pill(cls,txt){return `<span class="pill ${cls}">${txt}</span>`;}
+function suitRow(s){
+  const lab=["洪水","地震","大火災","内水"];
+  const cls=["p-flood","p-quake","p-fire","p-flood"];
+  return `<div class="row">`+s.map((v,i)=>pill(v?cls[i]:"p-ng",lab[i]+(v?" ○":" ×"))).join("")+`</div>`;
+}
+
+/* --- 北本市：地区名→広域避難所 --- */
+function renderKitamoto(query){
+  hintEl.innerHTML="お住まいの<b>丁目・地区名</b>を入れると、割り当ての広域避難所が出ます（例：中央3／本町2／東間6／西10）。";
+  let list=kitamoto, matched=[], aliasNote="";
+  if(query){
+    matched=kitamoto.filter(s=>s.areas.some(a=>{const na=norm(a); return na.includes(query)||query.includes(na);}) || placeHit(s.addr,query));
+    if(!matched.length){
+      const al=resolveKitaAlias(q.value);
+      if(al){ matched=kitamoto.filter(s=>al.to.includes(s.name)); aliasNote=`「${q.value}」：${al.note}`; }
+    }
+    list=matched.length?matched:[];
+  }
+  // 水害時に開設しない（洪水×）施設に該当した場合の警告
+  if(query && matched.length){
+    const bad=matched.filter(s=>!s.suit[0]);
+    if(bad.length){
+      dynNote.innerHTML=`<div class="alert">⚠ この地区の広域避難所「${bad.map(b=>b.name).join("・")}」は<b>洪水・内水では使えません（指定外）</b>。荒川・支川の氾濫時は、最寄りで洪水○の小中学校（東小・中丸東小・北小・北本中・文化センター・南小・西小・石戸小・西中など）の上階へ。必ず公式マップで自宅の浸水深を確認してください。</div>`;
+    }
+  }
+  if(!query){
+    countEl.textContent=`広域避難所 全${kitamoto.length}か所（地区名で検索すると割り当てが出ます）`;
+    out.appendChild(secEl("広域避難所一覧"));
+  }else if(!list.length){
+    out.innerHTML=emptyMsg("北本市",q.value)+`<div class="hint">丁目だけ（例：中央3）や地区名の一部（例：西高尾）でも試せます。</div>`;
+    return;
+  }else{
+    countEl.textContent=`一致 ${list.length}件`;
+  }
+  if(aliasNote) out.appendChild(noteEl(aliasNote));
+  if(query){
+    const nk=resolveKitaNick(q.value);
+    if(nk) out.appendChild(noteEl(`「${nk.nick}」は通称（団地・マンション名）。実際の場所はおおよそ<b>${nk.loc}</b>。割り当ては公式の避難対象地域による下記です。`));
+  }
+  list.forEach(s=>{
+    const c=document.createElement("div"); c.className="card"+(query?" match":"");
+    let areaHtml=s.raw;
+    if(query){ areaHtml=s.areas.map(a=>{const na=norm(a);return (na.includes(query)||query.includes(na))?`<span class="hl">${a}</span>`:a;}).join("／"); }
+    c.innerHTML=`<div class="name">${s.name}<span class="kind">広域避難所</span></div>
+      <div class="addr">北本市${s.addr}　<a href="${mapsLink("北本市",s.addr)}" target="_blank" rel="noopener">地図</a></div>
+      ${suitRow(s.suit)}
+      <div class="area">対象地域の目安：${areaHtml}</div>`;
+    out.appendChild(c);
+  });
+}
+
+/* --- 鴻巣市：名称・住所で絞り込み（水害時使用可能階を強調） --- */
+function renderKonosu(query){
+  hintEl.innerHTML="<b>字（地名）・丁目・施設名</b>で絞り込めます。字を入れると<b>地区→その地区の避難所</b>が出ます（例：小松→馬室地区、すみれ野→箕田・赤見台、袋→吹上地区）。色は<span style='color:var(--quake)'>水害時1階〜○</span>／<span style='color:var(--warn)'>2階〜</span>／<span style='color:var(--ng)'>3階〜のみ</span>。";
+  segEl.innerHTML="";
+  const fb=document.createElement("button");
+  fb.textContent="水害で1階から使える所のみ"; fb.className=floodMode?"on":"";
+  fb.onclick=()=>{floodMode=!floodMode; render();}; segEl.appendChild(fb);
+  const cardOf=(s,label)=>{
+    const c=document.createElement("div"); c.className="card"+(query?" match":"");
+    let meta = s.floor
+      ? `<div class="row">${pill(floorClass(s.floor),"水害時 "+s.floor)}${pill("p-cap","地震時 "+s.quake.toLocaleString()+"人")}${pill("p-cap","水害時 "+s.fc.toLocaleString()+"人")}${pill("p-cap","駐車 "+s.park+"台")}</div>`
+      : `<div class="row">${pill("p-warn","要配慮者向け・原則後日開設")}</div>`;
+    c.innerHTML=`<div class="name">${s.name}<span class="kind">${label}</span></div>
+      <div class="addr">鴻巣市${s.addr}　${s.tel||""}　<a href="${mapsLink("鴻巣市",s.addr)}" target="_blank" rel="noopener">地図</a></div>${meta}`;
+    return c;
+  };
+  const floorOk=s=>!(floodMode && s.floor && !s.floor.startsWith("1"));
+  const labelOf=s=>konosuShitei.includes(s)?"指定避難所":"補助避難所";
+  const chiku = query ? resolveChiku(q.value) : null;
+  const shownNames=new Set();
+  // 列1：指定避難所（＋補助）
+  let col1=[];
+  const directShelters=[...konosuShitei,...konosuHojo].filter(s=>hit(s,query)&&floorOk(s));
+  directShelters.forEach(s=>{shownNames.add(s.name); col1.push(s);});
+  let chikuNote="";
+  if(chiku){
+    const lookup=n=>konosuShitei.find(s=>s.name===n)||konosuHojo.find(s=>s.name===n);
+    const rows=KONOSU_CHIKU[chiku].map(lookup).filter(Boolean).filter(floorOk).filter(s=>!shownNames.has(s.name));
+    rows.forEach(s=>{shownNames.add(s.name); col1.push(s);});
+    chikuNote = directShelters.length
+      ? `「${q.value}」は【${chiku}】。同地区の代替も指定避難所の列に表示しています。`
+      : `「${q.value}」は【${chiku}】の避難所です。鴻巣市は住所別の割当が無いため、ここと最寄りの開設所を確認してください。`;
+  }
+  // 列2：指定緊急避難場所（公園・グラウンド）
+  let col2=konosuKinkyu.filter(s=>hit(s,query));
+  if(floodMode) col2=col2.filter(s=>s.kozui==="ok");
+  // 列3：福祉避難所
+  let col3=konosuFukushi.filter(s=>hit(s,query)&&!(floodMode && s.floor && !s.floor.startsWith("1")));
+  const total=col1.length+col2.length+col3.length;
+  if(chikuNote) out.appendChild(noteEl(chikuNote));
+  // 3列を組む
+  const cols=document.createElement("div"); cols.className="cols";
+  const c1=document.createElement("div"); c1.className="col";
+  c1.appendChild(secEl(`指定避難所（${col1.length}）｜寝泊まり`));
+  if(!col1.length) c1.appendChild(noteEl("（該当なし）"));
+  col1.forEach(s=>c1.appendChild(cardOf(s,labelOf(s))));
+  const c2=document.createElement("div"); c2.className="col";
+  c2.appendChild(secEl(`指定緊急避難場所（${col2.length}）｜緊急の逃げ場`));
+  c2.appendChild(noteEl("公園類は<b>地震時</b>の一時退避先（屋根・物資なし）。荒川氾濫時に使えるのは本町・中央・赤見台台地など一部だけ。"));
+  if(!col2.length) c2.appendChild(noteEl("（該当なし）"));
+  col2.forEach(s=>{
+    const k = s.kozui==="ok" ? pill("p-flood","水害○ 荒川・利根川とも")
+            : s.kozui==="tone" ? pill("floor2","水害△ 利根川氾濫時のみ")
+            : pill("p-ng","水害×");
+    const c=document.createElement("div"); c.className="card"+(query?" match":"");
+    c.innerHTML=`<div class="name">${s.name}<span class="kind">指定緊急避難場所</span></div>
+      <div class="addr">鴻巣市${s.addr}　<a href="${mapsLink("鴻巣市",s.addr)}" target="_blank" rel="noopener">地図</a></div>
+      <div class="row">${pill("p-quake","地震○ 一時退避")}${k}</div>`;
+    c2.appendChild(c);
+  });
+  const c3=document.createElement("div"); c3.className="col";
+  c3.appendChild(secEl(`福祉避難所（${col3.length}）｜要配慮者・二次開設`));
+  c3.appendChild(noteEl("高齢者・障害者など要配慮者向け。原則として後日（二次的に）開設。"));
+  if(!col3.length) c3.appendChild(noteEl("（該当なし）"));
+  col3.forEach(s=>c3.appendChild(cardOf(s,"福祉避難所")));
+  cols.appendChild(c1); cols.appendChild(c2); cols.appendChild(c3);
+  out.appendChild(cols);
+  // 医療・拠点（参考・全幅）
+  if(!floodMode){
+    const iryo=konosuIryo.filter(s=>hit(s,query));
+    if(iryo.length){ out.appendChild(secEl(`医療救護所（${iryo.length}）`)); iryo.forEach(s=>out.appendChild(simpleCard(s,"鴻巣市","医療救護所","p-fire","負傷者の応急処置"))); }
+    const kyoten=konosuKyoten.filter(s=>hit(s,query));
+    if(kyoten.length){ out.appendChild(secEl(`災害対策本部・活動拠点（${kyoten.length}）`)); kyoten.forEach(s=>out.appendChild(simpleCard(s,"鴻巣市","拠点","p-cap","運営・応援拠点（避難所ではない）"))); }
+  }
+  countEl.textContent = (query||floodMode)?`該当 ${total}件`:`指定避難所 ${col1.length}・指定緊急 ${col2.length}・福祉 ${col3.length}`;
+  if(!total){ out.innerHTML=emptyMsg("鴻巣市",q.value); }
+}
+
+/* --- 川島町：水害／地震で開設施設が異なる --- */
+function renderKawajima(query){
+  hintEl.innerHTML="川島町は<b>水害時と地震時で開く避難所が違います</b>。施設名・住所で絞り込めます。";
+  segEl.innerHTML="";
+  [["水害時に開く避難所",true],["地震・火災時の避難所",false]].forEach(([lab,fm])=>{
+    const b=document.createElement("button"); b.textContent=lab; b.className=floodMode===fm?"on":"";
+    b.onclick=()=>{floodMode=fm; render();}; segEl.appendChild(b);
+  });
+  const filt=(arr)=>arr.filter(s=>hit(s,query));
+  if(floodMode){
+    dynNote.innerHTML=`<div class="alert">⚠ 川島町はほぼ全域が深く浸水します。<b>${kawajimaFloodClosed.join("・")}</b>は水害時に開設しません。<b>洪水のおそれの段階で、早めに町外の避難先へ「立ち退き避難」</b>が原則です。</div>`;
+    const soto=filt(kawajimaSoto);
+    if(soto.length){
+      out.appendChild(secEl("町外避難場所（早めの立ち退き先・"+soto.length+"）"));
+      out.appendChild(noteEl("洪水のおそれがある段階で、まずここへ。所在地は東松山・上尾・坂戸・滑川など<b>町外</b>です。"));
+      soto.forEach(s=>{
+        const c=document.createElement("div"); c.className="card"+(query?" match":"");
+        c.innerHTML=`<div class="name">${s.name}<span class="kind">町外避難場所</span></div>
+          <div class="addr">${s.addr}　<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.addr)}" target="_blank" rel="noopener">地図</a></div>
+          <div class="row">${pill("p-quake","早めの立ち退き先")}${pill("p-cap",s.cap.includes("台")?"駐車 "+s.cap:s.cap)}</div>`;
+        out.appendChild(c);
+      });
+    }
+    const rows=filt(kawajimaFlood);
+    out.appendChild(secEl("町内の緊急避難場所（町外へ行けない時・"+rows.length+"）"));
+    out.appendChild(noteEl("町外へ逃げ遅れた時に緊急に逃げ込む先。高い建物の浸水しない階へ。"));
+    rows.forEach(s=>out.appendChild(simpleCard(s,"川島町","町内緊急","p-flood","浸水しない階へ")));
+    const park=filt(kawajimaParking);
+    if(park.length){
+      out.appendChild(secEl("町協定の町内緊急避難場所（駐車場・"+park.length+"）"));
+      park.forEach(s=>out.appendChild(simpleCard(s,"川島町","駐車場のみ","p-warn","車中の一時退避。持出袋持参")));
+    }
+    countEl.textContent=`水害時 町外${soto.length}・町内${rows.length+park.length}件`;
+  }else{
+    const rows=filt(kawajimaQuake);
+    out.appendChild(secEl("地震・大規模火災の指定避難所（"+rows.length+"）"));
+    rows.forEach(s=>out.appendChild(simpleCard(s,"川島町","地震・火災","p-quake","校庭等は指定緊急避難場所")));
+    countEl.textContent=`地震・火災 ${rows.length}件`;
+  }
+  if(!out.querySelector(".card")) out.innerHTML=emptyMsg("川島町",q.value)+`<div class="note">川島町は<b>ほぼ全域が深く浸水</b>します。その字に避難所が無くても、<b>水害時に開くのは6か所のみ</b>（中山小・伊草小・旧出丸小・川島中・西中・コミュニティセンター）。早めに最寄りの開設所か<b>町外の高台</b>へ。鳥羽井・谷中など小見野側は中山小・川島中方面が近めです。</div>`;
+}
+
+/* --- 吉見町：水害時は西部のみ使用可。種別と災害適否を表示 --- */
+function renderYoshimi(query){
+  hintEl.innerHTML="吉見町は荒川・市野川氾濫で<b>ほぼ全域が深く浸水</b>します。水害時に建物として使えるのは<b>西部（和名・北吉見・南吉見・黒岩）</b>と、東部・中央の<b>3階以上</b>のみ。施設名・住所で絞り込めます。";
+  segEl.innerHTML="";
+  const fb=document.createElement("button");
+  fb.textContent="水害時に使える所だけ"; fb.className=floodMode?"on":"";
+  fb.onclick=()=>{floodMode=!floodMode; render();}; segEl.appendChild(fb);
+  const pb=document.createElement("button");
+  pb.textContent=showParks?"公園（地震用）を隠す":"公園（地震用）も表示"; pb.className=showParks?"on":"";
+  pb.onclick=()=>{showParks=!showParks; render();}; segEl.appendChild(pb);
+
+  if(floodMode){
+    dynNote.innerHTML=`<div class="alert">⚠ 水害時、東公民館・荒川荘・保健センター・悠友館・町民体育館・けやき保育所・道の駅や全ての公園は<b>使えません</b>。早めに西部の避難所か町外の高台へ「立ち退き避難」を。</div>`;
+  }
+  let list=yoshimi.filter(s=>{
+    if(!hit(s,query)) return false;
+    if(floodMode && s.kozui==="no") return false;
+    if(!floodMode && s.park && !showParks) return false;
+    return true;
+  });
+  // 並べ替え：水害◎(1階)→3階以上→不可
+  const rank=s=>s.kozui==="ok"?0:s.kozui==="3f"?1:2;
+  list.sort((a,b)=>rank(a)-rank(b));
+
+  out.appendChild(secEl(floodMode?"水害時に使える避難所":"避難所・指定緊急避難場所"));
+  list.forEach(s=>{
+    const c=document.createElement("div"); c.className="card"+(query?" match":"");
+    let typeBadges=s.types.map(t=>`<span class="kind">${t}避難所</span>`).join("");
+    if(s.park) typeBadges=`<span class="kind">公園（地震時）</span>`;
+    // 災害適否ピル
+    const k = s.kozui==="ok" ? pill("p-flood","水害○ 1階から")
+            : s.kozui==="3f" ? pill("floor3","水害△ 3階以上のみ")
+            : pill("p-ng","水害× 不可");
+    const j = s.jishin ? pill("p-quake","地震○") : pill("p-ng","地震×");
+    const d = s.dosha ? pill("p-warn","土砂○") : "";
+    c.innerHTML=`<div class="name">${s.name}${typeBadges}</div>
+      <div class="addr">吉見町${s.addr}${s.tel?"　0493-"+s.tel:""}　<a href="${mapsLink("吉見町",s.addr)}" target="_blank" rel="noopener">地図</a></div>
+      <div class="row">${k}${j}${d}<span class="pill p-cap">図 ${s.coord}</span></div>`;
+    out.appendChild(c);
+  });
+  countEl.textContent=`${floodMode?"水害時 ":""}${list.length}件`;
+  if(!list.length) out.innerHTML=emptyMsg("吉見町",q.value)+`<div class="note">吉見町は<b>ほぼ全域が深く浸水</b>します。その字に避難所が無くても、水害時に使えるのは<b>西部の浸水しない避難所</b>（西小・西が丘小・西公民館・西部ふれあいセンター・埋蔵文化財センター・フレンドシップハイツ＝和名/北吉見/南吉見/黒岩）か、東部・中央なら<b>3階以上</b>。久米田など南部は西が丘小・南小（3階）方面が近めです。</div>`;
+}
+
+/* 共通カード */
+function simpleCard(s,cityName,kind,cls,memo){
+  const c=document.createElement("div"); c.className="card";
+  c.innerHTML=`<div class="name">${s.name}<span class="kind">${kind}</span></div>
+    <div class="addr">${cityName}${s.addr}　<a href="${mapsLink(cityName,s.addr)}" target="_blank" rel="noopener">地図</a></div>
+    <div class="row">${pill(cls,memo)}</div>`;
+  return c;
+}
+function secEl(t){const d=document.createElement("div"); d.className="sec"; d.textContent=t; return d;}
+function noteEl(html){const d=document.createElement("div"); d.className="note"; d.innerHTML=html; return d;}
+
+/* --- 要配慮者利用施設：浸水深ビュー --- */
+const DEPTH={ "外":{l:"区域外",c:"p-quake",r:0}, "<0.5":{l:"0.5m未満",c:"p-flood",r:1},
+  "0.5-1":{l:"0.5〜1m",c:"p-warn",r:2}, "1-2":{l:"1〜2m",c:"p-fire",r:3}, "2-5":{l:"2〜5m",c:"p-ng",r:4} };
+const CATLABEL={老:"老人福祉",障:"障がい福祉",児:"保育・児童",医:"医療",幼:"幼稚園"};
+function renderYohairyo(query){
+  hintEl.innerHTML="鴻巣市の<b>要配慮者利用施設</b>（避難させる側の施設）を浸水深で確認できます。施設名・字で絞り込み。<b>2〜5m＝1階水没・2階浸水</b>レベル。";
+  // カテゴリ絞り込み
+  segEl.innerHTML="";
+  [["all","すべて"],["老","老人"],["障","障がい"],["児","保育"],["医","医療"],["幼","幼稚園"]].forEach(([k,lab])=>{
+    const b=document.createElement("button"); b.textContent=lab; b.className=yhCat===k?"on":"";
+    b.onclick=()=>{yhCat=k; render();}; segEl.appendChild(b);
+  });
+  dynNote.innerHTML=`<div class="note">ここは<b>避難所ではありません</b>。浸水想定区域内の施設は、利用者を守る避難確保計画づくりの対象になります。色が濃いほど深い浸水想定（荒川等／利根川等）。深い順に表示します。</div>`;
+  const worst=s=>Math.max(DEPTH[s.ara].r,DEPTH[s.tone].r);
+  let list=konosuYohairyo.filter(s=>{
+    if(yhCat!=="all" && s.cat!==yhCat) return false;
+    return hit(s,query);
+  }).sort((a,b)=>worst(b)-worst(a));
+  countEl.textContent=`${list.length}件（深い順）`;
+  if(!list.length){ out.innerHTML=emptyMsg("要配慮者施設",q.value); return; }
+  list.forEach(s=>{
+    const isOurs=s.name==="ふくしのまち";
+    const da=DEPTH[s.ara], dt=DEPTH[s.tone];
+    const c=document.createElement("div"); c.className="card"+(query?" match":"");
+    if(isOurs) c.style.boxShadow="0 0 0 2px var(--quakebg) inset, 0 0 0 1px var(--quake)";
+    c.innerHTML=`<div class="name">${s.name}<span class="kind">${CATLABEL[s.cat]}</span>${isOurs?'<span class="kind" style="background:var(--quakebg);color:var(--quake)">自社</span>':''}</div>
+      <div class="addr">鴻巣市${s.addr}　<a href="${mapsLink("鴻巣市",s.addr)}" target="_blank" rel="noopener">地図</a></div>
+      <div class="row">${pill(da.c,"荒川 "+da.l)}${pill(dt.c,"利根川 "+dt.l)}</div>`;
+    out.appendChild(c);
+  });
+}
+
+/* --- 加須市：利根川・荒川低地。屋外は水害×、建物の上階へ垂直避難 --- */
+/* 加須市 警戒レベル別タイムライン（令和7年度 水害時の避難行動マップ） */
+const KAZO_TL=[
+ {lv:3,nm:"高齢者等避難",when:"台風接近 2〜1日前（明るいうちに）。高齢者・要配慮者は避難開始",cls:"l3",areas:[
+   {a:"北川辺地域",p:["市民プラザかぞ","加須文化・学習センター（パストラルかぞ）","加須市民体育館"]},
+   {a:"大利根地域",p:["騎西総合体育館（ふじアリーナ）"]},
+   {a:"樋遣川地区",p:["騎西文化・学習センター（キャッスルきさい）2階"]},
+   {a:"大越地区",p:["騎西文化・学習センター（キャッスルきさい）1階"]},
+   {a:"上記以外の地域",self:true,p:["自宅2〜4階以上、または最寄りの小学校"]},
+ ]},
+ {lv:4,nm:"避難指示（全員避難）",when:"台風接近 当日（明るいうちに）。危険な場所から全員避難",cls:"l4",areas:[
+   {a:"北川辺地域",p:["不動岡高校","昭和中学校","加須西中学校","大桑小学校","加須平成中学校","花崎北小学校","志多見小学校","市民プラザかぞ","パストラルかぞ","加須市民体育館","加須コミュニティセンター","加須クリーンセンター","南篠崎コミュニティセンター","並木製作所","ブリヂストンフローテック","むさしの村（駐車場・屋内）","立正佼成会埼玉教会（駐車場）","市外広域避難場所"]},
+   {a:"大利根地域",p:["加須東中学校","平成国際大学","水深小学校","騎西小学校","騎西中学校","田ケ谷小学校","種足小学校","鴻茎小学校","高柳小学校","花咲徳栄高校","ふじアリーナ","川口コミュニティセンター","加須げんきプラザ","環境浄化センター","田ケ谷総合センター","SFAフットボールセンター・彩の国KAZOヴィレッジ（旧騎西高校）","センコー（駐車場）","興和（駐車場）"]},
+   {a:"樋遣川地区",p:["加須小学校","三俣小学校","加須南小学校","キャッスルきさい2階"]},
+   {a:"大越地区",p:["不動岡小学校","礼羽小学校","キャッスルきさい1階"]},
+   {a:"上記以外の地域",self:true,p:["自宅2〜4階以上、または最寄りの小学校"]},
+ ]},
+ {lv:5,nm:"緊急安全確保",when:"災害切迫時（時間に関わらず）。命の危険、直ちに安全確保",cls:"l5",areas:[
+   {a:"北川辺地域",p:["開智未来中学・高校"]},
+   {a:"大利根地域",p:["大利根中学校","藤倉コンポジット","サンヨーメディカル","大光電機"]},
+   {a:"樋遣川・大越地区",p:["樋遣川小学校","加須北中学校"]},
+ ]},
+];
+function renderKazoTimeline(){
+  dynNote.innerHTML="";
+  hintEl.innerHTML="加須市『水害時の避難行動マップ（令和7年度）』より。<b>お住まいの地域</b>と<b>警戒レベル</b>で開く避難場所が違います。施設名をタップで地図。";
+  countEl.textContent="加須市・警戒レベル別の開設避難場所";
+  const wrap=document.createElement("div"); wrap.className="tl";
+  const head=document.createElement("div"); head.className="tlhead";
+  head.innerHTML="まずは<b>浸水しない区域の親類・知人宅やホテル</b>へ早めに。確保できない時に、下のレベル・地域別の避難場所へ。屋外や1階は浸水するため<b>建物は上階利用</b>が基本。<b>北川辺・大利根は特に深く</b>、レベル2（3〜2日前）の段階で<b>市外への広域避難</b>を。レベル2の広域避難対象は北川辺・大利根・樋遣川・大越地区。";
+  wrap.appendChild(head);
+  const grid=document.createElement("div"); grid.className="tlgrid";
+  KAZO_TL.forEach(L=>{
+    const box=document.createElement("div"); box.className="tllv "+L.cls;
+    box.innerHTML=`<div class="bar"><span class="lvno">${L.lv}</span><span class="lvnm">${L.nm}</span><span class="lvwhen">${L.when}</span></div>`;
+    const body=document.createElement("div"); body.className="tlbody";
+    L.areas.forEach(ar=>{
+      const a=document.createElement("div"); a.className="tlarea";
+      const chips=ar.p.map(n=> ar.self
+        ? `<a class="tlself" style="pointer-events:none">${n}</a>`
+        : `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("加須市 "+n.replace(/（.*?）/g,""))}" target="_blank" rel="noopener">${n}</a>`).join("");
+      a.innerHTML=`<div class="an">${ar.a}</div><div class="ap">${chips}</div>`;
+      body.appendChild(a);
+    });
+    box.appendChild(body); grid.appendChild(box);
+  });
+  wrap.appendChild(grid);
+  wrap.appendChild(noteEl("※小学校等へは小学校等からバスで避難する場合があります（自家用車は駐車できないことも）。開設状況は災害ごとに変わるため、実際は加須市の防災行政無線・公式サイト・防災アプリで確認を。"));
+  out.appendChild(wrap);
+}
+function renderKazo(query){
+  hintEl.innerHTML="加須市は利根川・荒川の低地で<b>広く深く浸水</b>します。屋外の緊急避難場所（公園・運動用地）は<b>水害時×</b>。水害時は学校等の<b>建物の上階へ垂直避難</b>するか、早めに<b>市外・高台へ広域避難</b>を（加須市『水害時の避難行動マップ 令和7年度』）。施設名・地名で絞り込めます。";
+  segEl.innerHTML="";
+  const fb=document.createElement("button");
+  fb.textContent="水害時の避難先だけ"; fb.className=floodMode?"on":"";
+  fb.onclick=()=>{floodMode=!floodMode; timelineMode=false; render();}; segEl.appendChild(fb);
+  const tb=document.createElement("button");
+  tb.textContent="⏱ 警戒レベル別タイムライン"; tb.className=timelineMode?"on":"";
+  tb.onclick=()=>{timelineMode=!timelineMode; floodMode=false; render();}; segEl.appendChild(tb);
+  if(timelineMode){ renderKazoTimeline(); return; }
+  if(floodMode){
+    dynNote.innerHTML=`<div class="alert">⚠ 加須市は広範囲が深く浸水します。<b>屋外（公園・運動用地）は水害時×</b>。学校等の建物の<b>2階以上へ垂直避難</b>するか、浸水しない<b>市外・高台へ早めに立ち退き避難</b>を。北川辺・大利根は特に深く、上階でも不十分な場合は広域避難を。自宅の浸水深は加須市ハザードマップで必ず確認を。</div>`;
+  }
+  let list=kazo.filter(s=>hit(s,query));
+  // 列分け：指定避難所(school/bldg/hotel/other)｜指定緊急(屋外out)｜福祉(welfare)
+  let col1=list.filter(s=>s.bt==="school"||s.bt==="bldg"||s.bt==="hotel"||s.bt==="other");
+  let col2=list.filter(s=>s.bt==="out");
+  let col3=list.filter(s=>s.bt==="welfare");
+  if(floodMode){ col2=[]; } // 屋外は水害×なので水害モードでは出さない
+  const order={school:0,bldg:1,other:2,hotel:3};
+  col1.sort((a,b)=>(order[a.bt]??9)-(order[b.bt]??9));
+  const total=col1.length+col2.length+col3.length;
+  const cols=document.createElement("div"); cols.className="cols";
+  const c1=document.createElement("div"); c1.className="col";
+  c1.appendChild(secEl(`指定避難所（${col1.length}）｜寝泊まり`));
+  c1.appendChild(noteEl(floodMode?"水害時は<b>2階以上</b>へ。何階まで浸水するかは加須市ハザードマップで確認を。":"地震・火災など。水害時は上階へ。"));
+  if(!col1.length) c1.appendChild(noteEl("（該当なし）"));
+  col1.forEach(s=>c1.appendChild(kazoCard(s,query)));
+  const c2=document.createElement("div"); c2.className="col";
+  c2.appendChild(secEl(`指定緊急避難場所（${col2.length}）｜緊急の逃げ場`));
+  c2.appendChild(noteEl("公園・運動用地など屋外。地震時の一時退避先で、<b>水害時は×</b>（深く浸水）。"));
+  if(!col2.length) c2.appendChild(noteEl(floodMode?"（屋外は水害時に使えません）":"（該当なし）"));
+  col2.forEach(s=>c2.appendChild(kazoCard(s,query)));
+  const c3=document.createElement("div"); c3.className="col";
+  c3.appendChild(secEl(`福祉避難所（${col3.length}）｜要配慮者・二次開設`));
+  c3.appendChild(noteEl("要配慮者向け。原則として後日（二次的に）開設。"));
+  if(!col3.length) c3.appendChild(noteEl("（該当なし）"));
+  col3.forEach(s=>c3.appendChild(kazoCard(s,query)));
+  cols.appendChild(c1); cols.appendChild(c2); cols.appendChild(c3);
+  out.appendChild(cols);
+  countEl.textContent=floodMode?`水害時の候補 ${total}件`:`${total}件`;
+  if(!total) out.innerHTML=emptyMsg("加須市",q.value)+`<div class="note">加須市は<b>ほぼ全域が浸水</b>します。近くに建物の避難所が無ければ、早めに<b>市外・高台</b>へ立ち退き避難を。</div>`;
+}
+function kazoCard(s,query){
+  const labels={school:"学校",bldg:"指定避難所",out:"屋外避難場所",welfare:"福祉避難所",hotel:"協定宿泊",other:"避難場所"};
+  const c=document.createElement("div"); c.className="card"+(query?" match":"");
+  let kpill;
+  if(s.bt==="out") kpill=pill("p-ng","水害× 屋外");
+  else if(s.kozui==="-") kpill=pill("p-cap","水害 上階へ要確認");
+  else kpill=pill("p-warn","水害 上階へ");
+  const jp = s.jishin? pill("p-quake","地震○") : (s.kozui==="-"?pill("p-cap","種別未掲載"):"");
+  c.innerHTML=`<div class="name">${s.name}<span class="kind">${labels[s.bt]}</span></div>
+    <div class="addr">加須市${s.addr}　<a href="${mapsLink("加須市",s.addr)}" target="_blank" rel="noopener">地図</a></div>
+    <div class="row">${kpill}${jp}</div>`;
+  return c;
+}
+
+function renderFoot(){
+  const src={
+    "鴻巣市":"出典：鴻巣市水害ハザードマップ（令和2年9月発行）／指定・補助・福祉避難所一覧",
+    "北本市":"出典：北本市 広域避難所・指定緊急避難場所一覧",
+    "川島町":"出典：川島町 指定避難所・指定緊急避難場所一覧／広域避難場所一覧",
+    "桶川市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（桶川市）。台地中心。西部の川田谷（荒川沿い）は浸水注意。",
+    "加須市":"出典：国土地理院 指定緊急避難場所・指定避難所データ（加須市）。屋外の緊急避難場所は洪水×。建物の上階での垂直避難可否・浸水深は加須市ハザードマップで要確認。種別未掲載（-）は指定避難所のみで災害種別データ未掲載。",
+    "吉見町":"出典：吉見町防災ハザードマップ（令和3年3月版）P7-8 避難所一覧（全44か所）",
+    "要配慮者施設":"出典：鴻巣市防災マップ 要配慮者利用施設一覧（浸水想定：荒川等／利根川等。利根川等は小山川・福川・女堀川流域を含む）"
+  }[city];
+  document.getElementById("foot").innerHTML=
+    `${src}<br>※このツールは手元データの要約です。開設状況は災害ごとに変わります。実際の避難は各市町の防災行政無線・公式サイト・防災アプリの最新情報に従ってください。<br>緊急時は迷わず命を守る行動を。`;
+}
+
+
+/* ====== 最寄り（距離）機能：座標つきフラット索引 GEO ====== */
+const GEO = [
+
+
+// ===== 鴻巣・北本・川島・加須（国土地理院データ＋座標）=====
+// ===== 鴻巣市（国土地理院データ）62件 =====
+["鴻巣市","ひばり野中央公園","ひばり野1-286-91","-","P","no","",36.067197,139.525049],
+["鴻巣市","はぎ公園","ひばり野2-13-69","-","P","no","",36.066307,139.529202],
+["鴻巣市","川里中央公園","関新田1780-1","-","P","no","",36.090042,139.521894],
+["鴻巣市","宮地公園","宮地5-35","-","P","ok","",36.066629,139.514638],
+["鴻巣市","糠田運動場","糠田1073-1","-","P","no","",36.062171,139.485366],
+["鴻巣市","上谷総合公園","上谷707","-","P","no","",36.059278,139.550522],
+["鴻巣市","新宿第１公園","新宿1-228","-","P","no","",36.114618,139.44161],
+["鴻巣市","鴻巣宿鞠子公園","人形1-3127-1","-","P","ok","",36.052004,139.517026],
+["鴻巣市","富士見公園","吹上富士見4-777-59","-","P","no","",36.096571,139.454199],
+["鴻巣市","本町せせらぎ公園","吹上本町2-238-2","-","P","no","",36.106141,139.457],
+["鴻巣市","上生出塚１号公園","生出塚2-785-372","-","P","no","",36.062519,139.52974],
+["鴻巣市","赤見台中央公園","赤見台1-8-2","-","P","no","",36.086283,139.479078],
+["鴻巣市","あじさい公園","赤見台2-11-1","-","P","no","",36.090298,139.476628],
+["鴻巣市","しいのき公園","赤見台3-18-2","-","P","no","",36.082876,139.484628],
+["鴻巣市","赤見台近隣公園","赤見台3-4","-","P","no","",36.087468,139.480641],
+["鴻巣市","すずかけ公園","赤見台4-31-2","-","P","no","",36.079811,139.487133],
+["鴻巣市","さつき公園","赤見台4-7","-","P","no","",36.083951,139.481592],
+["鴻巣市","あかぎ公園","赤城台212-51","-","P","no","",36.11687,139.509685],
+["鴻巣市","荒川パノラマ公園","大芦1366","-","P","ok","",36.095538,139.437727],
+["鴻巣市","荒川総合運動公園","大芦2546-1","-","P","no","",36.086332,139.444669],
+["鴻巣市","せせらぎ公園","中央28","-","P","no","",36.067241,139.522016],
+["鴻巣市","東町公園","東1-37","-","P","ok","",36.063566,139.514576],
+["鴻巣市","東裏２号公園","東3-1","-","P","ok","",36.06315,139.518369],
+["鴻巣市","東裏１号公園","東3-72","-","P","no","",36.063836,139.520314],
+["鴻巣市","氷川町２号公園","氷川町30","-","P","ok","",36.051196,139.512254],
+["鴻巣市","氷川町１号公園","氷川町4","-","P","ok","",36.053793,139.510622],
+["鴻巣市","ふれあい公園","北根821-1","-","P","no","",36.110036,139.52612],
+["鴻巣市","中央児童公園","本町3-241","-","P","ok","",36.059447,139.516161],
+["鴻巣市","鴻巣公園","本町8-3003-1","-","P","ok","",36.054837,139.515477],
+["鴻巣市","旧鴻巣市立常光小学校","下谷369","-","K","-","",36.050743,139.548185],
+["鴻巣市","旧鴻巣市立笠原小学校","笠原1613","-","K","-","",36.06393,139.541144],
+["鴻巣市","下忍小学校","鎌塚10","-","K","-","",36.108792,139.459724],
+["鴻巣市","吹上北中学校","鎌塚550","-","K","-","",36.112382,139.45417],
+["鴻巣市","川里中学校","関新田1560-1","-","K","-","",36.097871,139.525279],
+["鴻巣市","屈巣小学校","屈巣4515-1","-","K","-","",36.091245,139.511594],
+["鴻巣市","松原小学校","原馬室2425","-","K","-","",36.036655,139.519478],
+["鴻巣市","鴻巣南中学校","原馬室3685","-","K","-","",36.032099,139.517572],
+["鴻巣市","広田小学校","広田3156-5","-","K","-","",36.109072,139.511545],
+["鴻巣市","田間宮小学校","糠田2985","-","K","-","",36.064981,139.490865],
+["鴻巣市","総合体育館","鴻巣864-1","-","K","-","",36.067456,139.518924],
+["鴻巣市","旧鴻巣市立小谷小学校","小谷1890-1","-","K","-","",36.084761,139.464796],
+["鴻巣市","共和小学校","新井194-2","-","K","-","",36.100847,139.539475],
+["鴻巣市","鴻巣北小学校","神明3-18-10","-","K","-","",36.071916,139.504692],
+["鴻巣市","吹上中学校","吹上富士見1-6-1","-","K","-","",36.10086,139.456615],
+["鴻巣市","赤見台第二小学校","赤見台2-6-1","-","K","-","",36.089401,139.475562],
+["鴻巣市","赤見台第一小学校","赤見台4-19-1","-","K","-","",36.082985,139.482998],
+["鴻巣市","赤見台中学校","赤見台4-25-1","-","K","-","",36.081272,139.48522],
+["鴻巣市","埼玉県立吹上秋桜高等学校","前砂907-1","-","K","-","",36.086408,139.466744],
+["鴻巣市","大芦小学校","大芦923-1","-","K","-","",36.094499,139.453286],
+["鴻巣市","埼玉県立鴻巣高等学校","大間1020","-","K","-","",36.059781,139.500915],
+["鴻巣市","鴻巣西中学校","大間1161","-","K","-","",36.05899,139.496453],
+["鴻巣市","馬室小学校","滝馬室555","-","K","-","",36.04391,139.506098],
+["鴻巣市","鴻巣中央小学校","中央30-1","-","K","-","",36.068752,139.522392],
+["鴻巣市","埼玉県立鴻巣女子高等学校","天神1-1-72","-","K","-","",36.0601,139.517943],
+["鴻巣市","鴻巣中学校","東2-4-62","-","K","-","",36.060689,139.517117],
+["鴻巣市","吹上小学校","南1-10-5","-","K","-","",36.101938,139.450587],
+["鴻巣市","鴻巣東小学校","本町6-4-56","-","K","-","",36.059083,139.516875],
+["鴻巣市","鴻巣南小学校","本町8-7-23","-","K","-","",36.053729,139.514922],
+["鴻巣市","市民活動センター","本町１ー２－１　エルミこうのすアネックス３階","-","K","-","",36.061085,139.509049],
+["鴻巣市","箕田小学校","箕田408","-","K","-","",36.076496,139.482531],
+["鴻巣市","鴻巣北中学校","箕田4280","-","K","-","",36.071919,139.509153],
+["鴻巣市","コスモスアリーナふきあげ","明用636-1","-","K","-","",36.086459,139.452161],
+
+// ===== 北本市（国土地理院データ）18件 =====
+["北本市","栄市民活動交流センター コミュニティ広場（旧栄小グラウンド）","栄1","-","P","ok","",36.019231,139.530043],
+["北本市","宮内中学校グラウンド","宮内4-322","-","P","no","",36.047333,139.541749],
+["北本市","中丸小学校グラウンド","宮内7-145","-","K","ok","",36.036155,139.544716],
+["北本市","北本市体育センター","古市場1-156","-","Q","no","",36.044712,139.549537],
+["北本市","石戸小学校グラウンド","荒井2-320","-","K","ok","",36.018238,139.518631],
+["北本市","東中学校グラウンド","山中2-128","-","K","ok","",36.033524,139.549211],
+["北本市","北小学校グラウンド","深井4-45","-","K","ok","",36.047267,139.530566],
+["北本市","西中学校グラウンド","石戸9-210","-","K","ok","",36.013884,139.519537],
+["北本市","中丸東小学校グラウンド","中丸10-270","-","K","ok","",36.029435,139.554516],
+["北本市","東小学校グラウンド","中丸6-65","-","K","ok","",36.019782,139.551376],
+["北本市","北本中学校グラウンド","本町1-1-1","-","K","ok","",36.028189,139.528799],
+["北本市","北本市文化センター","本町1-2-1","-","Q","ok","",36.027468,139.529486],
+["北本市","西小学校グラウンド","本町7-3","-","K","ok","",36.025792,139.524332],
+["北本市","南小学校グラウンド","緑3-387","-","K","ok","",36.020748,139.538909],
+["北本市","栄市民活動交流センター（ミドリトテラス・旧栄小）","栄1","-","K","-","",36.019231,139.530043],
+["北本市","総合福祉センター","高尾1-180","-","K","-","",36.026588,139.519176],
+["北本市","健康増進センター","中丸10-55","-","K","-","",36.030796,139.552753],
+["北本市","文化センター","本町1-2-1","-","K","-","",36.027468,139.529486],
+
+// ===== 川島町（国土地理院データ）20件 =====
+["川島町","かわじま公園","かわじま2-9","-","P","no","",35.981372,139.460112],
+["川島町","伊草小学校グラウンド","大字伊草238-1","-","K","no","",35.96813,139.466382],
+["川島町","平成の森公園多目的広場","大字下八ツ林920","-","P","no","",35.991935,139.486196],
+["川島町","川島町地域活動センターイースト","大字下八ツ林923","-","K","ok","",35.991208,139.484391],
+["川島町","川島町総合運動場","大字下八ツ林930","-","P","no","",35.99006,139.484522],
+["川島町","旧　出丸小学校","大字上大屋敷100","-","K","ok","",35.961888,139.518964],
+["川島町","旧　小見野小学校","大字谷中99","-","K","no","",36.005748,139.473751],
+["川島町","中山小学校グラウンド","大字中山1333","-","K","no","",35.990635,139.447663],
+["川島町","西中学校","大字中山270-1","-","K","ok","",35.982749,139.459846],
+["川島町","つばさ小学校・川島中学校","大字白井沼230","-","K","ok","",35.986023,139.488276],
+["川島町","旧つばさ南小学校","大字白井沼945","-","K","no","",35.978854,139.489427],
+["川島町","旧つばさ北小学校グラウンド","大字畑中31","-","K","no","",35.996441,139.493019],
+["川島町","ウイングワーク＆ライク　のびっこ","大字下八ツ林871-5","-","F","-","",35.992818,139.485045],
+["川島町","川島町民体育館","大字下八ツ林923","-","K","-","",35.991208,139.484391],
+["川島町","川島町民会館","大字下八ツ林926-1","-","K","-","",35.991295,139.483946],
+["川島町","川島町社会福祉協議会","大字曲師402-1","-","F","-","",35.961626,139.503772],
+["川島町","永楽会特別養護老人ホーム　ひまわり","大字山ケ谷戸519-1","-","F","-","",35.981828,139.510415],
+["川島町","みどりの郷あすか川島","大字中山1347-1","-","F","-","",35.990755,139.44841],
+["川島町","医療法人啓仁会平成の森・川島病院","大字畑中478-1","-","K","-","",35.991978,139.490131],
+["川島町","永楽会特別養護老人ホーム　永楽園","大字表147-1","-","F","-","",35.980242,139.507757],
+
+// ===== 加須市（国土地理院データ）92件 =====
+["加須市","ファミリーグラウンド","阿佐間769","-","P","no","",36.131639,139.655011],
+["加須市","加須南小学校","下高柳1991","-","K","up","",36.114684,139.602706],
+["加須市","樋遣川小学校","下樋遣川427","-","K","up","",36.154469,139.618674],
+["加須市","加須東中学校","花崎1-22-1","-","K","up","",36.107165,139.631688],
+["加須市","花崎北公園","花崎北2-1","-","P","no","",36.112549,139.635867],
+["加須市","花崎北小学校","花崎北3-1","-","K","up","",36.113923,139.63061],
+["加須市","騎西総合公園","外川355","-","P","no","",36.108522,139.578803],
+["加須市","騎西城山公園","外川457-1","-","P","no","",36.104008,139.58262],
+["加須市","大利根東小学校","旗井807","-","K","no","",36.152487,139.686218],
+["加須市","騎西中学校","騎西1001","-","K","up","",36.104933,139.576503],
+["加須市","騎西小学校","騎西52-3","-","K","up","",36.103075,139.572129],
+["加須市","玉敷公園","騎西535-1","-","P","no","",36.106848,139.570905],
+["加須市","騎西中央公園","騎西961","-","P","no","",36.106978,139.575379],
+["加須市","久下公園","久下1-23","-","P","no","",36.11851,139.609767],
+["加須市","加須北部公園","古川2-6-1","-","P","no","",36.146111,139.643122],
+["加須市","北川辺東小学校","向古河54","-","K","no","",36.18611,139.688783],
+["加須市","鴻茎小学校","鴻茎1596-2","-","K","up","",36.086047,139.594568],
+["加須市","藤ノ木公園","鴻茎3208-1","-","P","no","",36.090084,139.582548],
+["加須市","原道小学校","細間699","-","K","no","",36.158315,139.65096],
+["加須市","志多見小学校","志多見633","-","K","up","",36.131684,139.549142],
+["加須市","高柳小学校","上高柳889","-","K","up","",36.114098,139.58229],
+["加須市","田ケ谷サン・スポーツランド","上崎1850-1","-","P","no","",36.109857,139.546777],
+["加須市","種足ふれあいの森","上種足937-1","-","P","no","",36.08659,139.559367],
+["加須市","加須北中学校","上樋遣川4128","-","K","up","",36.163651,139.628329],
+["加須市","大利根西部公園","新利根1-4-1","-","P","no","",36.167395,139.637509],
+["加須市","加須はなさき公園","水深1722","-","P","no","",36.102104,139.633965],
+["加須市","古宮公園","正能4","-","P","no","",36.111848,139.567828],
+["加須市","豊野小学校","生出313-1","-","K","no","",36.13358,139.652143],
+["加須市","けやき公園","西ノ谷800","-","P","no","",36.095899,139.578321],
+["加須市","大越小学校","大越2115","-","K","no","",36.179387,139.621581],
+["加須市","水深小学校","大室165","-","K","up","",36.100754,139.620851],
+["加須市","種足小学校","中種足123","-","K","up","",36.084489,139.567811],
+["加須市","ふるさと広場","中種足1230-1","-","P","no","",36.08462,139.565634],
+["加須市","田ヶ谷小学校","内田ケ谷447-3","-","K","up","",36.115346,139.551588],
+["加須市","加須平成中学校","南大桑1860","-","K","up","",36.111094,139.647769],
+["加須市","大桑小学校","南大桑3388-1","-","K","up","",36.116623,139.64157],
+["加須市","加須西中学校","馬内1","-","K","up","",36.13652,139.572318],
+["加須市","北川辺西小学校","麦倉1189","-","K","no","",36.194367,139.651386],
+["加須市","北川辺中学校","麦倉3705","-","K","no","",36.188719,139.66374],
+["加須市","埼玉県立不動岡高等学校","不動岡1-7-45","-","K","up","",36.133279,139.591139],
+["加須市","不動岡小学校","不動岡798","-","K","up","",36.137149,139.586952],
+["加須市","豊野台公園","豊野台2-725-3","-","P","no","",36.121067,139.667486],
+["加須市","大利根中学校","北下新井1705-1","-","K","up","",36.13875,139.664276],
+["加須市","元和小学校","北下新井521-1","-","K","no","",36.141142,139.670445],
+["加須市","大利根運動公園","北下新井684-1","-","P","no","",36.136733,139.666937],
+["加須市","埼玉県水産研究所","北小浜1060-1","-","Q","no","",36.132253,139.609933],
+["加須市","昭和中学校","北小浜70","-","K","up","",36.125025,139.615499],
+["加須市","三俣小学校","北小浜850","-","K","up","",36.132349,139.613825],
+["加須市","加須小学校","本町4-25","-","K","up","",36.123836,139.604508],
+["加須市","礼羽小学校","礼羽560","-","K","up","",36.129242,139.582756],
+["加須市","十善病院介護医療院","愛宕1-9-16","-","F","-","",36.132287,139.588081],
+["加須市","ケアビレッジシャローム","岡古井73","-","F","-","",36.137801,139.575708],
+["加須市","加須市民体育館","下三俣590","-","K","up","",36.135811,139.600983],
+["加須市","加須市環境浄化センター","花崎2046","-","K","up","",36.107543,139.62201],
+["加須市","騎西総合体育館（ふじアリーナ）","外川355","-","K","up","",36.108522,139.578803],
+["加須市","ショートステイひまわり","騎西433-1","-","F","-","",36.104776,139.567392],
+["加須市","グループホーム　加須ひばりの里","久下1625-1","-","F","-","",36.115915,139.607731],
+["加須市","久下けやきハウス","久下3-6-1","-","K","-","",36.122246,139.613475],
+["加須市","別邸　暁（介護老人福祉施設）","琴寄270-3","-","F","-","",36.127275,139.67832],
+["加須市","ショートステイ藤の里","鴻茎2168-1","-","F","-","",36.096942,139.584952],
+["加須市","グループホーム藤の里","鴻茎2168-2","-","F","-","",36.097195,139.585166],
+["加須市","ショートステイ藤の里Ⅱ","鴻茎2170","-","F","-","",36.097422,139.584827],
+["加須市","騎西文化・学習センター（キャッスルきさい）","根古屋633-10","-","K","up","",36.104725,139.583862],
+["加須市","多賀谷寿光園","上崎2037-1","-","F","-","",36.111485,139.547195],
+["加須市","虹の園","上崎2047-1","-","F","-","",36.111399,139.547821],
+["加須市","田ケ谷総合センター","上崎2080-1","-","K","up","",36.110403,139.548015],
+["加須市","加須文化・学習センター（パストラルかぞ）","上三俣2255","-","K","up","",36.136471,139.603958],
+["加須市","埼玉県立騎西特別支援学校","上種足888-1","-","K","-","",36.084458,139.559358],
+["加須市","埼玉中央学園","上種足894-1","-","F","-","",36.085045,139.558513],
+["加須市","万葉の郷","新川通105-1","-","F","-","",36.159664,139.670834],
+["加須市","ふれ愛の郷","新川通179-1","-","F","-","",36.159211,139.670363],
+["加須市","あいせんハイム","水深869-17","-","K","-","",36.09525,139.636606],
+["加須市","愛泉苑","水深869-2","-","F","-","",36.095294,139.636195],
+["加須市","川口コミュニティセンター","川口2-12-1","-","K","up","",36.112241,139.659284],
+["加須市","グループホーム　つくしんぼ","多門寺158-2","-","F","-","",36.126685,139.621262],
+["加須市","利根川いこいの里","大越1933-1","-","K","-","",36.177921,139.620157],
+["加須市","グループホーム　藤の里大越","大越3386-1","-","F","-","",36.168869,139.627497],
+["加須市","加須センターホテル","中央1-7-50","-","K","-","",36.124626,139.59689],
+["加須市","市民プラザかぞ","中央2-4-17","-","K","up","",36.123589,139.599091],
+["加須市","加須第一ホテル","中央2-9-11","-","K","-","",36.125411,139.599402],
+["加須市","南篠崎コミュニティセンター","南篠崎2-1-6","-","K","up","",36.120659,139.622177],
+["加須市","加須コミュニティセンター","南町3-51","-","K","up","",36.120136,139.600403],
+["加須市","加須クリーンセンター","馬内1790","-","K","up","",36.120953,139.581223],
+["加須市","開智未来中学・高等学校","麦倉1238","-","K","up","",36.193709,139.653975],
+["加須市","北埼玉ヘルスケアビレッジ","麦倉191","-","F","-","",36.193346,139.649029],
+["加須市","グループホーム　麦倉ひばりの里","麦倉2116-2","-","F","-","",36.184724,139.642869],
+["加須市","みずほの里","平永142","-","K","-","",36.125966,139.56903],
+["加須市","三俣コミュニティセンター（三俣公民館）","北小浜780-1","-","K","-","",36.129228,139.615055],
+["加須市","あけぼの園","北小浜800-1","-","F","-","",36.129351,139.61556],
+["加須市","グループホーム明日葉かぞ・こもれび","北小浜821-3","-","F","-","",36.131383,139.61541],
+["加須市","ライゼ清輝苑","陽光台2-883-75","-","F","-","",36.190961,139.680303],
+["加須市","加須清輝苑","陽光台2-883-78","-","F","-","",36.190557,139.680148],
+
+
+// ===== 吉見町（ハザードマップ・階数情報つき）=====
+["吉見町","西小学校","和名50","西部","K","ok","0493-54-1509",36.050802,139.436248],
+["吉見町","西が丘小学校","南吉見2074-3","西部","K","ok","0493-54-7577",36.038832,139.431905],
+["吉見町","西公民館","北吉見2823","西部","K","ok","0493-54-4545",36.045966,139.436],
+["吉見町","西部ふれあいセンター","北吉見1717-1","西部","K","ok","",36.049789,139.42515],
+["吉見町","埋蔵文化財センター","北吉見321","西部","Q","ok","0493-54-9111",36.03902,139.42135],
+["吉見町","フレンドシップハイツよしみ","黒岩602","西部","H","ok","0493-54-2030",36.056727,139.441441],
+["吉見町","東第一小学校","東野5-20-1","東部","K","up","0493-54-1510",36.03768,139.471301],
+["吉見町","東第二小学校","江和井1555","東部","K","up","0493-54-1530",36.026262,139.495195],
+["吉見町","南小学校","久保田942-2","南部","K","up","0493-54-1504",36.027382,139.447661],
+["吉見町","吉見中学校","下細谷1","中央","K","up","0493-54-1525",36.046858,139.448809],
+["吉見町","吉見町役場","下細谷411","中央","Q","up","0493-54-1511",36.039852,139.45388],
+["吉見町","悠友館","下細谷1213","中央","K","up","0493-53-0526",36.044467,139.454493],
+["吉見町","北小学校","地頭方441","北部","K","up","0493-54-1500",36.063874,139.458012],
+["吉見町","東公民館","蚊斗谷132","東部","H","no","0493-54-4655",36.032998,139.483989],
+["吉見町","荒川荘","大串2843","東部","F","no","0493-54-4768",36.019388,139.487799],
+["吉見町","東野ふれあいセンター","東野5-15-7","東部","H","no","",36.037763,139.47203],
+["吉見町","勤労福祉センター","下細谷1210","中央","Q","no","",36.044273,139.453696],
+["吉見町","保健センター","下細谷1212","中央","F","no","0493-54-3120",36.044368,139.454009],
+["吉見町","吉見町福祉会館","下細谷1216-1","中央","F","no","0493-54-5228",36.044449,139.454909],
+["吉見町","町民体育館","中新井493-1","中央","K","no","0493-54-5625",36.050912,139.453678],
+["吉見町","B&G海洋センター体育館","中新井497","中央","H","no","",36.051396,139.453543],
+["吉見町","吉見町民会館（フレサよしみ）","中新井508","中央","H","no","0493-53-1331",36.051974,139.454968],
+["吉見町","よしみけやき保育所","中新井467","中央","F","no","0493-54-1766",36.05199,139.452857],
+["吉見町","道の駅いちごの里よしみ","久保田1737","南部","Q","no","0493-53-1530",36.036776,139.457466],
+
+// ===== 桶川市（国土地理院データ）=====
+// 桶川市（桶川市公式 指定避難場所・避難所一覧／電話番号つき）
+["桶川市","桶川小学校","西1-4-27","-","K","ok","048-771-1259",36.003916,139.560299],
+["桶川市","桶川東小学校","坂田西1-7-1","-","K","ok","048-728-3886",36.009987,139.573628],
+["桶川市","桶川東中学校","末広3-19-28","-","K","ok","048-728-4461",36.009238,139.571143],
+["桶川市","老人福祉センター","末広2-8-29","-","F","ok","048-728-1122",36.006088,139.571483],
+["桶川市","坂田コミュニティセンター","坂田東2-3-1","-","K","no","048-776-9106",36.012483,139.574622],
+["桶川市","桶川西小学校","下日出谷836-1","-","K","ok","048-786-3760",35.99974,139.547306],
+["桶川市","桶川中学校","泉1-5-10","-","K","ok","048-787-1311",36.000629,139.55914],
+["桶川市","保健センター","鴨川1-4-1","-","F","ok","048-786-1855",35.996816,139.558852],
+["桶川市","サン・アリーナ","下日出谷西2-4-1","-","K","ok","048-787-5111",35.993957,139.545612],
+["桶川市","加納小学校","坂田883","-","K","ok","048-728-3533",36.018115,139.578848],
+["桶川市","加納中学校","加納1279","-","K","ok","048-728-3061",36.022591,139.572698],
+["桶川市","桶川高等学校","坂田945","-","K","ok","048-728-4421",36.019807,139.575013],
+["桶川市","加納公民館","坂田982-5","-","K","ok","048-728-1040",36.018633,139.573087],
+["桶川市","べに花ふるさと館","加納419-1","-","K","ok","048-729-1611",36.01793,139.561899],
+["桶川市","日出谷小学校","上日出谷885","-","K","ok","048-786-2880",36.007712,139.540888],
+["桶川市","川田谷小学校","川田谷4213","-","K","ok","048-786-1335",35.998328,139.529438],
+["桶川市","桶川西中学校","川田谷3680-1","-","K","no","048-787-1342",36.001649,139.534852],
+["桶川市","桶川西高等学校","川田谷1531-2","-","K","no","048-787-0081",35.984325,139.531588],
+["桶川市","農業センター","川田谷4414","-","K","ok","048-786-1200",35.99357,139.527061],
+["桶川市","川田谷生涯学習センター","川田谷4405-4","-","K","ok","048-786-4030",35.993913,139.526746],
+["桶川市","城山公園（指定広域・地震）","川田谷2839-11","-","P","no","048-786-5881",35.991429,139.525339],
+["桶川市","朝日小学校","朝日2-18-1","-","K","ok","048-771-3775",35.989489,139.570477],
+["桶川市","市民ホール（一時滞在）","若宮1-5-9","-","Q","no","048-789-1113",36.00185,139.55585],
+].map(r=>({city:r[0],name:r[1],addr:r[2],chiku:r[3],kind:r[4],flood:r[5],tel:r[6],lat:r[7]||0,lng:r[8]||0}));
+GEO.forEach(s=>{ if(s.city==="鴻巣市") s.chiku=resolveChiku(s.addr)||""; });
+function distM(a,b,c,d){const R=6371000,r=x=>x*Math.PI/180;const dl=r(c-a),dn=r(d-b),s=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+const fmtD=m=>m>=1000?(m/1000).toFixed(m<10000?1:0)+"km":Math.round(m/10)*10+"m";
+function centroidG(a){let la=0,ln=0,n=0;a.forEach(s=>{if(s.lat){la+=s.lat;ln+=s.lng;n++;}});return n?{lat:la/n,lng:ln/n}:null;}
+const hitGeo=(s,q)=>!q||norm(s.name).includes(q)||placeHit(s.addr,q);
+
+function resolveOrigin(city,raw){
+  const q=norm(raw), inC=GEO.filter(s=>s.city===city&&s.lat);
+  // 北本：公式の避難対象地域（丁目単位）を最優先
+  if(city==="北本市"){
+    let names=[]; const al=resolveKitaAlias(raw); if(al) names=al.to.slice();
+    if(!names.length){ kitamoto.forEach(k=>{ if(k.areas.some(a=>norm(a)===q)) names.push(k.name); }); }
+    if(names.length){ const mm=inC.filter(s=>names.some(nm=>s.name.includes(nm)||nm.includes(s.name))); if(mm.length) return {o:centroidG(mm),via:"",official:names,approx:false}; }
+  }
+  // 鴻巣：公式割り当て（字→地区）を併記。起点は住所一致を優先
+  let official=[], via="";
+  if(city==="鴻巣市"){ const ch=resolveChiku(raw); if(ch){ official=KONOSU_CHIKU[ch]||[]; via=ch; } }
+  let m=inC.filter(s=>placeHit(s.addr,raw)||norm(s.name).includes(q));
+  if(m.length) return {o:centroidG(m),via:"",official:official,approx:false};
+  if(city==="鴻巣市" && via){ const mm=inC.filter(s=>s.chiku===via); if(mm.length) return {o:centroidG(mm),via:via,official:official,approx:true}; }
+  return null;
+}
+function cityCenterG(c){return centroidG(GEO.filter(s=>s.city===c&&s.lat&&s.lng));}
+function linksRow(centerLL){
+  const d=document.createElement("div"); d.className="links";
+  const web=`https://www.google.com/search?q=${encodeURIComponent(city+" ハザードマップ")}`;
+  const dz=centerLL?`https://disaportal.gsi.go.jp/maps/index.html?ll=${centerLL.lat},${centerLL.lng}&z=15`:`https://disaportal.gsi.go.jp/maps/`;
+  const gmap=centerLL?`https://www.google.com/maps/search/避難所/@${centerLL.lat},${centerLL.lng},15z`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(city+" 避難所")}`;
+  d.innerHTML=`<a class="lk" href="${web}" target="_blank" rel="noopener">🔎 ${city}の公式ハザードマップ</a>`+
+   `<a class="lk" href="${dz}" target="_blank" rel="noopener">🗺️ 重ねるハザードマップ${centerLL?"（この地点に表示）":""}</a>`+
+   `<a class="lk" href="${gmap}" target="_blank" rel="noopener">📍 Googleマップで避難所</a>`;
+  return d;
+}
+const KMAPg={K:"指定避難所",Q:"指定緊急のみ",H:"補助避難所",F:"福祉避難所",P:"指定緊急(屋外)",G:"協定",C:"協定(車中泊)"};
+const FMAPg={ok:["水害1階○","p-flood"],up:["水害 上階へ","p-warn"],no:["水害×","p-ng"],"-":["水害 種別未掲載","p-cap"]};
+function nearCard(s,near,showD){
+  const c=document.createElement("div"); c.className="card"+(near?" match":""); if(near) c.style.boxShadow="0 0 0 2px #2b5d8a inset";
+  const fl=FMAPg[s.flood]||FMAPg["-"];
+  const dp=showD?`<span class="pill p-cap" style="background:#e8eef7;color:#2b5d8a;font-weight:700">${near?"最寄り ":""}${fmtD(s._d)}</span>`:"";
+  const dir=s.lat?` · <a href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}" target="_blank" rel="noopener">ここへ行く</a>`:"";
+  c.innerHTML=`<div class="name">${s.name}<span class="kind">${KMAPg[s.kind]||""}</span></div>
+   <div class="addr">${s.city}${s.addr}${s.tel?"　☎"+s.tel:""}　<a href="${mapsLink(s.city,s.addr)}" target="_blank" rel="noopener">地図</a>${dir}</div>
+   <div class="row">${dp}<span class="pill ${fl[1]}">${fl[0]}</span></div>`;
+  return c;
+}
+const BASINWARN={
+ "川島町":"川島町は四方を川に囲まれた低地。水害時は町内に安全な所がほぼ無く、町外（東松山・坂戸・上尾・北本方面の高台）へ早めに立ち退き避難を。",
+ "加須市":"加須市は利根川・荒川低地で広く深く浸水。ただし市の『水害時の避難行動マップ（令和7年度）』で地域別（北川辺・大利根・騎西・加須・樋遣川・大越）に水害時避難場所が指定されています。屋外や1階は×が多いので指定建物の上階へ。北川辺・大利根は特に深く、早めの広域避難も。",
+ "吉見町":"吉見町は荒川・市野川で概ね全域が浸水。西部の避難所か、東部・中央は3階以上へ。"
+};
+function renderNearest(city,raw,res){
+  hintEl.innerHTML="町名を入れると、その地点から<b>近い順</b>に並びます（直線距離）。種別ごとに分け、指定避難所を優先表示。";
+  segEl.innerHTML="";
+  const fb=document.createElement("button"); fb.className=floodMode?"on":""; fb.textContent="水害時に使える所だけ";
+  fb.onclick=()=>{floodMode=!floodMode;render();}; segEl.appendChild(fb);
+  let list=GEO.filter(s=>s.city===city&&s.lat);
+  if(floodMode) list=list.filter(s=>s.flood==="ok"||s.flood==="up");
+  list.forEach(s=>s._d=distM(res.o.lat,res.o.lng,s.lat,s.lng));
+  list.sort((a,b)=>a._d-b._d);
+  if(BASINWARN[city]) dynNote.innerHTML=`<div class="alert">⚠ ${BASINWARN[city]}</div>`;
+  if(res.approx && res.via) out.appendChild(noteEl(`「${raw}」はその町名に避難所が無いため、<b>${res.via}</b>のあたりから近い順で表示します。`));
+  if(res.official && res.official.length) out.appendChild(noteEl(`<b>公式の割り当て</b>：${res.official.join("、")}（市の指定。下は実際の距離順）`));
+  out.appendChild(linksRow(res.o));
+  const G1=list.filter(s=>s.kind==="K"||s.kind==="H");
+  const G2=list.filter(s=>s.kind==="Q"||s.kind==="P");
+  const G3=list.filter(s=>s.kind==="F");
+  const G4=list.filter(s=>s.kind==="G"||s.kind==="C");
+  const nearK=G1[0];
+  if(nearK) out.appendChild(noteEl(`<b>「${raw}」の最寄りの指定避難所${floodMode?"（水害時に使える）":""}</b><br><b>${nearK.name}</b>（${nearK.addr}・約${fmtD(nearK._d)}）`));
+  countEl.textContent=`${city}・「${raw}」から近い順`;
+  if(!list.length){ out.appendChild(noteEl("該当する避難所がありません。")); return; }
+  const cols=document.createElement("div"); cols.className="cols";
+  cols.appendChild(colDivN(`指定避難所（${G1.length}）｜寝泊まり`,G1,true));
+  cols.appendChild(colDivN(`指定緊急避難場所（${G2.length+G4.length}）｜緊急の逃げ場`,G2.concat(G4),false));
+  cols.appendChild(colDivN(`福祉避難所（${G3.length}）｜要配慮者・二次開設`,G3,false));
+  out.appendChild(cols);
+}
+function colDivN(title,arr,hiNear){
+  const d=document.createElement("div"); d.className="col";
+  d.appendChild(secEl(title));
+  if(!arr.length){ d.appendChild(noteEl("（該当なし）")); return d; }
+  arr.forEach((s,i)=>d.appendChild(nearCard(s,hiNear&&i===0,true)));
+  return d;
+}
+function renderOkegawa(query){
+  hintEl.innerHTML="桶川市の指定緊急避難場所・指定避難所。台地中心で水害に比較的強いが、西部の<b>川田谷（荒川沿い）</b>は浸水注意。<b>町名を入れると近い順</b>に並びます。";
+  segEl.innerHTML="";
+  const fb=document.createElement("button"); fb.textContent="水害時に使える所だけ"; fb.className=floodMode?"on":"";
+  fb.onclick=()=>{floodMode=!floodMode;render();}; segEl.appendChild(fb);
+  let list=GEO.filter(s=>s.city==="桶川市"&&hitGeo(s,query));
+  if(floodMode) list=list.filter(s=>s.flood==="ok"||s.flood==="up");
+  countEl.textContent=`${list.length}件`;
+  out.appendChild(linksRow(cityCenterG("桶川市")));
+  if(!list.length){ const cols0=document.createElement("div");cols0.className="cols";out.appendChild(cols0); out.appendChild(noteEl("該当する避難所がありません。")); return; }
+  const G1=list.filter(s=>s.kind==="K"||s.kind==="H");
+  const G2=list.filter(s=>s.kind==="Q"||s.kind==="P");
+  const G3=list.filter(s=>s.kind==="F");
+  const cols=document.createElement("div"); cols.className="cols";
+  cols.appendChild(colDivN(`指定避難所（${G1.length}）｜寝泊まり`,G1,false));
+  cols.appendChild(colDivN(`指定緊急避難場所（${G2.length}）｜緊急の逃げ場`,G2,false));
+  cols.appendChild(colDivN(`福祉避難所（${G3.length}）｜要配慮者・二次開設`,G3,false));
+  out.appendChild(cols);
+}
+
+render();
+
+/* ===== 共有（LINE・メール・端末の共有）DOM後付け版 ===== */
+(function(){
+ const FOOT="\n\n※開設状況は災害ごとに変わります。市町村の最新情報を確認してください。";
+ const gsi=(la,ln)=>`https://maps.gsi.go.jp/#17/${la}/${ln}/&base=std&ls=std&disp=1&vs=c1g1j0h0k0l0u0t0z0r0s0m0f0&d=m`;
+ function row(subj,getText){
+  const d=document.createElement("div");d.className="share";
+  const mk=(cls,label,fn)=>{const b=document.createElement("button");b.className=cls;b.textContent=label;b.onclick=e=>{e.stopPropagation();fn(b);};d.appendChild(b);};
+  mk("line","LINEで送る",()=>location.href="https://line.me/R/share?text="+encodeURIComponent(getText()));
+  mk("mail","✉ メール",()=>location.href="mailto:?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(getText()));
+  if(navigator.share) mk("","💬 SMS・他のアプリ",()=>navigator.share({title:subj,text:getText()}).catch(()=>{}));
+  mk("",'コピー',b=>{const t=getText(),ok=()=>{const o=b.textContent;b.textContent="✓ コピー済";setTimeout(()=>b.textContent=o,1500);};
+   if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(ok,()=>prompt("コピーしてください",t));else prompt("コピーしてください",t);});
+  return d;
+ }
+ function cardText(c){
+  const nm=c.querySelector(".name"); if(!nm) return null;
+  const name=[...nm.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join("").trim();
+  const kind=[...nm.querySelectorAll(".kind")].map(k=>k.textContent).join("・");
+  const ad=c.querySelector(".addr"); let addr="",map="",la=null,ln=null;
+  if(ad){const cl=ad.cloneNode(true);cl.querySelectorAll("a").forEach(a=>a.remove());addr=cl.textContent.replace(/[\s　·]+$/,"").replace(/\s+/g," ").trim();
+   const dir=ad.querySelector('a[href*="maps/dir"]'); const m=dir&&dir.href.match(/destination=([\d.]+),([\d.]+)/);
+   if(m){la=m[1];ln=m[2];map=`https://www.google.com/maps/search/?api=1&query=${la},${ln}`;}
+   else{const a=ad.querySelector('a[href*="google.com/maps"]');if(a)map=a.href;}}
+  const pills=[...c.querySelectorAll(".row .pill")].map(p=>p.textContent.trim()).filter(Boolean).join(" / ");
+  let t=`【避難先】${name}${kind?`（${kind}）`:""}`;
+  if(addr) t+=`\n住所：${addr}`; if(pills) t+=`\n${pills}`; if(map) t+=`\n地図：${map}`; if(la) t+=`\n地理院地図：${gsi(la,ln)}`;
+  return {name,text:t+FOOT};
+ }
+ function enhance(){
+  document.querySelectorAll(".card").forEach(c=>{
+   if(c.querySelector(".share")) return; const d=cardText(c); if(!d||!d.name) return;
+   c.appendChild(row(`避難先：${d.name}`,()=>cardText(c).text));
+  });
+  document.querySelectorAll(".gpsbest").forEach(g=>{
+   if(g.querySelector(".share")) return;
+   const t=()=>{const b=g.querySelector("b");const r=g.querySelector('a[href*="maps/dir"]');const z=g.querySelector('a[href*="ll="]');
+    const m=z&&z.href.match(/ll=([\d.]+),([\d.]+)/);
+    return `【現在地から一番近い避難先】\n${g.textContent.split("▶")[0].replace("🚶","").trim()}`+(r?`\nルート：${r.href}`:"")+(m?`\n現在地：https://www.google.com/maps/search/?api=1&query=${m[1]},${m[2]}`:"")+FOOT;};
+   const s=row("現在地から一番近い避難先",t);g.appendChild(s);
+  });
+ }
+ let q=false; new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;enhance();});}).observe(document.body,{childList:true,subtree:true});
+ enhance();
+})();
+</script>
+</body>
+</html>
