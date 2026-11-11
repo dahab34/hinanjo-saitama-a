@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """エリア索引ページ（hinanjo-areas.html）とエリア版へのディープリンク対応。"""
 import json, re
+from urllib.parse import quote
 K='https://dahab34.github.io/hinanjo/hinanjo.html'
 H='https://dahab34.github.io/hinanjo/hinanjo-higashimatsuyama.html'
 Q='https://dahab34.github.io/hinanjo/hinanjo-kuki.html'
@@ -10,8 +11,8 @@ DETAIL=[
  ('北本市','市の避難所一覧より。丁目・地区名から避難先が分かる',[('鴻巣版で開く',K)]),
  ('川島町','町の避難所一覧・広域避難場所より。浸水しない階、駐車場、町外の避難先',[('鴻巣版で開く',K)]),
  ('桶川市','市の公式の避難所一覧より。全23施設の電話番号、福祉避難所',[('鴻巣版で開く',K)]),
- ('吉見町','町のハザードマップより。水害時に使える階（3階以上など）、電話番号、地区',[('鴻巣版で開く',K),('東松山版で開く',H)]),
- ('加須市','市の水害時避難行動マップより。地域別の水害時避難場所（上階避難）、警戒レベル別タイムライン',[('鴻巣版で開く',K),('久喜版で開く',Q)]),
+ ('吉見町','町のハザードマップより。水害時に使える階（3階以上など）、電話番号、地区',[('鴻巣版で開く',K)]),
+ ('加須市','市の水害時避難行動マップより。地域別の水害時避難場所（上階避難）、警戒レベル別タイムライン',[('鴻巣版で開く',K)]),
  ('久喜市','市のハザードマップ（令和5年3月版）より。全施設の洪水時に使える階（2階以上・3階以上など）、一時避難場所、協定締結先',[('久喜版で開く',Q)]),
  ('幸手市','市の洪水ハザードマップより。全施設の洪水時に使える階（2階以上・3階以上・使用不可）、電話番号',[('久喜版で開く',Q)]),
  ('杉戸町','町の洪水ハザードマップ（令和3年3月）より。利根川・江戸川・大落古利根川ごとの使用可否（全階・2階以上・使用不可）、電話番号、福祉避難所',[('久喜版で開く',Q)]),
@@ -34,7 +35,7 @@ def deeplink(h):
 def make_index(areas, facs, asof_s, n_all):
     A=[{'n':a,'f':fn,'c':cs,'k':n} for a,fn,n,cs in areas]
     P={c:[[round(f['lat'],4),round(f['lng'],4)] for f in facs[c] if f['lat'] and f['lng']] for a in areas for c in a[3]}
-    D=[{'c':c,'d':d,'l':[{'n':n,'u':u} for n,u in ls]} for c,d,ls in DETAIL]
+    D=[{'c':c,'d':d,'l':[{'n':f'{c}の詳しい版を見る','u':u+'?city='+quote(c)} for n,u in ls[:1]]} for c,d,ls in DETAIL]
     J=lambda x: json.dumps(x,ensure_ascii=False,separators=(',',':'))
     return f'''<!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8">
@@ -75,7 +76,7 @@ h2{{font-size:15px;margin:22px 0 4px}}
 #map{{height:68vh;min-height:380px;border-radius:12px;border:1px solid var(--line);background:#e9edf2}}
 .lg{{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--sub);margin:8px 2px 0}}
 .lg span::before{{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:4px;vertical-align:-1px}}
-.lbl{{background:rgba(255,255,255,.85);border:0;box-shadow:none;font-size:11px;font-weight:600;color:#1c2530;padding:0 3px}}
+.lbl{{background:#fff;border:1px solid #d5dbe3;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.12);font-size:12px;font-weight:700;color:#2b5d8a;padding:2px 6px;cursor:pointer}}
 .lbl::before{{display:none}}
 #map.lowz .lbl{{display:none}}
 .pop b{{font-size:15px}} .pop a{{display:block;margin-top:6px;padding:7px 10px;border-radius:8px;text-align:center;text-decoration:none;font-weight:600;font-size:13.5px}}
@@ -97,7 +98,7 @@ h2{{font-size:15px;margin:22px 0 4px}}
 <div id="mapwrap"><div id="map"></div><div class="lg" id="lg"></div></div>
 
 <h2>より詳しい版がある市町村</h2>
-<p class="lead"><i style="font-style:normal;font-size:10.5px;font-weight:700;color:var(--star);background:var(--starbg);border-radius:4px;padding:0 4px">詳しい版</i> の市町村は、国土地理院データに加えて市町の資料から情報を足した版もあります。</p>
+<p class="lead"><i style="font-style:normal;font-size:10.5px;font-weight:700;color:var(--star);background:var(--starbg);border-radius:4px;padding:0 4px">詳しい版</i> の市町村は、国土地理院データに加えて市町の資料から情報を足した版を開きます。</p>
 <div id="det"></div>
 
 <div class="foot">出典：国土地理院 指定緊急避難場所・指定避難所データ（{asof_s}）。種別・水害可否は自動判定で、上階避難の判断・協定避難先・電話番号は含みません（詳しい版を除く）。開設状況は災害ごとに変わるため、実際の避難は各市町村の防災無線・公式サイトの最新情報に従ってください。現在地検索は https:// で開いたときに使えます。</div>
@@ -111,7 +112,7 @@ AREAS.forEach(a=>{{
   const box=document.createElement("div");box.className="area";
   box.innerHTML=`<div class="ahead"><a href="${{a.f}}">${{a.n}}</a><span>${{a.k.toLocaleString()}}件</span></div><div class="chips"></div>`;
   const ch=box.querySelector(".chips");
-  a.c.forEach(c=>{{const e=document.createElement("a");e.className="chip";e.href=`${{a.f}}?city=${{encodeURIComponent(c)}}`;
+  a.c.forEach(c=>{{const e=document.createElement("a");e.className="chip";e.href=detOf[c]?detOf[c].l[0].u:`${{a.f}}?city=${{encodeURIComponent(c)}}`;
     e.dataset.c=c;e.innerHTML=c+(detOf[c]?"<i>詳しい版</i>":"");ch.appendChild(e);}});
   list.appendChild(box);
 }});
@@ -141,18 +142,18 @@ function loadMap(){{
     const all=[];
     AREAS.forEach((a,i)=>a.c.forEach(c=>{{const p=PTS[c];if(!p||!p.length)return;
       let la=0,ln=0;p.forEach(x=>{{la+=x[0];ln+=x[1];}});la/=p.length;ln/=p.length;all.push([la,ln]);
-      const dd=detOf[c], d=dd?dd.l:[];
-      const html=`<div class="pop"><b>${{c}}</b><br><span style="color:#5b6573;font-size:12px">${{a.n}}・${{p.length}}施設</span>`+
-        `<a class="p1" href="${{a.f}}?city=${{encodeURIComponent(c)}}">このまちの避難所を見る</a>`+
-        (dd?`<div style="font-size:12px;color:#5b6573;margin-top:6px">詳しい版：${{dd.d}}</div>`:"")+d.map(x=>`<a class="p2" href="${{x.u}}">${{x.n}}</a>`).join("")+`</div>`;
-      L.circleMarker([la,ln],{{radius:d.length?9:7,color:"#fff",weight:2,fillColor:COL[i%COL.length],fillOpacity:.95}})
-       .bindTooltip(c,{{permanent:true,direction:"right",offset:[6,0],className:"lbl"}}).bindPopup(html).addTo(map);
+      const dd=detOf[c], go=dd?dd.l[0].u:`${{a.f}}?city=${{encodeURIComponent(c)}}`;
+      const mk=L.circleMarker([la,ln],{{radius:dd?11:9,color:"#fff",weight:2,fillColor:COL[i%COL.length],fillOpacity:.95}})
+       .bindTooltip(c,{{permanent:true,interactive:true,direction:"right",offset:[7,0],className:"lbl"}})
+       .on("click",()=>{{location.href=go;}}).addTo(map);
+      const te=mk.getTooltip()&&mk.getTooltip().getElement();
+      if(te){{te.style.pointerEvents="auto";te.addEventListener("click",e=>{{e.stopPropagation();location.href=go;}});}}
     }}));
     const z=()=>document.getElementById("map").classList.toggle("lowz",map.getZoom()<10);
     map.on("zoomend",z);map.fitBounds(all,{{padding:[16,16]}});z();
   }};
   document.head.appendChild(js);
-  document.getElementById("lg").innerHTML=AREAS.map((a,i)=>`<span style="--c:${{COL[i%COL.length]}}">${{a.n}}</span>`).join("")+'<span style="--c:#999">大きい点＝詳しい版あり</span>';
+  document.getElementById("lg").innerHTML=AREAS.map((a,i)=>`<span style="--c:${{COL[i%COL.length]}}">${{a.n}}</span>`).join("")+'<span style="--c:#999">大きい点＝詳しい版あり。点か市町村名を押すとその市町村のページへ</span>';
 }}
 const msg=document.getElementById("msg"),btn=document.getElementById("gps");
 function show(t){{msg.textContent=t;msg.style.display="block";}}

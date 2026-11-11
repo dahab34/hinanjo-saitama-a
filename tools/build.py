@@ -34,7 +34,22 @@ def base(n): return re.sub(r'[\s　]','',re.sub(r'[（(].*?[)）]','',n or ''))
 def jis5(cid): m=re.match(r'E(\d{5})',(cid or '').strip()); return m.group(1) if m else ''
 OUTDOOR=re.compile(r'公園|グラウンド|グランド|広場|運動場|運動公園|緑地|河川敷|園庭|校庭|ピロティ|多目的')
 
+
+def cleanup():
+    """手作業アップロードで紛れ込んだ不要ファイルを片付ける（存在するものだけ削除）。"""
+    import shutil, glob
+    T=os.path.join(ROOT,'tools')
+    targets=[os.path.join(ROOT,n) for n in ('build.py','index_page.py','patch_share.py','template.html','update.yml','watch.py','hinanjo-chichibu (1).html')]
+    targets+=[f for f in glob.glob(os.path.join(ROOT,'*txt'))+glob.glob(os.path.join(T,'*txt')) if os.path.isfile(f)]
+    targets+=[os.path.join(T,'tools'),os.path.join(T,'hinanjo'),os.path.join(T,'__pycache__')]+glob.glob(os.path.join(T,'auto-update*'))
+    for t in targets:
+        if os.path.isdir(t): shutil.rmtree(t); print('掃除:',os.path.relpath(t,ROOT))
+        elif os.path.isfile(t): os.remove(t); print('掃除:',os.path.relpath(t,ROOT))
+    gi=os.path.join(ROOT,'.gitignore')
+    if not os.path.exists(gi): open(gi,'w').write('__pycache__/\n*.pyc\n')
+
 def main():
+    cleanup()
     ev,sh,dates=[],[],[]
     for c in CODES:
         r,d=fetch(c,'2'); ev+=r; dates.append(d)
