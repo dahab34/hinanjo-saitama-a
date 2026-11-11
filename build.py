@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-"""国土地理院の公開GeoJSONを取得し、9エリア版の避難所さがしを再生成する。
+"""国土地理院の公開GeoJSONを取得し、9エリア版の「埼玉 避難所ナビ」を再生成する。
 GitHub Actions から月1回実行。件数が大きく減った場合は更新しない（安全装置）。"""
 import json, re, os, sys, urllib.request, email.utils, datetime
 from collections import defaultdict, Counter
 HERE=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(HERE)
 sys.path.insert(0,HERE); from patch_share import patch
+import watch
+from index_page import make_index, deeplink
 BASE='https://hinanmap.gsi.go.jp/hinanjocp/defaultFtpData/geoJSON/'
 CODES=['11000','10205','10209','10523','10524','10525','12208','08542']  # 埼玉県全域＋周辺7市町
 STATE=os.path.join(HERE,'state.json'); MIN_RATIO=0.9
@@ -48,6 +50,8 @@ def main():
         if k and n: votes[k][n]+=1
     nmap={k:v.most_common(1)[0][0] for k,v in votes.items()}
     muni=lambda r: nmap.get(jis5(r.get('共通ID'))) or parse_pm(r.get('住所'))
+    try: watch.run(ev,sh,muni,short,base)
+    except Exception as e: print('watch失敗（更新は続行）:',e)
     emg=defaultdict(lambda:{'kozui':0,'outdoor':False})
     for r in ev:
         m=muni(r); nm=r.get('施設・場所名',''); e=emg[(m,base(nm))]
@@ -100,22 +104,10 @@ def main():
         h=re.sub(r'const RAW = \[.*?\]\.map\(',lambda _:'const RAW = ['+raw+'].map(',tpl,count=1,flags=re.S)
         h=re.sub(r'const CITIES=\[[^\]]*\];',lambda _:'const CITIES=['+','.join(esc(c) for c in cities)+'];',h,count=1)
         h=re.sub(r'const SRC=\{.*?\n\};',lambda _:'const SRC={\n '+',\n '.join(f'{esc(c)}:{esc(NOTE)}' for c in cities)+'\n};',h,count=1,flags=re.S)
-        h=h.replace('避難所さがし 東松山営業所版',f'避難所さがし {area}版').replace('避難所さがし　東松山営業所版',f'避難所さがし　{area}版')
-        fn=os.path.join(ROOT,f'hinanjo-{slug}.html'); open(fn,'w',encoding='utf-8').write(h); patch(fn)
+        h=h.replace('避難所さがし 東松山営業所版',f'埼玉 避難所ナビ｜{area}').replace('避難所さがし　東松山営業所版',f'埼玉 避難所ナビ｜{area}')
+        h=deeplink(h); fn=os.path.join(ROOT,f'hinanjo-{slug}.html'); open(fn,'w',encoding='utf-8').write(h); patch(fn)
         idx.append((area,f'hinanjo-{slug}.html',len(rows),cities)); n_all+=len(rows)
-    li=''.join(f'<li><a href="{fn}">避難所さがし {a}版</a><span class="m">{n}件・{len(cs)}市町村<br>{"／".join(cs)}</span></li>' for a,fn,n,cs in idx)
-    open(os.path.join(ROOT,'hinanjo-areas.html'),'w',encoding='utf-8').write(f'''<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>避難所さがし エリア索引（埼玉県＋周辺）</title>
-<style>body{{margin:0;background:#f6f7f9;color:#1c2530;font-family:-apple-system,"Noto Sans JP","Yu Gothic",sans-serif;font-size:15px;line-height:1.6}}
-.wrap{{max-width:760px;margin:0 auto;padding:16px}} h1{{font-size:18px}} .lead{{color:#5b6573;font-size:13px}}
-ul{{list-style:none;padding:0}} li{{background:#fff;border:1px solid #e3e7ec;border-radius:12px;margin:8px 0;padding:12px 14px}}
-li a{{font-weight:700;color:#2b5d8a;text-decoration:none;font-size:16px}} .m{{display:block;color:#5b6573;font-size:12px;margin-top:4px}}
-.src{{color:#5b6573;font-size:12px;margin-top:16px}}</style></head>
-<body><div class="wrap"><h1>避難所さがし｜エリア索引</h1>
-<p class="lead">埼玉県全域（63市町村）＋隣接する群馬・千葉・茨城の周辺自治体（計70市町村・{n_all:,}施設）を9エリアに分割。各エリアをタップで開いてください。出典：国土地理院 指定緊急避難場所・指定避難所データ（{asof_s}）。毎月自動更新。</p>
-<ul>{li}</ul>
-<p class="src">※種別・水害可否はGSIデータからの自動判定です。上階避難の判断・協定避難先・電話番号などは含みません。GPS・共有ボタンは https:// で開いたときに動作します。</p>
-</div></body></html>''')
+    open(os.path.join(ROOT,'hinanjo-areas.html'),'w',encoding='utf-8').write(make_index(idx,facs,asof_s,n_all))
     json.dump({'total':total,'facilities':n_all,'asof':str(asof),'built':str(datetime.date.today())},open(STATE,'w'),ensure_ascii=False,indent=1)
     print(f'完了: {n_all}施設 / {asof_s}')
 if __name__=='__main__': main()
