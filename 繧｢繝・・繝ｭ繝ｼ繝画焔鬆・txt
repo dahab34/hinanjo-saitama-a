@@ -1,0 +1,9 @@
+■ hinanjo-saitama-a リポジトリ（9エリア版・自動更新）
+  1. 「tools」フォルダをそのままドラッグして上書き（Add file → Upload files → Commit）
+  2. .github/workflows/update.yml は前回から変更なし（入れ替え済みならそのままでOK）
+  3. Actions →「避難所データ自動更新」→「Run workflow」で即反映
+     （索引・9エリア版のHTMLは自動で作り直されるので、手で上げなくてよい）
+
+■ hinanjo リポジトリ（詳しい版）
+  hinanjo.html（鴻巣版）、hinanjo-higashimatsuyama.html（東松山版）、hinanjo-kuki.html（久喜版）
+  の3つをドラッグして上書き → Commit
