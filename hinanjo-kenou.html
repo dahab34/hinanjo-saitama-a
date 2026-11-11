@@ -81,7 +81,7 @@ footer{color:var(--sub);font-size:11.5px;padding:16px 14px 30px;line-height:1.6}
 </head>
 <body>
 <header>
-  <h1>避難所さがし　県央版</h1>
+  <h1>避難所さがし　県央版</h1><a href="hinanjo-areas.html" style="display:inline-block;font-size:12.5px;color:var(--accent);margin:-4px 0 6px;text-decoration:none">‹ 市町村一覧にもどる</a>
   <div class="tabs" id="tabs"></div>
   <div class="search">
     <input id="q" type="search" placeholder="地名・施設名でしぼり込み（例：高坂／下細谷／〇〇小）" autocomplete="off">
@@ -617,7 +617,9 @@ function colDiv(title,arr,query,hiNear){
  return d;
 }
 function note(h){const d=document.createElement("div");d.className="note";d.innerHTML=h;return d;}
+try{const _p=new URLSearchParams(location.search),_c=_p.get("city");if(_c&&CITIES.includes(_c))city=_c;}catch(e){}
 render();
+try{if(new URLSearchParams(location.search).get("gps")==="1")setTimeout(()=>document.getElementById("gps").click(),50);}catch(e){}
 </script>
 </body>
 </html>
