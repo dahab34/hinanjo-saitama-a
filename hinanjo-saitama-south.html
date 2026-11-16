@@ -199,6 +199,11 @@ footer{color:var(--sub);font-size:11.5px;padding:16px 14px 30px;line-height:1.6}
 #printSheet .ps-qrh svg{width:54px;height:54px}
 #printSheet .ps-home{font-size:34px}
 
+#printSheet .ps-depth{display:flex;align-items:center;gap:8px;border:1.6px solid #000;border-radius:4px;padding:4px 10px;margin:0 0 6px;font-size:14.5px;line-height:1.35}
+#printSheet .ps-depth i,.lvdepth i{display:inline-block;width:18px;height:14px;border:1px solid #666;flex:none;vertical-align:-2px}
+#printSheet .ps-depth small{font-size:12.5px;color:#222}
+.lvdepth{border:1.5px solid #888;border-radius:8px;padding:8px 10px;margin:0 0 8px;font-size:14px;line-height:1.5;background:#fff}
+.lvdepth small{display:block;font-size:12px;color:#555;margin-top:2px}
 #printSheet .ps-in{width:680px;margin:0 auto}
 @media print{body.printing #printSheet{padding-top:12mm}}
 @media print and (min-width:780px){body.printing #printSheet{padding:17mm 15mm 12mm}}
@@ -1210,11 +1215,13 @@ function buildSheet(lat,lng,base,list,isAddr,onReady){
  const hz=qrSvg(`https://disaportal.gsi.go.jp/maps/index.html?ll=${lat},${lng}&z=16`);
  const el=document.getElementById("printSheet")||document.body.appendChild(Object.assign(document.createElement("div"),{id:"printSheet"}));
  el.innerHTML=`<div class="ps-in"><div class="ps-head"><h1>避難先マップ</h1><div class="ps-sub">${isAddr?`基準：<b>${E(base)}</b>`:`基準：現在地（${lat.toFixed(5)}, ${lng.toFixed(5)}）`}　作成日：${ds}</div>${hz?`<div class="ps-qrh">${hz}<span>ハザード<br>マップ</span></div>`:""}</div>
- <div class="ps-mapbox" id="psMapbox" style="height:${G.length>3?330:400}px"></div>
+ <div class="ps-depth" id="psDepth" style="display:none"></div>
+ <div class="ps-mapbox" id="psMapbox" style="height:${G.length>3?310:380}px"></div>
  <div class="ps-legend"><span class="ps-home">★</span>${isAddr?"この住所":"現在地"}　<span class="ps-mk ps-g緊">緊</span>まず逃げる場所　<span class="ps-mk ps-g避">避</span>寝泊まりする場所${G.some(g=>g[3]==="水")?'　<span class="ps-mk ps-g水">水</span>水害のときの避難先':""}　<span class="ps-mk ps-g福">福</span>福祉避難所　<span style="color:#c00">点線の円</span>＝直線500m・1km　地図の外の施設は縁に方向（→）と距離<br><b>洪水で浸かる深さ（想定最大規模・全河川の重ね合わせ）：</b><span class="ps-dp" style="background:#f7f5a9"></span>0.5m未満 <span class="ps-dp" style="background:#ffd8c0"></span>0.5〜3m（1階が浸かる） <span class="ps-dp" style="background:#ffb7b7"></span>3〜5m（2階まで） <span class="ps-dp" style="background:#ff9191"></span>5〜10m <span class="ps-dp" style="background:#f285c9"></span>10m以上</div>
  <div class="ps-lists">${lists}</div>
  <div class="ps-foot">距離は直線です。浸水や通行止めで通れない道もあります。どこが開くかは災害ごとに違うので、市町村の避難情報を確認してください。「水害時は使えない」場所には洪水のとき行かないこと。右のQRをスマホで読むと道案内が開きます。<br>出典：国土地理院 指定緊急避難場所・指定避難所データ${asof?"（"+E(asof)+"）":""}・各市町の避難所資料・地理院タイル（埼玉 避難所ナビ）</div></div>`;
- drawMap(document.getElementById("psMapbox"),lat,lng,marks,onReady,G.length>3?330:400);
+ fillDepth(lat,lng,isAddr);
+ drawMap(document.getElementById("psMapbox"),lat,lng,marks,onReady,G.length>3?310:380);
  showLive(lat,lng,marks,isAddr);
 }
 function drawMap(box,lat,lng,marks,onReady,H){
@@ -1266,7 +1273,7 @@ function addPrintBtns(box,lat,lng,base,list,isAddr){
  bImg.classList.add("main");
  const fname=(isAddr?String(base).replace(/^.+?[都道府県]/,""):"現在地")+"_避難先マップ";
  const hint=document.createElement("div"); hint.className="printhint"; hint.textContent="画像で保存しておくと、電波がないときもスマホの写真から見られます。";
- const lv=document.createElement("div"); lv.id="psLiveWrap"; lv.innerHTML='<div id="psLive"></div><div class="lvbar"><label><input type="checkbox" id="psFld" checked> 洪水で浸かる深さを重ねる</label><span class="lvlg"><i style="background:#f7f5a9"></i>0.5m未満<i style="background:#ffd8c0"></i>〜3m<i style="background:#ffb7b7"></i>〜5m<i style="background:#ff9191"></i>〜10m<i style="background:#f285c9"></i>10m〜</span></div>';
+ const lv=document.createElement("div"); lv.id="psLiveWrap"; lv.innerHTML='<div id="psDepthLive" class="lvdepth" style="display:none"></div><div id="psLive"></div><div class="lvbar"><label><input type="checkbox" id="psFld" checked> 洪水で浸かる深さを重ねる</label><span class="lvlg"><i style="background:#f7f5a9"></i>0.5m未満<i style="background:#ffd8c0"></i>〜3m<i style="background:#ffb7b7"></i>〜5m<i style="background:#ff9191"></i>〜10m<i style="background:#f285c9"></i>10m〜</span></div>';
  box.appendChild(lv); box.appendChild(w); box.appendChild(hint);
  const ready=()=>{ bImg.disabled=bPdf.disabled=bPr.disabled=false; bImg.textContent="📷 画像で保存（スマホ向け）"; };
  bImg.onclick=()=>makeFile(bImg,"png",fname,"📷 画像で保存（スマホ向け）");
@@ -1275,6 +1282,43 @@ function addPrintBtns(box,lat,lng,base,list,isAddr){
  const build=()=>{ buildSheet(lat,lng,base,list,isAddr,ready); w._file=null; };
  build();
  if(!window.qrcode&&QRLIB) QRLIB.addEventListener("load",build,{once:true});
+}
+/* ===== この地点の想定浸水深（重ねている浸水マップの色をその地点で読む） ===== */
+const DEPTHS=[[[247,245,169],"0.5m未満","床下が浸かるていど","水が引くまで家の2階で待つこともできる場合があります。早めに情報を確認。"],
+ [[255,216,192],"0.5〜3m","1階が浸かる","1階は危険。2階以上か、「水害時OK」の避難先へ。"],
+ [[255,183,183],"3〜5m","2階の床まで浸かる","2階でも危険。早めに浸からない場所へ逃げてください。"],
+ [[255,145,145],"5〜10m","2階まで浸かる","家にとどまるのは危険。早めに浸からない場所へ逃げてください。"],
+ [[242,133,201],"10m以上","3階以上まで浸かる","家にとどまるのは危険。早めに浸からない場所へ逃げてください。"],
+ [[220,122,220],"20m以上","5階以上まで浸かる","家にとどまるのは危険。早めに浸からない場所へ逃げてください。"]];
+const _DEP={};
+function floodAt(lat,lng){
+ const k=lat.toFixed(5)+","+lng.toFixed(5); if(_DEP[k]) return _DEP[k];
+ const z=17,n=1<<z,xf=(lng+180)/360*n,r=lat*Math.PI/180,yf=(1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*n;
+ const tx=Math.floor(xf),ty=Math.floor(yf),px=Math.min(255,Math.floor((xf-tx)*256)),py=Math.min(255,Math.floor((yf-ty)*256));
+ const url=`https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/${z}/${tx}/${ty}.png`;
+ return _DEP[k]=fetch(url,{mode:"cors"}).then(res=>{
+  if(res.status===404) return {none:true};
+  if(!res.ok) return null;
+  return res.blob().then(b=>new Promise((ok,ng)=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>ok(im);im.onerror=ng;im.src=URL.createObjectURL(b);})).then(im=>{
+   const c=document.createElement("canvas");c.width=c.height=256;const x=c.getContext("2d");x.drawImage(im,0,0);
+   const d=x.getImageData(px,py,1,1).data; if(d[3]<40) return {none:true};
+   let best=-1,bd=1e9; DEPTHS.forEach((q,i)=>{const e=(q[0][0]-d[0])**2+(q[0][1]-d[1])**2+(q[0][2]-d[2])**2;if(e<bd){bd=e;best=i;}});
+   return bd<2500?{i:best}:null;
+  });
+ }).catch(()=>null);
+}
+function depthHTML(r,isAddr,sheet){
+ const where=isAddr?"この住所":"現在地";
+ if(!r) return "";
+ if(r.none) return `<span>★<b>${where}の洪水の深さ（想定最大）：浸水の想定なし</b>${sheet?"　":"<br>"}<small>大きな川があふれたときの想定です。小さな川・用水路や大雨で水がたまる浸水は含みません。</small></span>`;
+ const q=DEPTHS[r.i];
+ return `<i style="background:rgb(${q[0].join(",")})"></i><span>★<b>${where}の洪水の深さ（想定最大）：${q[1]}（${q[2]}）</b>${sheet?"　":"<br>"}<small>${q[3]}</small></span>`;
+}
+function fillDepth(lat,lng,isAddr){
+ floodAt(lat,lng).then(r=>{
+  [["psDepth",true],["psDepthLive",false]].forEach(([id,sh])=>{const e=document.getElementById(id);if(!e)return;const h=depthHTML(r,isAddr,sh);e.innerHTML=h;e.style.display=h?"":"none";});
+  if(typeof fitSheet==="function") fitSheet();
+ });
 }
 let LVMAP=null;
 function showLive(lat,lng,marks,isAddr){
