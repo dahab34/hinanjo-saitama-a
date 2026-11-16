@@ -4,7 +4,7 @@ on:
     - cron: '17 0 1 * *'   # 毎月1日 9:17（日本時間）
   workflow_dispatch: {}      # 手動実行ボタン
   push:
-    paths: ['**.py', 'template.html', 'tools/**']   # 設計図をアップロードしたら自動で作り直す
+    paths: ['**.py', '**template.html']   # 設計図をアップロードしたら自動で作り直す
 permissions:
   contents: write
   issues: write
@@ -13,13 +13,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
-      - name: 一番上に置かれた設計図ファイルを tools フォルダへ移す
+      - name: どこに上がった設計図も tools フォルダへ集める
+        shell: bash
         run: |
+          # hinanjo-saitama-a 用：どこに・どんな名前で上がっても、最新の設計図を tools/ に集めて、残骸を消す
           for f in build.py index_page.py print_patch.py watch.py patch_share.py template.html; do
-            if [ -f "$f" ]; then mv -f "$f" "tools/$f"; echo "移動: $f"; fi
+            best=""; bt=-1
+            while IFS= read -r p; do
+              t=$(git log -1 --format=%ct -- "$p" 2>/dev/null); t=${t:-0}
+              if [ "$t" -ge "$bt" ]; then bt=$t; best="$p"; fi
+            done < <(find . -type f -name "*$f" -not -path "./tools/*" -not -path "./.git/*" -not -path "./.github/*" -printf '%P\n')
+            if [ -n "$best" ]; then cp -f "$best" "tools/$f"; echo "更新: $best → tools/$f"; fi
+            find . -type f -name "*$f" -not -path "./tools/*" -not -path "./.git/*" -not -path "./.github/*" -delete
           done
+          # zip由来の空ファイル・文字化けした名前の残骸・空フォルダを消す
+          find . -maxdepth 2 -type f -size 0 -not -path "./.git/*" -not -path "./.github/*" -not -path "./tools/*" -delete
+          find . -type f \( -name "*.txt" -o -name "*.yml" \) -not -path "./.git/*" -not -path "./.github/*" -not -path "./tools/*" -delete
+          find . -mindepth 1 -type d -empty -not -path "./.git*" -delete
       - name: 国土地理院から取得して再生成
         run: python tools/build.py
       - name: 手作り版の見直しが必要なら通知（Issue作成）
