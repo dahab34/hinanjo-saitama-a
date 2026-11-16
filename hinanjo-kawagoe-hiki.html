@@ -106,7 +106,7 @@ footer{color:var(--sub);font-size:11.5px;padding:16px 14px 30px;line-height:1.6}
  body.printing>*:not(#printSheet){display:none!important}
  body.printing{background:#fff!important}
  body.printing #printSheet{display:block}
- @page{size:A4 portrait;margin:14mm 15mm}
+ @page{size:A4 portrait;margin:16mm 15mm}
 }
 #printSheet{box-sizing:border-box;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;color:#000;font-size:14px;line-height:1.45}
 #printSheet h1{font-size:18.7px;margin:0 0 2px}
@@ -1191,11 +1191,14 @@ async function makeFile(btn,type,fname,label){
  if(btn._blob){ saveBlob(btn._blob,fname+"."+type); return; }
  btn.disabled=true; btn.textContent=type==="png"?"📷 画像を作成中…":"📄 PDFを作成中…";
  try{
-  const c=await sheetCanvas(); let blob;
+  const c0=await sheetCanvas(); let blob;
+  // A4の紙に余白(左右15mm・上下16mm)を付けた画像にする。プリンターの印刷できない端で切れないように。
+  const c=(()=>{const W=Math.round(c0.width*210/180),H=Math.round(W*297/210),m=W*15/210,t=W*16/210,aw=W-2*m,ah=H-2*t;
+   let w=aw,h=c0.height*aw/c0.width; if(h>ah){h=ah;w=c0.width*ah/c0.height;}
+   const k=document.createElement("canvas");k.width=W;k.height=H;const x=k.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,W,H);x.drawImage(c0,(W-w)/2,t,w,h);return k;})();
   if(type==="png"){ blob=await new Promise(r=>c.toBlob(r,"image/png")); }
   else{ await loadJS("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
-   const pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"}); const mw=190,mh=277; let w=mw,h=c.height*w/c.width; if(h>mh){h=mh;w=c.width*h/c.height;}
-   pdf.addImage(c.toDataURL("image/jpeg",0.92),"JPEG",(210-w)/2,10,w,h); blob=pdf.output("blob"); }
+   const pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"}); pdf.addImage(c.toDataURL("image/jpeg",0.92),"JPEG",0,0,210,297); blob=pdf.output("blob"); }
   btn._blob=blob; btn.disabled=false; btn.classList.add("ready");
   btn.textContent=(type==="png"?"✅ 画像ができました → タップして保存":"✅ PDFができました → タップして保存");
  }catch(e){ btn.disabled=false; btn.textContent=label+"（もう一度）"; alertMsg("作成に失敗しました。通信状況を確認して、もう一度お試しください。"); }
