@@ -109,28 +109,28 @@ footer{color:var(--sub);font-size:11.5px;padding:16px 14px 30px;line-height:1.6}
  @page{size:A4 portrait;margin:14mm 15mm}
 }
 #printSheet{box-sizing:border-box;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;color:#000;font-size:14px;line-height:1.45}
-#printSheet h1{font-size:18.7px;margin:0 0 .18.9px}
+#printSheet h1{font-size:18.7px;margin:0 0 2px}
 #printSheet .ps-sub{font-size:12px;color:#333;margin-bottom:7.6px}
 #printSheet .ps-top{display:flex;gap:15.1px;align-items:flex-start;border:1.6px solid #000;padding:11.3px;margin-bottom:11.3px}
 #printSheet .ps-top .f{flex:1}
-#printSheet .ps-row{display:flex;border-bottom:.8px solid #888;padding:4.2px 0 .18.9px;font-size:13.3px}
+#printSheet .ps-row{display:flex;border-bottom:.8px solid #888;padding:4.2px 0 2px;font-size:13.3px}
 #printSheet .ps-row b{width:90.7px;flex:none}
 #printSheet .ps-qr{text-align:center;font-size:9.3px;width:75.6px;flex:none}
 #printSheet .ps-qr svg{width:49.1px;height:49.1px}
 #printSheet .ps-sec{border:0;padding:0;margin:0;background:none}
 #printSheet h1,#printSheet h2,#printSheet b,#printSheet td,#printSheet div{color:#000}
-#printSheet h2{font-size:13.3px;margin:0 0 .22.7px;padding:.26.5px 7.6px;background:#e6e6e6;border-left:9.4px solid #000}
+#printSheet h2{font-size:13.3px;margin:0 0 3px;padding:3.5px 7.6px;background:#e6e6e6;border-left:9.4px solid #000}
 #printSheet h2 small{font-weight:400;font-size:11.3px;margin-left:7.6px}
 #printSheet table{width:100%;table-layout:fixed;border-collapse:collapse;page-break-inside:avoid}
 #printSheet td.n{width:34px;text-align:center;padding-top:3.8px}
-#printSheet td{border:.8px solid #666;padding:.18.9px 5.3px;vertical-align:top}
+#printSheet td{border:.8px solid #666;padding:2px 5.3px;vertical-align:top}
 #printSheet td.n{width:22.7px;text-align:center;font-weight:700}
-#printSheet td.q{width:37.8px;text-align:center;font-size:8px;color:#333;padding:.22.7px}
+#printSheet td.q{width:37.8px;text-align:center;font-size:8px;color:#333;padding:3px}
 #printSheet td.q svg{width:34px;height:34px;display:block;margin:0 auto}
 #printSheet td.d{width:60.5px;text-align:right;white-space:nowrap}
 #printSheet .ps-nm{font-weight:700;font-size:13.3px;color:#000;line-height:1.3}
 #printSheet .ps-sm{font-size:10.7px;color:#222;line-height:1.3}
-#printSheet .ps-fl{display:inline-block;border:.8px solid #000;border-radius:3.8px;padding:0 4.5px;font-size:10.7px;margin-top:.11.3px;line-height:1.35}
+#printSheet .ps-fl{display:inline-block;border:.8px solid #000;border-radius:3.8px;padding:0 4.5px;font-size:10.7px;margin-top:1.5px;line-height:1.35}
 #printSheet .ps-fl.ng{background:#000;color:#fff}
 #printSheet .ps-none{font-size:12px;color:#444;padding:3.8px 0}
 #printSheet,#printSheet *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -150,13 +150,16 @@ footer{color:var(--sub);font-size:11.5px;padding:16px 14px 30px;line-height:1.6}
 #printSheet .ps-north{position:absolute;right:10px;top:8px;background:rgba(255,255,255,.9);padding:2px 6px;text-align:center;font-size:12px;font-weight:800;line-height:1.1}
 #printSheet .ps-attr{position:absolute;right:4px;bottom:3px;font-size:8.7px;background:rgba(255,255,255,.85);padding:0 3px}
 #printSheet .ps-legend{font-size:10.7px;margin-top:3.8px;line-height:1.55}
-#printSheet .ps-dp{display:inline-block;width:12.1px;height:12.1px;border:.6.7px solid #666;vertical-align:-.18.9px;margin:0 .22.7px 0 5.3px}
+#printSheet .ps-dp{display:inline-block;width:12.1px;height:12.1px;border:1px solid #666;vertical-align:-2px;margin:0 3px 0 5.3px}
 #printSheet .ps-fld{opacity:.62}
 #printSheet .ps-legend .ps-mk{font-size:10px;margin:0 2px 0 0}
 #printSheet td.n .ps-mk{font-size:10.7px}
 #printSheet .ps-head{display:flex;align-items:baseline;gap:15.1px;flex-wrap:wrap;margin-bottom:5.7px}
 #printSheet .ps-head h1{margin:0}
 #printSheet .ps-head .ps-sub{margin:0}
+#printSheet .ps-head{align-items:center}
+#printSheet .ps-qrh{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:9.3px;line-height:1.25}
+#printSheet .ps-qrh svg{width:46px;height:46px;display:block}
 #printSheet .ps-row2{display:flex;gap:15.1px}
 #printSheet .ps-row2 .ps-row{flex:1}
 #printSheet .ps-top{padding:5.7px 11.3px;margin-bottom:7.6px}
@@ -164,13 +167,34 @@ footer{color:var(--sub);font-size:11.5px;padding:16px 14px 30px;line-height:1.6}
 #printSheet .ps-it,#printSheet h2{break-inside:avoid;page-break-inside:avoid}
 #printSheet h2{break-after:avoid}
 #printSheet .ps-sec+.ps-sec{margin-top:6px}
-#printSheet .ps-it{display:flex;gap:6px;align-items:flex-start;border-bottom:.6.7px solid #999;padding:.30.2px 0}
-#printSheet .ps-it>.ps-mk{flex:none;margin-top:.15.1px}
+#printSheet .ps-it{display:flex;gap:6px;align-items:flex-start;border-bottom:1px solid #999;padding:4px 0}
+#printSheet .ps-it>.ps-mk{flex:none;margin-top:2px}
 #printSheet .ps-tx{flex:1;min-width:0}
 #printSheet .ps-iq{flex:none;width:37.8px}
 #printSheet .ps-iq svg{width:37.8px;height:37.8px;display:block}
 #printSheet .ps-d{float:right;font-weight:700;font-size:12px;margin-left:7.6px}
 #printSheet .ps-foot{margin-top:5.7px;font-size:9.7px;line-height:1.35;color:#222;border-top:.8px solid #000;padding-top:5.7px}
+
+/* 文字を大きく（見やすさ優先） */
+#printSheet h1{font-size:24px}
+#printSheet .ps-sub{font-size:14px}
+#printSheet h2{font-size:16.5px;padding:3px 8px}
+#printSheet h2 small{font-size:13px}
+#printSheet .ps-nm{font-size:16.5px;line-height:1.3}
+#printSheet .ps-d{font-size:15px}
+#printSheet .ps-sm{font-size:13px;line-height:1.35}
+#printSheet .ps-fl{font-size:13px}
+#printSheet .ps-none{font-size:14px}
+#printSheet .ps-mk{font-size:13.5px;padding:0 5px}
+#printSheet .ps-legend{font-size:12.5px}
+#printSheet .ps-legend .ps-mk{font-size:12px}
+#printSheet .ps-foot{font-size:11.5px;line-height:1.4}
+#printSheet .ps-scale{font-size:12.5px}
+#printSheet .ps-north{font-size:14px}
+#printSheet .ps-iq,#printSheet .ps-iq svg{width:44px;height:44px}
+#printSheet .ps-qrh{font-size:11px}
+#printSheet .ps-qrh svg{width:54px;height:54px}
+#printSheet .ps-home{font-size:34px}
 
 #printSheet .ps-in{width:680px;margin:0 auto}
 @media print and (max-width:680px){body.printing #printSheet{zoom:0.971}}
@@ -1037,7 +1061,8 @@ function buildSheet(lat,lng,base,list,isAddr,onReady){
  const E=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
  const N=3, now=new Date(), ds=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
  const asof=((typeof SRC!=="undefined"&&SRC[city]||"").match(/（([^）]*時点)）/)||[])[1]||"";
- const flT=s=>{ if(s.flood==="up") return ["水害時は "+(s.fl||"上の階")+" へ",""]; if(s.flood==="no") return ["水害時は使えない","ng"]; if(s.flood==="ok") return ["水害時 1階から可",""]; return ["水害時の可否：データ未掲載",""]; };
+ const flT=s=>{ if(s.flood==="up") return ["水害時は "+(s.fl||"上の階")+" へ",""]; if(s.flood==="no") return ["水害時は使えない","ng"]; if(s.flood==="ok") return ["水害時 1階から可",""]; return ["水害時：情報なし",""]; };
+ const nt=(s,g)=>{ let t=String(s.note||"").replace(/・収容.*$/,""); if(g[3]==="福") t=t.replace(/被害が大きく避難生活が長引くときに市が開設/,"").replace(/^[・、\s]+/,""); return t?"　※"+E(t):""; };
  const FOK=s=>s.flood==="ok"||s.flood==="up";
  const bc=((isAddr&&String(base).replace(/^.+?[都道府県]/,"").match(/^(.+?[市町村])/))||[])[1]||(list[0]&&list[0].city)||"";
  const G=[["まず逃げる場所","指定緊急避難場所",isEmg,"緊"],
@@ -1052,20 +1077,16 @@ function buildSheet(lat,lng,base,list,isAddr,onReady){
  const items=(g,n)=>{ const L=list.filter(g[2]).slice(0,n||N); if(!L.length) return g[3]==="福"?`<div class="ps-none">${E(bc)}の福祉避難所は公開データに載っていません。要配慮の方は、事前に市町村（福祉・防災の担当課）か担当のケアマネジャーに確認してください。</div>`:'<div class="ps-none">この周辺には登録がありません。</div>';
   return L.map((s,i)=>{ const f=flT(s), lb=g[3]+(i+1); marks.push({lat:s.lat,lng:s.lng,lb:lb,g:g[3],nm:s.name,d:s._d,fl:f[0]});
    const both=g[3]==="緊"&&(s.kind==="K"||s.kind==="H")?"（避難所も兼ねる）":"";
-   return `<div class="ps-it"><span class="ps-mk ps-g${g[3]}">${lb}</span><div class="ps-tx"><div class="ps-nm">${E(s.name)}<span class="ps-d">約${_FD(s._d)}</span></div><div class="ps-sm">${E(s.city+s.addr)}${s.tel?"　☎"+E(s.tel):""}${both}</div><div class="ps-sm"><span class="ps-fl ${f[1]}">${f[0]}</span>${s.note?"　※"+E(s.note):""}</div></div><div class="ps-iq">${qrSvg(`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}`)}</div></div>`; }).join(""); };
+   return `<div class="ps-it"><span class="ps-mk ps-g${g[3]}">${lb}</span><div class="ps-tx"><div class="ps-nm">${E(s.name)}<span class="ps-d">約${_FD(s._d)}</span></div><div class="ps-sm">${E(s.city+s.addr)}${s.tel?"　☎"+E(s.tel):""}${both}</div><div class="ps-sm"><span class="ps-fl ${f[1]}">${f[0]}</span>${nt(s,g)}</div></div><div class="ps-iq">${qrSvg(`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}`)}</div></div>`; }).join(""); };
  const lists=G.map(g=>`<div class="ps-sec"><h2>${g[0]}<small>${g[1]}</small></h2>`+items(g,(G.length>3&&g[3]==="福")?2:N)+`</div>`).join("");
  const hz=qrSvg(`https://disaportal.gsi.go.jp/maps/index.html?ll=${lat},${lng}&z=16`);
  const el=document.getElementById("printSheet")||document.body.appendChild(Object.assign(document.createElement("div"),{id:"printSheet"}));
- el.innerHTML=`<div class="ps-in"><div class="ps-head"><h1>わが家の避難先メモ</h1><div class="ps-sub">${isAddr?`基準：<b>${E(base)}</b>`:`基準：現在地（${lat.toFixed(5)}, ${lng.toFixed(5)}）`}　作成日：${ds}</div></div>
- <div class="ps-top"><div class="f">
-  <div class="ps-row2"><div class="ps-row"><b>お名前</b><span></span></div><div class="ps-row"><b>緊急連絡先</b><span></span></div></div>
-  <div class="ps-row"><b>メモ</b><span style="color:#777;font-size:10.7px">持ち出し品・避難の手助けが必要なこと など</span></div>
- </div>${hz?`<div class="ps-qr">${hz}<br>ハザードマップ</div>`:""}</div>
- <div class="ps-mapbox" id="psMapbox" style="height:${G.length>3?370:440}px"></div>
+ el.innerHTML=`<div class="ps-in"><div class="ps-head"><h1>避難先マップ</h1><div class="ps-sub">${isAddr?`基準：<b>${E(base)}</b>`:`基準：現在地（${lat.toFixed(5)}, ${lng.toFixed(5)}）`}　作成日：${ds}</div>${hz?`<div class="ps-qrh">${hz}<span>ハザード<br>マップ</span></div>`:""}</div>
+ <div class="ps-mapbox" id="psMapbox" style="height:${G.length>3?330:400}px"></div>
  <div class="ps-legend"><span class="ps-home">★</span>${isAddr?"この住所":"現在地"}　<span class="ps-mk ps-g緊">緊</span>まず逃げる場所　<span class="ps-mk ps-g避">避</span>寝泊まりする場所${G.some(g=>g[3]==="水")?'　<span class="ps-mk ps-g水">水</span>水害のときの避難先':""}　<span class="ps-mk ps-g福">福</span>福祉避難所　<span style="color:#c00">点線の円</span>＝直線500m・1km　地図の外の施設は縁に方向（→）と距離<br><b>洪水で浸かる深さ（想定最大規模・全河川の重ね合わせ）：</b><span class="ps-dp" style="background:#f7f5a9"></span>0.5m未満 <span class="ps-dp" style="background:#ffd8c0"></span>0.5〜3m（1階が浸かる） <span class="ps-dp" style="background:#ffb7b7"></span>3〜5m（2階まで） <span class="ps-dp" style="background:#ff9191"></span>5〜10m <span class="ps-dp" style="background:#f285c9"></span>10m以上</div>
  <div class="ps-lists">${lists}</div>
- <div class="ps-foot">距離は直線です。浸水や通行止めで通れない道もあります。どこが開くかは災害ごとに違うので、市町村の防災無線・避難情報を確認してください。「水害時は使えない」場所には洪水のとき行かないでください。各施設の右のQRコードをスマホで読むと道案内が開きます。<br>出典：国土地理院 指定緊急避難場所・指定避難所データ${asof?"（"+E(asof)+"）":""}・各市町の避難所資料・地理院タイル（埼玉 避難所ナビ）</div></div>`;
- drawMap(document.getElementById("psMapbox"),lat,lng,marks,onReady,G.length>3?370:440);
+ <div class="ps-foot">距離は直線です。浸水や通行止めで通れない道もあります。どこが開くかは災害ごとに違うので、市町村の避難情報を確認してください。「水害時は使えない」場所には洪水のとき行かないこと。右のQRをスマホで読むと道案内が開きます。<br>出典：国土地理院 指定緊急避難場所・指定避難所データ${asof?"（"+E(asof)+"）":""}・各市町の避難所資料・地理院タイル（埼玉 避難所ナビ）</div></div>`;
+ drawMap(document.getElementById("psMapbox"),lat,lng,marks,onReady,G.length>3?330:400);
  showLive(lat,lng,marks,isAddr);
 }
 function drawMap(box,lat,lng,marks,onReady,H){
@@ -1115,7 +1136,7 @@ function addPrintBtns(box,lat,lng,base,list,isAddr){
  const mk=t=>{const b=document.createElement("button");b.type="button";b.className="printbtn";b.textContent=t;b.disabled=true;w.appendChild(b);return b;};
  const bImg=mk("🗺 地図を準備中…"), bPdf=mk("📄 PDFで保存"), bPr=mk("🖨 印刷する");
  bImg.classList.add("main");
- const fname=(isAddr?String(base).replace(/^.+?[都道府県]/,""):"現在地")+"_避難先メモ";
+ const fname=(isAddr?String(base).replace(/^.+?[都道府県]/,""):"現在地")+"_避難先マップ";
  const hint=document.createElement("div"); hint.className="printhint"; hint.textContent="画像で保存しておくと、電波がないときもスマホの写真から見られます。";
  const lv=document.createElement("div"); lv.id="psLiveWrap"; lv.innerHTML='<div id="psLive"></div><div class="lvbar"><label><input type="checkbox" id="psFld" checked> 洪水で浸かる深さを重ねる</label><span class="lvlg"><i style="background:#f7f5a9"></i>0.5m未満<i style="background:#ffd8c0"></i>〜3m<i style="background:#ffb7b7"></i>〜5m<i style="background:#ff9191"></i>〜10m<i style="background:#f285c9"></i>10m〜</span></div>';
  box.appendChild(lv); box.appendChild(w); box.appendChild(hint);
