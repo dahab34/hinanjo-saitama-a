@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """国土地理院の公開GeoJSONを取得し、9エリア版の「埼玉 避難所ナビ」を再生成する。
 GitHub Actions から月1回実行。件数が大きく減った場合は更新しない（安全装置）。"""
-import json, re, os, sys, urllib.request, email.utils, datetime
+import json, re, os, sys, urllib.request, urllib.parse, email.utils, datetime
 from collections import defaultdict, Counter
 HERE=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(HERE)
 sys.path.insert(0,HERE); from patch_share import patch
@@ -36,7 +36,83 @@ def jis5(cid): m=re.match(r'E(\d{5})',(cid or '').strip()); return m.group(1) if
 OUTDOOR=re.compile(r'公園|グラウンド|グランド|広場|運動場|運動公園|緑地|河川敷|園庭|校庭|ピロティ|多目的')
 
 
+EXTRA=os.path.join(HERE,'extra.json'); GCACHE=os.path.join(HERE,'geocode_cache.json'); EXTRA_OUT=os.path.join(HERE,'extra_geo.json')
+
+def _nad(s):
+    import unicodedata
+    s=unicodedata.normalize('NFKC',s or ''); s=re.sub(r'^.+?[都道府県]','',s); s=re.sub(r'^.+?[市町村]','',s) if re.match(r'^.+?[市町村]',s) else s
+    s=re.sub(r'(\d+)丁目',r'\1-',s); s=re.sub(r'番地?|号','-',s); s=re.sub(r'[^\w-]','',s); return re.sub(r'-+','-',s).strip('-')
+
+def _nnm(s):
+    import unicodedata
+    s=unicodedata.normalize('NFKC',s or ''); s=re.sub(r'[（(].*?[)）]','',s)
+    return re.sub(r'^(埼玉県立|県立|.{1,4}?[市町村]立)','',s).replace(' ','').replace('ー','-').replace('－','-')
+
+def geocode(q, cache):
+    if q in cache: return cache[q]
+    try:
+        url='https://msearch.gsi.go.jp/address-search/AddressSearch?q='+urllib.parse.quote(q)
+        with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'hinanjo-updater'}),timeout=30) as r:
+            a=json.loads(r.read().decode('utf-8'))
+        v=[round(a[0]['geometry']['coordinates'][1],6),round(a[0]['geometry']['coordinates'][0],6)] if a else None
+    except Exception as e:
+        print('住所検索失敗',q,e); return None
+    cache[q]=v; return v
+
+def merge_extra(facs, allrows, muni, short):
+    """tools/extra.json（市町の資料から足すデータ）を反映。座標は国土地理院データから、無ければ住所検索で付ける。"""
+    if not os.path.exists(EXTRA): return
+    ex=json.load(open(EXTRA,encoding='utf-8'))
+    cache=json.load(open(GCACHE,encoding='utf-8')) if os.path.exists(GCACHE) else {}
+    out=[]; nadd=nupd=0
+    for e in ex:
+        c=e['city']; L=facs.setdefault(c,[])
+        same=[f for f in L if _nad(f['addr'])==_nad(e['addr']) or _nnm(f['name'])==_nnm(e['name'])]
+        lat=lng=None
+        if same: lat,lng=same[0]['lat'],same[0]['lng']
+        else:
+            g=[r for r in allrows if short(muni(r))==c and _nad(r.get('住所'))==_nad(e['addr'])]
+            if g: lat,lng=round(float(g[0]['緯度']),6),round(float(g[0]['経度']),6)
+            else:
+                v=geocode('埼玉県'+c+re.sub(r'(エルミ|アネックス).*$','',e['addr']), cache)
+                if v: lat,lng=v
+        if e['kind']=='H' and same:
+            for f in same:
+                if f['kind'] in ('K','H','Q','P'):
+                    f.update(flood=e['flood'],fl=e.get('fl',''),tel=e.get('tel',''),note=e.get('note',''))
+            nupd+=1
+        elif lat:
+            L.append(dict(city=c,name=e['name'],addr=e['addr'],kind=e['kind'],flood=e.get('flood','-'),tel=e.get('tel',''),fl=e.get('fl',''),note=e.get('note',''),lat=lat,lng=lng)); nadd+=1
+        else:
+            print('座標が見つからず追加できない:',c,e['name'],e['addr'])
+        out.append(dict(e,lat=lat,lng=lng))
+    json.dump(cache,open(GCACHE,'w',encoding='utf-8'),ensure_ascii=False,indent=0)
+    json.dump(out,open(EXTRA_OUT,'w',encoding='utf-8'),ensure_ascii=False,indent=0)
+    print(f'市町の資料から：追加{nadd}件・更新{nupd}件')
+
+def card_tweaks(fn):
+    t=open(fn,encoding='utf-8').read()
+    a='<div class="row">${dp}${pill(fl[1],fl[0])}</div>`;'
+    assert a in t
+    t=t.replace(a,'<div class="row">${dp}${pill(fl[1],(s.flood==="up"&&s.fl)?"水害 "+s.fl+"へ":fl[0])}${s.note?`<span class="pill p-cap" style="white-space:normal">${s.note}</span>`:""}</div>`;',1)
+    t=t.replace(' if(fl) t+=`\\n水害：${fl}`;',' if(fl) t+=`\\n水害：${s.flood==="up"&&s.fl?s.fl+"へ":fl}`;\n if(s.note) t+=`\\n※${s.note}`;',1)
+    open(fn,'w',encoding='utf-8').write(t)
+
+def engine_tweaks(t):
+    """エリア版の表示で、使える階（fl）と補足（note）を出す。"""
+    rep=[('tel:r[6],lat:r[7]||0,lng:r[8]||0}));','tel:r[6],lat:r[7]||0,lng:r[8]||0,fl:r[9]||"",note:r[10]||""}));'),
+]
+    for a,b in rep:
+        assert a in t, a[:40]; t=t.replace(a,b,1)
+    return t
+
 def cleanup():
+    import glob, shutil
+    # extra.json がどこに上がっていても tools/ に入れる（一番新しいもの）
+    cands=[f for f in glob.glob(os.path.join(ROOT,'**','*extra.json'),recursive=True) if os.path.dirname(os.path.abspath(f))!=HERE and '/.git' not in f]
+    if cands:
+        newest=max(cands,key=os.path.getmtime); shutil.copy(newest,EXTRA); print('extra.json 更新:',os.path.relpath(newest,ROOT))
+        for f in cands: os.remove(f)
     """手作業アップロードで紛れ込んだ不要ファイルを片付ける（存在するものだけ削除）。"""
     import shutil, glob
     T=os.path.join(ROOT,'tools')
@@ -92,6 +168,7 @@ def main():
             try: return round(float(x),6)
             except: return 0
         facs[short(m)].append(dict(city=short(m),name=src['name'],addr=rel,kind=kind,flood=flood,lat=f6(src['lat']),lng=f6(src['lng'])))
+    merge_extra(facs, ev+sh, muni, short)
     known=[d for d in dates if d]; asof=max(known) if known else datetime.date.today()
     asof_s=f'{asof.year}年{asof.month}月{asof.day}日時点'
     AREAS=[
@@ -115,16 +192,16 @@ def main():
     from urllib.parse import quote
     import index_page
     DMAP={c:ls[0][1]+'?city='+quote(c) for c,_,ls in index_page.DETAIL}
-    tpl=open(os.path.join(HERE,'template.html'),encoding='utf-8').read(); idx=[]; n_all=0
+    tpl=engine_tweaks(open(os.path.join(HERE,'template.html'),encoding='utf-8').read()); idx=[]; n_all=0
     for area,slug,cities in AREAS:
         rows=[f for c in cities for f in facs[c]]
         rows.sort(key=lambda f:(cities.index(f['city']),KORD.get(f['kind'],9),f['name']))
-        raw='\n'+',\n'.join(f"[{esc(f['city'])},{esc(f['name'])},{esc(f['addr'])},\"-\",\"{f['kind']}\",\"{f['flood']}\",\"\",{f['lat']},{f['lng']}]" for f in rows)+'\n'
+        raw='\n'+',\n'.join(f"[{esc(f['city'])},{esc(f['name'])},{esc(f['addr'])},\"-\",\"{f['kind']}\",\"{f['flood']}\",{esc(f.get('tel',''))},{f['lat']},{f['lng']},{esc(f.get('fl',''))},{esc(f.get('note',''))}]" for f in rows)+'\n'
         h=re.sub(r'const RAW = \[.*?\]\.map\(',lambda _:'const RAW = ['+raw+'].map(',tpl,count=1,flags=re.S)
         h=re.sub(r'const CITIES=\[[^\]]*\];',lambda _:'const CITIES=['+','.join(esc(c) for c in cities)+'];',h,count=1)
         h=re.sub(r'const SRC=\{.*?\n\};',lambda _:'const SRC={\n '+',\n '.join(f'{esc(c)}:{esc(NOTE)}' for c in cities)+'\n};',h,count=1,flags=re.S)
         h=h.replace('避難所さがし 東松山営業所版',f'埼玉 避難所ナビ｜{area}').replace('避難所さがし　東松山営業所版',f'埼玉 避難所ナビ｜{area}')
-        h=deeplink(h); fn=os.path.join(ROOT,f'hinanjo-{slug}.html'); open(fn,'w',encoding='utf-8').write(h); patch(fn); print_patch.patch(fn,DMAP)
+        h=deeplink(h); fn=os.path.join(ROOT,f'hinanjo-{slug}.html'); open(fn,'w',encoding='utf-8').write(h); patch(fn); card_tweaks(fn); print_patch.patch(fn,DMAP,print_patch.docs_map())
         idx.append((area,f'hinanjo-{slug}.html',len(rows),cities)); n_all+=len(rows)
     open(os.path.join(ROOT,'hinanjo-areas.html'),'w',encoding='utf-8').write(make_index(idx,facs,asof_s,n_all))
     json.dump({'total':total,'facilities':n_all,'asof':str(asof),'built':str(datetime.date.today())},open(STATE,'w'),ensure_ascii=False,indent=1)

@@ -25,11 +25,23 @@ PDFS=[
  ('杉戸町 洪水ハザードマップ','https://www.town.sugito.lg.jp/uploaded/attachment/13861.pdf',None),
  ('宮代町 避難所一覧','https://www.town.miyashiro.lg.jp/cmsfiles/contents/0000025/25603/P07-P08_hinanjoitiranzentaisakuinzu.pdf',None),
  ('坂戸市 防災関連施設一覧','https://www.city.sakado.lg.jp/uploaded/attachment/34390.pdf',None),
+ ('鴻巣市 避難所一覧（福祉・補助避難所）','https://www.city.kounosu.saitama.jp/site/saigaitaiou/1895.html',None),
  ('久喜市 ハザードマップ（全ページ）','https://www.city.kuki.lg.jp/_res/projects/default_project/_page_/001/007/443/r5.3hm-zenpeji.pdf',None),
 ]
 WATCHED=sorted({c for v in TOOLS.values() for c in v})
 
 def head(url):
+    if url.endswith('.html'):
+        try:
+            import hashlib
+            req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 hinanjo-watch'})
+            with urllib.request.urlopen(req,timeout=60) as r:
+                body=r.read().decode('utf-8','ignore')
+            body=re.sub(r'<script.*?</script>|<[^>]+>|\s+',' ',body,flags=re.S)
+            m=re.search(r'避難所.*',body)
+            return {'status':200,'lm':None,'len':None,'etag':hashlib.sha1((m.group(0) if m else body).encode()).hexdigest()}
+        except urllib.error.HTTPError as e: return {'status':e.code}
+        except Exception as e: return {'status':'err','msg':str(e)[:100]}
     try:
         req=urllib.request.Request(url,method='HEAD',headers={'User-Agent':'Mozilla/5.0 hinanjo-watch'})
         with urllib.request.urlopen(req,timeout=60) as r:

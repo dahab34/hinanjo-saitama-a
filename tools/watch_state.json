@@ -6071,6 +6071,15 @@
 },
 "next": {}
 },
+"鴻巣市 避難所一覧（福祉・補助避難所）": {
+"base": {
+"status": 200,
+"lm": null,
+"len": null,
+"etag": "e5e037a98d7cdebf84fe6da0702474efc1af6eaa"
+},
+"next": {}
+},
 "久喜市 ハザードマップ（全ページ）": {
 "base": {
 "status": 200,

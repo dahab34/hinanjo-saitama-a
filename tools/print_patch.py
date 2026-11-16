@@ -17,6 +17,11 @@ CSS = """
 .printbtn.main{background:var(--accent);color:#fff}
 .printbtn.ready{background:#1d7a3d;border-color:#1d7a3d;color:#fff}
 .printhint{font-size:12px;color:var(--sub);margin-top:6px}
+#cityDocs{font-size:13px;}
+.share.one{justify-content:flex-end}
+.share .sendone{font-size:12px;padding:4px 12px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--sub);cursor:pointer}
+#cityDocs{margin:6px 2px 2px;line-height:1.7}
+#cityDocs a{margin-right:2px}
 #psLiveWrap{margin-top:10px}
 #psLive{height:340px;border-radius:10px;border:1px solid var(--line);background:#e9edf2;z-index:0}
 @media (min-width:900px){#psLive{height:440px}}
@@ -301,6 +306,14 @@ async function makeFile(btn,type,fname,label){
 }
 function alertMsg(t){ const d=document.querySelector(".printhint"); if(d){ d.textContent="⚠ "+t; d.style.color="#a33"; } }
 async function saveBlob(blob,name){
+ // パソコン（Chrome・Edge）は「名前を付けて保存」の画面で保存先を選べるようにする
+ if(window.showSaveFilePicker&&!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+  try{ const pdf=blob.type==="application/pdf";
+   const hnd=await showSaveFilePicker({suggestedName:name,types:[{description:pdf?"PDF":"画像",accept:pdf?{"application/pdf":[".pdf"]}:{"image/png":[".png"]}}]});
+   const w=await hnd.createWritable(); await w.write(blob); await w.close();
+   if(pdf){ const u=URL.createObjectURL(blob); window.open(u,"_blank"); setTimeout(()=>URL.revokeObjectURL(u),60000); }
+   return; }catch(e){ if(e&&e.name==="AbortError") return; }
+ }
  const f=new File([blob],name,{type:blob.type});
  if(navigator.canShare&&navigator.canShare({files:[f]})){ try{ await navigator.share({files:[f],title:name}); return; }catch(e){ if(e&&e.name==="AbortError") return; } }
  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
@@ -324,6 +337,37 @@ function doPrint(){
 }
 """
 
+
+ONESHARE = r'''
+/* ===== 各施設カードの送るボタンを「📤 送る」1つに ===== */
+(function(){
+ function one(){
+  document.querySelectorAll(".card .share:not(.one)").forEach(d=>{
+   d.classList.add("one"); const bs=[...d.querySelectorAll("button")];
+   const nat=bs.find(b=>/SMS|他のアプリ/.test(b.textContent)), cp=bs.find(b=>/コピー/.test(b.textContent));
+   bs.forEach(b=>b.style.display="none");
+   const b=document.createElement("button"); b.className="sendone"; b.textContent=nat?"📤 送る":"📤 送る（コピー）";
+   b.onclick=e=>{e.stopPropagation(); (nat||cp).click(); if(!nat){const o=b.textContent;b.textContent="✓ コピーしました";setTimeout(()=>b.textContent=o,1500);}};
+   d.appendChild(b);
+  });
+ }
+ let q=false; new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;one();});}).observe(document.body,{childList:true,subtree:true});
+ one();
+})();
+'''
+
+DOCJS = r'''
+/* ===== 市町の公式資料（ハザードマップ・避難所一覧）へのリンク ===== */
+(function(){
+ if(typeof CITYDOCS==="undefined"||typeof tabsEl==="undefined") return;
+ const box=document.createElement("div"); box.id="cityDocs"; tabsEl.insertAdjacentElement("afterend",box);
+ const show=()=>{ const L=CITYDOCS[city]||[];
+  box.innerHTML=L.length?`📄 <b>${city}の公式資料</b>：`+L.map(d=>`<a href="${d[1]}" target="_blank" rel="noopener">${d[0]}</a>`).join("　"):"";
+  box.style.display=L.length?"":"none"; };
+ const orig=render; render=function(){ const r=orig.apply(this,arguments); show(); return r; };
+ show();
+})();
+'''
 
 def _konosu(h):
     """鴻巣版（独自エンジン）の renderGps に基準地点と印刷ボタンを足す。"""
@@ -376,7 +420,7 @@ def _template(h, detail):
     return h
 
 
-def patch(path, detail=None):
+def patch(path, detail=None, docs=None):
     """detail: {市町村名: 詳しい版のURL(?city=付き)} を渡すと、結果に詳しい版への案内を出す（エリア版用）。"""
     import json
     h = open(path, encoding='utf-8').read()
@@ -392,6 +436,9 @@ def patch(path, detail=None):
     else:
         h = _konosu(h)
     js = JS.replace('__QR__', QR_URL).replace('__INDEX__', INDEX_URL)
+    js = js + ONESHARE
+    if docs:
+        js = 'const CITYDOCS=' + json.dumps(docs, ensure_ascii=False) + ';\n' + js + DOCJS
     if detail:
         js = 'const DETAILURL=' + json.dumps(detail, ensure_ascii=False) + ';\n' + js
     js += ('try{const _p=new URLSearchParams(location.search),_la=parseFloat(_p.get("lat")),_ln=parseFloat(_p.get("lng"));'
@@ -402,6 +449,17 @@ def patch(path, detail=None):
     return 'patched'
 
 
+def docs_map():
+    import os
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import watch
+    d = {}
+    for label, url, _ in watch.PDFS:
+        c, _, t = label.partition(' ')
+        d.setdefault(c, []).append([t or label, url])
+    return d
+
+
 if __name__ == '__main__':
     for p in sys.argv[1:]:
-        print(p.split('/')[-1], patch(p))
+        print(p.split('/')[-1], patch(p, docs=docs_map()))
