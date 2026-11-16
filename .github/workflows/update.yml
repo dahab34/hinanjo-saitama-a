@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: '17 0 1 * *'   # 毎月1日 9:17（日本時間）
   workflow_dispatch: {}      # 手動実行ボタン
+  push:
+    paths: ['**.py', 'template.html', 'tools/**']   # 設計図をアップロードしたら自動で作り直す
 permissions:
   contents: write
   issues: write
@@ -13,6 +15,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
+      - name: 一番上に置かれた設計図ファイルを tools フォルダへ移す
+        run: |
+          for f in build.py index_page.py print_patch.py watch.py patch_share.py template.html; do
+            if [ -f "$f" ]; then mv -f "$f" "tools/$f"; echo "移動: $f"; fi
+          done
       - name: 国土地理院から取得して再生成
         run: python tools/build.py
       - name: 手作り版の見直しが必要なら通知（Issue作成）
