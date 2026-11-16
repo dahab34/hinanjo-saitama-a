@@ -55,6 +55,8 @@ CSS = """
 #printSheet .ps-home{color:#d00;font-size:22pt;line-height:1;-webkit-text-stroke:1.2px #fff;text-shadow:0 0 2px #000}
 #printSheet .ps-legend .ps-home{font-size:12pt}
 #printSheet .ps-homepin{z-index:3}
+#printSheet .ps-edge{z-index:2}
+#printSheet .ps-edge .ps-mk{border-style:dashed}
 #printSheet .ps-scale{position:absolute;left:10px;bottom:10px;background:rgba(255,255,255,.9);padding:2px 5px;font-size:8pt;font-weight:700}
 #printSheet .ps-scale div{height:5px;border:1.5px solid #000;border-top:0;margin-bottom:1px}
 #printSheet .ps-north{position:absolute;right:10px;top:8px;background:rgba(255,255,255,.9);padding:2px 6px;text-align:center;font-size:9pt;font-weight:800;line-height:1.1}
@@ -75,6 +77,8 @@ CSS = """
 #printSheet .ps-it{display:flex;gap:1.6mm;align-items:flex-start;border-bottom:.5pt solid #999;padding:.8mm 0}
 #printSheet .ps-it>.ps-mk{flex:none;margin-top:.4mm}
 #printSheet .ps-tx{flex:1;min-width:0}
+#printSheet .ps-iq{flex:none;width:10mm}
+#printSheet .ps-iq svg{width:10mm;height:10mm;display:block}
 #printSheet .ps-d{float:right;font-weight:700;font-size:9pt;margin-left:2mm}
 #printSheet .ps-foot{margin-top:1.5mm;font-size:7.3pt;line-height:1.35;color:#222;border-top:.6pt solid #000;padding-top:1.5mm}
 """
@@ -134,7 +138,7 @@ function buildSheet(lat,lng,base,list,isAddr,onReady){
  const items=(g,n)=>{ const L=list.filter(g[2]).slice(0,n||N); if(!L.length) return '<div class="ps-none">この周辺には登録がありません。</div>';
   return L.map((s,i)=>{ const f=flT(s), lb=g[3]+(i+1); marks.push({lat:s.lat,lng:s.lng,lb:lb,g:g[3]});
    const both=g[3]==="緊"&&(s.kind==="K"||s.kind==="H")?"（避難所も兼ねる）":"";
-   return `<div class="ps-it"><span class="ps-mk ps-g${g[3]}">${lb}</span><div class="ps-tx"><div class="ps-nm">${E(s.name)}<span class="ps-d">約${_FD(s._d)}</span></div><div class="ps-sm">${E(s.city+s.addr)}${s.tel?"　☎"+E(s.tel):""}${both}</div><div class="ps-sm"><span class="ps-fl ${f[1]}">${f[0]}</span>${s.note?"　※"+E(s.note):""}</div></div></div>`; }).join(""); };
+   return `<div class="ps-it"><span class="ps-mk ps-g${g[3]}">${lb}</span><div class="ps-tx"><div class="ps-nm">${E(s.name)}<span class="ps-d">約${_FD(s._d)}</span></div><div class="ps-sm">${E(s.city+s.addr)}${s.tel?"　☎"+E(s.tel):""}${both}</div><div class="ps-sm"><span class="ps-fl ${f[1]}">${f[0]}</span>${s.note?"　※"+E(s.note):""}</div></div><div class="ps-iq">${qrSvg(`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}`)}</div></div>`; }).join(""); };
  const lists=G.map(g=>`<div class="ps-sec"><h2>${g[0]}<small>${g[1]}</small></h2>`+items(g,(G.length>3&&g[3]==="福")?2:N)+`</div>`).join("");
  const hz=qrSvg(`https://disaportal.gsi.go.jp/maps/index.html?ll=${lat},${lng}&z=16`);
  const el=document.getElementById("printSheet")||document.body.appendChild(Object.assign(document.createElement("div"),{id:"printSheet"}));
@@ -144,30 +148,47 @@ function buildSheet(lat,lng,base,list,isAddr,onReady){
   <div class="ps-row"><b>メモ</b><span style="color:#777;font-size:8pt">持ち出し品・避難の手助けが必要なこと など</span></div>
  </div>${hz?`<div class="ps-qr">${hz}<br>ハザードマップ</div>`:""}</div>
  <div class="ps-mapbox" id="psMapbox" style="height:${G.length>3?390:470}px"></div>
- <div class="ps-legend"><span class="ps-home">★</span>${isAddr?"この住所":"現在地"}　<span class="ps-mk ps-g緊">緊</span>まず逃げる場所　<span class="ps-mk ps-g避">避</span>寝泊まりする場所${G.some(g=>g[3]==="水")?'　<span class="ps-mk ps-g水">水</span>水害のときの避難先':""}　<span class="ps-mk ps-g福">福</span>福祉避難所　<span style="color:#c00">点線の円</span>＝直線500m・1km</div>
+ <div class="ps-legend"><span class="ps-home">★</span>${isAddr?"この住所":"現在地"}　<span class="ps-mk ps-g緊">緊</span>まず逃げる場所　<span class="ps-mk ps-g避">避</span>寝泊まりする場所${G.some(g=>g[3]==="水")?'　<span class="ps-mk ps-g水">水</span>水害のときの避難先':""}　<span class="ps-mk ps-g福">福</span>福祉避難所　<span style="color:#c00">点線の円</span>＝直線500m・1km　地図の外の施設は縁に方向（→）と距離</div>
  <div class="ps-lists">${lists}</div>
- <div class="ps-foot">距離は直線です。浸水や通行止めで通れない道もあります。どこが開くかは災害ごとに違うので、市町村の防災無線・避難情報を確認してください。「水害時は使えない」場所には洪水のとき行かないでください。<br>出典：国土地理院 指定緊急避難場所・指定避難所データ${asof?"（"+E(asof)+"）":""}・各市町の避難所資料・地理院タイル（埼玉 避難所ナビ）</div>`;
+ <div class="ps-foot">距離は直線です。浸水や通行止めで通れない道もあります。どこが開くかは災害ごとに違うので、市町村の防災無線・避難情報を確認してください。「水害時は使えない」場所には洪水のとき行かないでください。各施設の右のQRコードをスマホで読むと道案内が開きます。<br>出典：国土地理院 指定緊急避難場所・指定避難所データ${asof?"（"+E(asof)+"）":""}・各市町の避難所資料・地理院タイル（埼玉 避難所ナビ）</div>`;
  drawMap(document.getElementById("psMapbox"),lat,lng,marks,onReady,G.length>3?390:470);
 }
 function drawMap(box,lat,lng,marks,onReady,H){
- const W=703,PAD=36,T=256; H=H||470;
+ const W=703,PAD=24,T=256; H=H||470;
  const wx=(ln,z)=>(ln+180)/360*T*2**z, wy=(la,z)=>{const r=la*Math.PI/180;return (1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*T*2**z;};
- const pts=[{lat:lat,lng:lng}].concat(marks.filter(m=>m.lat&&m.lng));
+ const M=marks.filter(m=>m.lat&&m.lng).map(m=>Object.assign({d:distM(lat,lng,m.lat,m.lng)},m));
+ // まず逃げる場所・寝泊まりする場所の近い2つずつ（1.5km以内）が入る、いちばん詳しい縮尺。中心は基準地点。
+ const byD=M.slice().sort((a,b)=>a.d-b.d);
+ let fit=["緊","避"].flatMap(g=>byD.filter(m=>m.g===g).slice(0,2)).filter(m=>m.d<=1500);
+ if(!fit.length) fit=byD.slice(0,2);
  let z=17;
- for(;z>10;z--){ const xs=pts.map(p=>wx(p.lng,z)), ys=pts.map(p=>wy(p.lat,z));
-  if(Math.max(...xs)-Math.min(...xs)<=W-2*PAD&&Math.max(...ys)-Math.min(...ys)<=H-2*PAD) break; }
- const xs=pts.map(p=>wx(p.lng,z)), ys=pts.map(p=>wy(p.lat,z));
- const ox=(Math.max(...xs)+Math.min(...xs))/2-W/2, oy=(Math.max(...ys)+Math.min(...ys))/2-H/2;
+ for(;z>13;z--){ const cx=wx(lng,z), cy=wy(lat,z);
+  if(fit.every(m=>Math.abs(wx(m.lng,z)-cx)<=W/2-PAD&&Math.abs(wy(m.lat,z)-cy)<=H/2-PAD)) break; }
+ const ox=wx(lng,z)-W/2, oy=wy(lat,z)-H/2;
  let html="", n=0;
  for(let tx=Math.floor(ox/T);tx<=Math.floor((ox+W)/T);tx++) for(let ty=Math.floor(oy/T);ty<=Math.floor((oy+H)/T);ty++){ n++;
   html+=`<img class="ps-tile" alt="" style="left:${(tx*T-ox).toFixed(1)}px;top:${(ty*T-oy).toFixed(1)}px" src="https://cyberjapandata.gsi.go.jp/xyz/std/${z}/${tx}/${ty}.png">`; }
- const bx=wx(lng,z)-ox, by=wy(lat,z)-oy, mpp=156543.03392*Math.cos(lat*Math.PI/180)/2**z;
- html+=`<svg class="ps-ov" width="${W}" height="${H}">`+[500,1000].map(m=>{const r=m/mpp;return r<Math.max(W,H)*1.5?`<circle cx="${bx}" cy="${by}" r="${r}" fill="none" stroke="#c00" stroke-width="1.6" stroke-dasharray="6 5"/><text x="${bx+r*0.71+3}" y="${by-r*0.71-3}" font-size="12" font-weight="700" fill="#c00" stroke="#fff" stroke-width="3" paint-order="stroke">${m<1000?m+"m":m/1000+"km"}</text>`:"";}).join("")+`</svg>`;
- const groups=[]; marks.forEach(m=>{ if(!m.lat) return; const x=wx(m.lng,z)-ox, y=wy(m.lat,z)-oy;
+ const bx=W/2, by=H/2, mpp=156543.03392*Math.cos(lat*Math.PI/180)/2**z;
+ html+=`<svg class="ps-ov" width="${W}" height="${H}">`+[500,1000].map(m=>{const r=m/mpp,ang=-0.6;return `<circle cx="${bx}" cy="${by}" r="${r}" fill="none" stroke="#c00" stroke-width="1.6" stroke-dasharray="6 5"/><text x="${bx+r*Math.cos(ang)+3}" y="${by+r*Math.sin(ang)-3}" font-size="12" font-weight="700" fill="#c00" stroke="#fff" stroke-width="3" paint-order="stroke">${m<1000?m+"m":"1km"}</text>`;}).join("")+`</svg>`;
+ const AR=["→","↘","↓","↙","←","↖","↑","↗"], fmt=m=>m<1000?Math.round(m/10)*10+"m":(m/1000).toFixed(1)+"km";
+ const groups=[], edge=[];
+ M.forEach(m=>{ const x=wx(m.lng,z)-ox, y=wy(m.lat,z)-oy;
+  if(x<PAD/2||x>W-PAD/2||y<PAD/2||y>H-PAD/2){ // 地図の外：縁に方向と距離を出す
+   const dx=x-bx, dy=y-by, k=Math.min((W/2-30)/Math.abs(dx||1e-9),(H/2-14)/Math.abs(dy||1e-9));
+   const ex=bx+dx*k, ey=Math.min(Math.max(by+dy*k,12),H-12), a=Math.round(((Math.atan2(dy,dx)*180/Math.PI)+360)%360/45)%8;
+   const same=edge.find(q=>Math.hypot(q.lat-m.lat,q.lng-m.lng)<1e-5); if(same){same.lb.push(m.lb);return;}
+   let ny=ey; while(edge.some(q=>Math.abs(q.x-ex)<110&&Math.abs(q.y-ny)<17)) ny+=(ey>H/2?-17:17);
+   edge.push({x:ex,y:ny,lb:[m.lb],g:m.g,ar:AR[a],d:m.d,lat:m.lat,lng:m.lng});
+   return; }
   const g=groups.find(q=>Math.hypot(q.x-x,q.y-y)<14); if(g){g.lb.push(m.lb);} else groups.push({x:x,y:y,lb:[m.lb],g:m.g}); });
  groups.forEach(q=>{ html+=`<div class="ps-pin" style="left:${q.x.toFixed(1)}px;top:${q.y.toFixed(1)}px"><span class="ps-mk ps-g${q.g}">${q.lb.join("・")}</span></div>`; });
- html+=`<div class="ps-pin ps-homepin" style="left:${bx.toFixed(1)}px;top:${by.toFixed(1)}px"><span class="ps-home">★</span></div>`;
- const nice=[50,100,200,500,1000,2000].find(m=>m/mpp>=90)||2000, bl=nice/mpp;
+ edge.forEach(q=>{ let st;
+  if(q.x<=40) st=`left:4px;top:${q.y.toFixed(1)}px;transform:translate(0,-50%)`;
+  else if(q.x>=W-40) st=`right:4px;top:${q.y.toFixed(1)}px;transform:translate(0,-50%)`;
+  else st=`left:${Math.min(Math.max(q.x,70),W-70).toFixed(1)}px;top:${q.y.toFixed(1)}px`;
+  html+=`<div class="ps-pin ps-edge" style="${st}"><span class="ps-mk ps-g${q.g}">${q.lb.join("・")} ${q.ar}${fmt(q.d)}</span></div>`; });
+ html+=`<div class="ps-pin ps-homepin" style="left:${bx}px;top:${by}px"><span class="ps-home">★</span></div>`;
+ const nice=[50,100,200,500,1000,2000].find(m=>m/mpp>=80)||2000, bl=nice/mpp;
  html+=`<div class="ps-scale"><div style="width:${bl.toFixed(0)}px"></div>${nice<1000?nice+"m":nice/1000+"km"}</div><div class="ps-north">▲<br>北</div><div class="ps-attr">地理院タイル（標準地図）</div>`;
  box.innerHTML=html;
  let left=n, fired=false; const fin=()=>{ if(!fired){ fired=true; onReady&&onReady(); } };
