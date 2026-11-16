@@ -35,7 +35,10 @@ CSS = """
  body.printing>*:not(#printSheet){display:none!important}
  body.printing{background:#fff!important}
  body.printing #printSheet{display:block}
- @page{size:A4 portrait;margin:16mm 15mm}
+ @page{size:A4 portrait;margin:0}
+ /* 余白はシート側で持つ（ブラウザの「余白：なし」やプリンターの「用紙に合わせる」でも上が切れないように） */
+ body.printing{margin:0!important;padding:0!important}
+
 }
 #printSheet{box-sizing:border-box;font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;color:#000;font-size:14px;line-height:1.45}
 #printSheet h1{font-size:18.7px;margin:0 0 2px}
@@ -126,6 +129,8 @@ CSS = """
 #printSheet .ps-home{font-size:34px}
 
 #printSheet .ps-in{width:680px;margin:0 auto}
+@media print{body.printing #printSheet{padding-top:12mm}}
+@media print and (min-width:780px){body.printing #printSheet{padding:17mm 15mm 12mm}}
 @media print and (max-width:680px){body.printing #printSheet{zoom:0.971}}
 @media print and (max-width:660px){body.printing #printSheet{zoom:0.941}}
 @media print and (max-width:640px){body.printing #printSheet{zoom:0.912}}
