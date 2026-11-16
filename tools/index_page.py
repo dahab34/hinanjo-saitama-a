@@ -51,6 +51,9 @@ h1{{font-size:21px;margin:4px 0 2px}}
 .badge{{display:inline-block;background:var(--accentbg);color:var(--accent);font-size:12px;font-weight:600;border-radius:6px;padding:2px 8px;margin-top:6px}}
 .gps{{display:block;width:100%;margin:16px 0 10px;padding:15px 12px;font-size:17px;font-weight:700;color:#fff;background:var(--accent);border:0;border-radius:12px;cursor:pointer}}
 .gps:disabled{{opacity:.7}}
+.addr{{display:flex;gap:6px;margin:0 0 10px}}
+.addr input{{flex:1;min-width:0;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}}
+.addr button{{border:0;background:var(--accentbg);color:var(--accent);font-weight:700;font-size:14.5px;padding:0 14px;border-radius:10px;cursor:pointer;white-space:nowrap}}
 .msg{{font-size:13px;color:#8a2a20;background:#fde8e8;border-radius:8px;padding:8px 10px;margin:0 0 10px;display:none}}
 .search{{position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}}
 .search input{{width:100%;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}}
@@ -89,6 +92,7 @@ h2{{font-size:15px;margin:22px 0 4px}}
 <div class="badge">データ：{asof_s}・毎月自動更新</div>
 
 <button class="gps" id="gps" type="button">📍 今いる場所から一番近い避難所</button>
+<form class="addr" id="addrform" onsubmit="return false"><input id="addr" type="search" placeholder="住所から探す（例：北本市本町1-111）" enterkeyhint="search" autocomplete="off"><button id="addrgo" type="submit">住所で探す</button></form>
 <div class="msg" id="msg"></div>
 
 <div class="search"><div class="seg"><button id="t1" class="on" type="button">一覧</button><button id="t2" type="button">地図</button></div>
@@ -101,7 +105,7 @@ h2{{font-size:15px;margin:22px 0 4px}}
 <p class="lead"><i style="font-style:normal;font-size:10.5px;font-weight:700;color:var(--star);background:var(--starbg);border-radius:4px;padding:0 4px">詳しい版</i> の市町村は、国土地理院データに加えて市町の資料から情報を足した版を開きます。</p>
 <div id="det"></div>
 
-<div class="foot">出典：国土地理院 指定緊急避難場所・指定避難所データ（{asof_s}）。種別・水害可否は自動判定で、上階避難の判断・協定避難先・電話番号は含みません（詳しい版を除く）。開設状況は災害ごとに変わるため、実際の避難は各市町村の防災無線・公式サイトの最新情報に従ってください。現在地検索は https:// で開いたときに使えます。</div>
+<div class="foot">出典：国土地理院 指定緊急避難場所・指定避難所データ（{asof_s}）。種別・水害可否は自動判定で、上階避難の判断・協定避難先・電話番号は含みません（詳しい版を除く）。開設状況は災害ごとに変わるため、実際の避難は各市町村の防災無線・公式サイトの最新情報に従ってください。現在地検索は https:// で開いたときに使えます。住所検索は国土地理院の住所検索を使っています。検索結果のページから、近い避難所をA4の紙に印刷できます。</div>
 </div>
 <script>
 const AREAS={J(A)}, PTS={J(P)}, DET={J(D)};
@@ -170,5 +174,25 @@ btn.onclick=()=>{{
     show(e.code===1?"位置情報の利用が許可されていません。設定で許可するか、市町村名で探してください。":"現在地を取得できませんでした。市町村名で探してください。");}},
   {{enableHighAccuracy:true,timeout:15000,maximumAge:60000}});
 }};
+function nearestCity(la,ln){{const r=Math.PI/180;let best=null,bd=1e18;
+  for(const c in PTS)for(const [a,b] of PTS[c]){{const x=(b-ln)*Math.cos(la*r),y=a-la,d=x*x+y*y;if(d<bd){{bd=d;best=c;}}}}
+  return {{c:best,km:Math.sqrt(bd)*111}};}}
+const af=document.getElementById("addrform"),ai=document.getElementById("addr"),ab=document.getElementById("addrgo");
+async function addrSearch(v){{
+  msg.style.display="none";ab.disabled=true;ab.textContent="検索中…";
+  try{{
+    const r=await fetch("https://msearch.gsi.go.jp/address-search/AddressSearch?q="+encodeURIComponent(v));
+    const a=r.ok?await r.json():[];
+    if(!a.length){{show("その住所が見つかりませんでした。市町村名から入れてみてください（例：北本市本町1-111）。");return;}}
+    const ln=+a[0].geometry.coordinates[0],la=+a[0].geometry.coordinates[1],t=(a[0].properties&&a[0].properties.title)||v;
+    const n=nearestCity(la,ln);
+    if(!n.c||n.km>20){{show(`「${{t}}」の近く（約20km以内）に収録エリアの避難所がありません。`);return;}}
+    const go=detOf[n.c]?detOf[n.c].l[0].u:`${{areaOf[n.c].f}}?city=${{encodeURIComponent(n.c)}}`;
+    location.href=`${{go}}&lat=${{la}}&lng=${{ln}}&label=${{encodeURIComponent(t)}}`;
+  }}catch(e){{show("住所検索に失敗しました（通信状況を確認してください）。市町村名からも探せます。");}}
+  finally{{ab.disabled=false;ab.textContent="住所で探す";}}
+}}
+af.addEventListener("submit",e=>{{e.preventDefault();const v=ai.value.trim();if(v)addrSearch(v);}});
+try{{const v=new URLSearchParams(location.search).get("addr");if(v){{ai.value=v;addrSearch(v);}}}}catch(e){{}}
 </script>
 </body></html>'''

@@ -6,6 +6,7 @@ from collections import defaultdict, Counter
 HERE=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(HERE)
 sys.path.insert(0,HERE); from patch_share import patch
 import watch
+import print_patch
 from index_page import make_index, deeplink
 BASE='https://hinanmap.gsi.go.jp/hinanjocp/defaultFtpData/geoJSON/'
 CODES=['11000','10205','10209','10523','10524','10525','12208','08542']  # 埼玉県全域＋周辺7市町
@@ -111,6 +112,9 @@ def main():
     KORD={'K':0,'F':1,'Q':2,'P':3}; esc=lambda s: json.dumps(s or '',ensure_ascii=False)
     NOTE=(f'出典：国土地理院 指定緊急避難場所・指定避難所データ（{asof_s}）。水害○×は『洪水の指定緊急避難場所か否か』の自動判定。'
           '水害‐は指定避難所のみで種別データ未掲載。上階避難・協定避難先・電話・地区は未収録。最新は各市町村で確認を。')
+    from urllib.parse import quote
+    import index_page
+    DMAP={c:ls[0][1]+'?city='+quote(c) for c,_,ls in index_page.DETAIL}
     tpl=open(os.path.join(HERE,'template.html'),encoding='utf-8').read(); idx=[]; n_all=0
     for area,slug,cities in AREAS:
         rows=[f for c in cities for f in facs[c]]
@@ -120,7 +124,7 @@ def main():
         h=re.sub(r'const CITIES=\[[^\]]*\];',lambda _:'const CITIES=['+','.join(esc(c) for c in cities)+'];',h,count=1)
         h=re.sub(r'const SRC=\{.*?\n\};',lambda _:'const SRC={\n '+',\n '.join(f'{esc(c)}:{esc(NOTE)}' for c in cities)+'\n};',h,count=1,flags=re.S)
         h=h.replace('避難所さがし 東松山営業所版',f'埼玉 避難所ナビ｜{area}').replace('避難所さがし　東松山営業所版',f'埼玉 避難所ナビ｜{area}')
-        h=deeplink(h); fn=os.path.join(ROOT,f'hinanjo-{slug}.html'); open(fn,'w',encoding='utf-8').write(h); patch(fn)
+        h=deeplink(h); fn=os.path.join(ROOT,f'hinanjo-{slug}.html'); open(fn,'w',encoding='utf-8').write(h); patch(fn); print_patch.patch(fn,DMAP)
         idx.append((area,f'hinanjo-{slug}.html',len(rows),cities)); n_all+=len(rows)
     open(os.path.join(ROOT,'hinanjo-areas.html'),'w',encoding='utf-8').write(make_index(idx,facs,asof_s,n_all))
     json.dump({'total':total,'facilities':n_all,'asof':str(asof),'built':str(datetime.date.today())},open(STATE,'w'),ensure_ascii=False,indent=1)
