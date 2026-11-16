@@ -40,7 +40,7 @@ def cleanup():
     """手作業アップロードで紛れ込んだ不要ファイルを片付ける（存在するものだけ削除）。"""
     import shutil, glob
     T=os.path.join(ROOT,'tools')
-    targets=[os.path.join(ROOT,n) for n in ('build.py','index_page.py','patch_share.py','template.html','update.yml','watch.py','hinanjo-chichibu (1).html')]
+    targets=[os.path.join(ROOT,n) for n in ('build.py','index_page.py','patch_share.py','print_patch.py','template.html','update.yml','watch.py','hinanjo-chichibu (1).html')]
     targets+=[f for f in glob.glob(os.path.join(ROOT,'*txt'))+glob.glob(os.path.join(T,'*txt')) if os.path.isfile(f)]
     targets+=[os.path.join(T,'tools'),os.path.join(T,'hinanjo'),os.path.join(T,'__pycache__')]+glob.glob(os.path.join(T,'auto-update*'))
     for t in targets:
