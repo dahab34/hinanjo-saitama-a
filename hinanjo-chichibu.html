@@ -210,6 +210,11 @@ footer{color:var(--sub);font-size:11.5px;padding:16px 14px 30px;line-height:1.6}
 #printSheet .ps-head{flex-wrap:nowrap}
 #printSheet .ps-head h1{white-space:nowrap}
 #printSheet .ps-head .ps-sub{flex:1 1 auto;min-width:0}
+/* 基準と作成日は塊ごとに折り返す（日付の途中で改行しない） */
+#printSheet .ps-sub{display:flex;flex-wrap:wrap;column-gap:14px;row-gap:1px}
+#printSheet .ps-date{white-space:nowrap}
+#printSheet .ps-qrh{flex:none}
+#printSheet .ps-qrh span{white-space:nowrap}
 #printSheet .ps-in{width:680px;margin:0 auto}
 @media print{body.printing #printSheet{padding-top:12mm}}
 @media print and (min-width:780px){body.printing #printSheet{padding:14mm 15mm 18mm}}
@@ -754,7 +759,7 @@ function buildSheet(lat,lng,base,list,isAddr,onReady){
  const lists=G.map(g=>`<div class="ps-sec"><h2>${g[0]}<small>${g[1]}</small></h2>`+items(g,(G.length>3&&g[3]==="福")?2:N)+`</div>`).join("");
  const hz=qrSvg(`https://disaportal.gsi.go.jp/maps/index.html?ll=${lat},${lng}&z=16`);
  const el=document.getElementById("printSheet")||document.body.appendChild(Object.assign(document.createElement("div"),{id:"printSheet"}));
- el.innerHTML=`<div class="ps-in"><div class="ps-head"><h1>避難先マップ</h1><div class="ps-sub">${isAddr?`基準：<b>${E(base)}</b>`:`基準：現在地（${lat.toFixed(5)}, ${lng.toFixed(5)}）`}　作成日：${ds}</div>${hz?`<div class="ps-qrh">${hz}<span>ハザード<br>マップ</span></div>`:""}</div>
+ el.innerHTML=`<div class="ps-in"><div class="ps-head"><h1>避難先マップ</h1><div class="ps-sub"><span class="ps-base">${isAddr?`基準：<b>${E(base)}</b>`:`基準：現在地（${lat.toFixed(5)}, ${lng.toFixed(5)}）`}</span><span class="ps-date">作成日：${ds}</span></div>${hz?`<div class="ps-qrh">${hz}<span>ハザード<br>マップ</span></div>`:""}</div>
  <div class="ps-depth" id="psDepth" style="display:none"></div>
  <div class="ps-mapbox" id="psMapbox" style="height:${G.length>3?310:380}px"></div>
  <div class="ps-legend"><span class="ps-home">★</span>${isAddr?"この住所":"現在地"}　<span class="ps-mk ps-g緊">緊</span>まず逃げる場所　<span class="ps-mk ps-g避">避</span>寝泊まりする場所${G.some(g=>g[3]==="水")?'　<span class="ps-mk ps-g水">水</span>水害のときの避難先':""}　<span class="ps-mk ps-g福">福</span>福祉避難所　<span style="color:#c00">点線の円</span>＝直線500m・1km　地図の外の施設は縁に方向（→）と距離<br><b>洪水で浸かる深さ（想定最大規模・全河川の重ね合わせ）：</b><span class="ps-dp" style="background:#f7f5a9"></span>0.5m未満 <span class="ps-dp" style="background:#ffd8c0"></span>0.5〜3m（1階が浸かる） <span class="ps-dp" style="background:#ffb7b7"></span>3〜5m（2階まで） <span class="ps-dp" style="background:#ff9191"></span>5〜10m <span class="ps-dp" style="background:#f285c9"></span>10m以上</div>
