@@ -1221,11 +1221,17 @@ function showLive(lat,lng,marks,isAddr){
   });
   const near=marks.filter(x=>x.lat&&(x.d<=700||["緊1","避1"].includes(x.lb))&&x.d<=1500).map(x=>[x.lat,x.lng]);
   m.fitBounds(L.latLngBounds([[lat,lng]].concat(near)).pad(0.15),{maxZoom:17});
-  setTimeout(()=>m.invalidateSize(),60);
+  // 表示の大きさが後から決まっても地図を描き直す（地図が灰色のままになるのを防ぐ）
+  [60,400,1200].forEach(t=>setTimeout(()=>{ if(LVMAP===m){ m.invalidateSize(); m.fitBounds(L.latLngBounds([[lat,lng]].concat(near)).pad(0.15),{maxZoom:17}); } },t));
+  if(window.ResizeObserver){ if(box._ro) box._ro.disconnect(); box._ro=new ResizeObserver(()=>{ if(LVMAP===m) m.invalidateSize(); }); box._ro.observe(box); }
  };
- if(window.L) return go();
- const css=document.createElement("link"); css.rel="stylesheet"; css.href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"; document.head.appendChild(css);
- loadJS("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js").then(go).catch(()=>{ box.innerHTML='<div style="padding:12px;color:#a33;font-size:13px">地図を読み込めませんでした（通信状況を確認してください）。</div>'; });
+ // 地図の部品（CSS）が読み終わってから作る
+ const cssURL="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+ let css=[...document.querySelectorAll("link")].find(x=>x.href===cssURL);
+ if(!css){ css=document.createElement("link"); css.rel="stylesheet"; css.href=cssURL; css.addEventListener("load",()=>css._ok=true); document.head.appendChild(css); }
+ const cssReady=css._ok||css.sheet?Promise.resolve():new Promise(ok=>{ css.addEventListener("load",ok); css.addEventListener("error",ok); setTimeout(ok,4000); });
+ if(window.L) return cssReady.then(go);
+ Promise.all([loadJS("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"),cssReady]).then(go).catch(()=>{ box.innerHTML='<div style="padding:12px;color:#a33;font-size:13px">地図を読み込めませんでした（通信状況を確認してください）。</div>'; });
 }
 function loadJS(u){ return new Promise((ok,ng)=>{ const e=[...document.scripts].find(x=>x.src===u); if(e&&e._ok) return ok(); const s=e||document.createElement("script");
  s.src=u; s.addEventListener("load",()=>{s._ok=true;ok();}); s.addEventListener("error",ng); if(!e) document.head.appendChild(s); }); }
