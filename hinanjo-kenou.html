@@ -205,9 +205,14 @@ footer{color:var(--sub);font-size:11.5px;padding:16px 14px 30px;line-height:1.6}
 #printSheet .ps-depth small{font-size:12.5px;color:#222}
 .lvdepth{border:1.5px solid #888;border-radius:8px;padding:8px 10px;margin:0 0 8px;font-size:14px;line-height:1.5;background:#fff}
 .lvdepth small{display:block;font-size:12px;color:#555;margin-top:2px}
+/* iPhoneの文字自動拡大を止める（保存画像で凡例や注意書きだけ大きくなるのを防ぐ） */
+#printSheet,#printSheet *{-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important}
+#printSheet .ps-head{flex-wrap:nowrap}
+#printSheet .ps-head h1{white-space:nowrap}
+#printSheet .ps-head .ps-sub{flex:1 1 auto;min-width:0}
 #printSheet .ps-in{width:680px;margin:0 auto}
 @media print{body.printing #printSheet{padding-top:12mm}}
-@media print and (min-width:780px){body.printing #printSheet{padding:17mm 15mm 12mm}}
+@media print and (min-width:780px){body.printing #printSheet{padding:14mm 15mm 18mm}}
 @media print and (max-width:680px){body.printing #printSheet{zoom:0.971}}
 @media print and (max-width:660px){body.printing #printSheet{zoom:0.941}}
 @media print and (max-width:640px){body.printing #printSheet{zoom:0.912}}
@@ -1006,13 +1011,13 @@ async function makeFile(btn,type,fname,label){
  btn.disabled=true; btn.textContent=type==="png"?"📷 画像を作成中…":"📄 PDFを作成中…";
  try{
   const c0=await sheetCanvas(); let blob;
-  // A4の紙に余白(左右15mm・上下16mm)を付けた画像にする。プリンターの印刷できない端で切れないように。
-  const c=(()=>{const W=Math.round(c0.width*210/180),H=Math.round(W*297/210),m=W*15/210,t=W*16/210,aw=W-2*m,ah=H-2*t;
-   let w=aw,h=c0.height*aw/c0.width; if(h>ah){h=ah;w=c0.width*ah/c0.height;}
-   const k=document.createElement("canvas");k.width=W;k.height=H;const x=k.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,W,H);x.drawImage(c0,(W-w)/2,t,w,h);return k;})();
+  // 画像：周りに細い白フチだけ付ける（スマホで見やすく、印刷アプリで端が切れない程度）
+  const c=(()=>{const m=Math.round(c0.width*0.035),k=document.createElement("canvas");k.width=c0.width+2*m;k.height=c0.height+2*m;
+   const x=k.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,k.width,k.height);x.drawImage(c0,m,m);return k;})();
   if(type==="png"){ blob=await new Promise(r=>c.toBlob(r,"image/png")); }
   else{ await loadJS("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
-   const pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"}); pdf.addImage(c.toDataURL("image/jpeg",0.92),"JPEG",0,0,210,297); blob=pdf.output("blob"); }
+   const pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"}); const mx=12,mt=12,mb=14,aw=210-2*mx,ah=297-mt-mb; let w=aw,h=c0.height*aw/c0.width; if(h>ah){h=ah;w=c0.width*ah/c0.height;}
+   pdf.addImage(c0.toDataURL("image/jpeg",0.92),"JPEG",(210-w)/2,mt,w,h); blob=pdf.output("blob"); }
   btn._blob=blob; btn.disabled=false; btn.classList.add("ready");
   btn.textContent=(type==="png"?"✅ 画像ができました → タップして保存":"✅ PDFができました → タップして保存");
  }catch(e){ btn.disabled=false; btn.textContent=label+"（もう一度）"; alertMsg("作成に失敗しました。通信状況を確認して、もう一度お試しください。"); }
@@ -1037,7 +1042,7 @@ function fitSheet(){
  const el=document.getElementById("printSheet"); if(!el) return; const inn=el.querySelector(".ps-in"); if(!inn) return;
  inn.style.zoom=""; const keep=el.style.cssText;
  el.style.cssText+=";display:block;position:absolute;left:-10000px;top:0;visibility:hidden;zoom:1";
- const h=inn.scrollHeight, lim=680*1.36;
+ const h=inn.scrollHeight, lim=680*1.30;
  el.style.cssText=keep;
  if(h>lim) inn.style.zoom=(lim/h).toFixed(3);
 }
