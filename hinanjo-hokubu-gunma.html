@@ -1445,8 +1445,10 @@ function fillDepth(lat,lng,isAddr){
 }
 let LVMAP=null;
 function showLive(lat,lng,marks,isAddr){
- const box=document.getElementById("psLive"); if(!box) return;
+ if(!document.getElementById("psLive")) return;
  const go=()=>{
+  // 読み込み待ちの間に結果が描き直される（タブが切り替わる等）ことがあるので、その時点の地図枠を探し直す
+  const box=document.getElementById("psLive"); if(!box||!box.isConnected||box._lvDone) return; box._lvDone=1;
   if(LVMAP){ LVMAP.remove(); LVMAP=null; }
   const m=L.map(box,{scrollWheelZoom:false,tap:true}); LVMAP=m;
   L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",{maxZoom:18,attribution:'<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">地理院タイル</a>'}).addTo(m);
@@ -1475,7 +1477,7 @@ function showLive(lat,lng,marks,isAddr){
  if(!css){ css=document.createElement("link"); css.rel="stylesheet"; css.href=cssURL; css.addEventListener("load",()=>css._ok=true); document.head.appendChild(css); }
  const cssReady=css._ok||css.sheet?Promise.resolve():new Promise(ok=>{ css.addEventListener("load",ok); css.addEventListener("error",ok); setTimeout(ok,4000); });
  if(window.L) return cssReady.then(go);
- Promise.all([loadJS("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"),cssReady]).then(go).catch(()=>{ box.innerHTML='<div style="padding:12px;color:#a33;font-size:13px">地図を読み込めませんでした（通信状況を確認してください）。</div>'; });
+ Promise.all([loadJS("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"),cssReady]).then(go).catch(()=>{ const box=document.getElementById("psLive"); if(box) box.innerHTML='<div style="padding:12px;color:#a33;font-size:13px">地図を読み込めませんでした（通信状況を確認してください）。</div>'; });
 }
 function loadJS(u){ return new Promise((ok,ng)=>{ const e=[...document.scripts].find(x=>x.src===u); if(e&&e._ok) return ok(); const s=e||document.createElement("script");
  s.src=u; s.addEventListener("load",()=>{s._ok=true;ok();}); s.addEventListener("error",ng); if(!e) document.head.appendChild(s); }); }
