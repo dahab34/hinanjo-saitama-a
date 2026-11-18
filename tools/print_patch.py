@@ -8,6 +8,10 @@ QR_URL = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'
 
 CSS = """
 .addrbox{display:flex;gap:6px;margin:6px 0 0}
+.addrin{flex:1;min-width:0;display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:text}
+.addrin input{border:0!important;background:transparent!important;outline:none;padding-left:6px!important}
+#addrPre{padding:0 0 0 11px;font-weight:700;font-size:16px;color:#1f2d3d;white-space:nowrap}#addrPre:empty{display:none}
+#addrPre:empty+input{padding-left:10px!important}
 #addrform+.hint,#addrform+div{margin-top:6px!important}
 .addrbox input{flex:1;min-width:0;font-size:16px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}
 .addrbox button{border:0;background:#e9eef4;color:var(--accent);font-weight:700;font-size:14px;padding:0 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
@@ -167,7 +171,7 @@ CSS = """
 """
 
 ADDR_HTML = ('<form class="addrbox" id="addrform" onsubmit="return false">'
-             '<input id="addr" type="search" placeholder="住所から探す（例：北本市本町1-111）" enterkeyhint="search" autocomplete="off">'
+             '<input id="addr" type="search" placeholder="住所から探す（例：本町1-111　市町村名は省略可）" enterkeyhint="search" autocomplete="off">'
              '<button id="addrgo" type="submit">住所で探す</button></form>')
 
 JS = r"""
@@ -189,14 +193,28 @@ async function geocode(text){
 (function(){
  const f=document.getElementById("addrform"), inp=document.getElementById("addr"), btn=document.getElementById("addrgo");
  if(!f) return;
+ // 検索窓の前に、今のタブの市町村名を表示（「鴻巣市｜本町1-111」のように町名から入れられる）
+ const wrap=document.createElement("div"); wrap.className="addrin"; const pre=document.createElement("span"); pre.id="addrPre";
+ inp.parentNode.insertBefore(wrap,inp); wrap.appendChild(pre); wrap.appendChild(inp); wrap.addEventListener("click",()=>inp.focus());
+ const updPre=()=>{ const cs=new Set(_DATA().map(s=>s.city)); const c=(typeof city!=="undefined"&&cs.has(city))?city:"";
+  pre.textContent=c; inp.placeholder=c?"町名・番地（例 本町1-111）":"住所から探す（例：北本市本町1-111）"; };
+ if(typeof render==="function"){ const o=render; render=function(){ const r=o.apply(this,arguments); try{updPre();}catch(_){} return r; }; }
+ const tb=document.getElementById("tabs"); if(tb) tb.addEventListener("click",()=>setTimeout(updPre,0));
+ updPre();
  f.addEventListener("submit",async e=>{
   e.preventDefault(); const v=inp.value.trim(); if(!v) return;
   btn.disabled=true; btn.textContent="検索中…";
   try{
-   const g=await geocode(v);
+   // 今のタブの市町村なら、市町村名を省いて「本町1-111」のように入れてもよい
+   const cs=new Set(_DATA().map(s=>s.city)); let q=v;
+   if(typeof city!=="undefined"&&cs.has(city)&&![...cs].some(c=>v.includes(c))&&!/^.+?[都道府県]|^[^0-9０-９\-－]{1,6}?[市郡]/.test(v)) q=city+v;
+   const g=await geocode(q);
    if(!g){ _MSG('<div class="alert">⚠ その住所が見つかりませんでした。市町村名から入れてみてください（例：北本市本町1-111）。</div>'); return; }
    let m=1e18; _DATA().forEach(s=>{ if(s.lat&&s.lng){ const d=distM(g.lat,g.lng,s.lat,s.lng); if(d<m) m=d; } });
    if(m>5000){ _MSG(`<div class="alert">⚠ 「${g.title}」はこのページの対象エリアの外のようです。<br><a href="__INDEX__?addr=${encodeURIComponent(v)}">全エリアから探す ›</a></div>`); segEl.innerHTML=""; countEl.textContent=""; return; }
+   // 住所の市町村がこのページに入っていなければ、その市町村のページへ案内する
+   { const cs=new Set(_DATA().map(s=>s.city)); const mm=String(g.title||"").match(/^.+?[都道府県](?:[^市町村]+?郡)?(.+?[市町村])/);
+     if(mm&&cs.size&&!cs.has(mm[1])){ const to=`__INDEX__?addr=${encodeURIComponent(v)}`; _MSG(`<div class="alert">${mm[1]}のページへ移動しています…<br><a href="${to}">移動しない場合はこちら ›</a></div>`); segEl.innerHTML=""; countEl.textContent=""; location.href=to; return; } }
    _GPS(g.lat,g.lng,null,g.title);
   }catch(err){ _MSG('<div class="alert">⚠ 住所検索に失敗しました（通信状況を確認してください）。地名・施設名の検索や現在地ボタンもお使いいただけます。</div>'); }
   finally{ btn.disabled=false; btn.textContent="住所で探す"; }
@@ -355,7 +373,7 @@ function showLive(lat,lng,marks,isAddr){
    const mk=L.marker([x.lat,x.lng],{icon:L.divIcon({className:"",html:`<span class="lvmk lv${x.g}">${x.lb}</span>`,iconSize:null})}).addTo(m).bindPopup(pop);
    seen.push({lat:x.lat,lng:x.lng,g:x.g,lbs:[x.lb],mk:mk});
   });
-  const near=marks.filter(x=>x.lat&&(x.d<=700||["緊1","避1"].includes(x.lb))&&x.d<=1500).map(x=>[x.lat,x.lng]);
+  const near=marks.filter(x=>x.lat&&((x.d<=700)||(["緊1","避1"].includes(x.lb)&&x.d<=5000))).map(x=>[x.lat,x.lng]);
   m.fitBounds(L.latLngBounds([[lat,lng]].concat(near)).pad(0.15),{maxZoom:17});
   // 表示の大きさが後から決まっても地図を描き直す（地図が灰色のままになるのを防ぐ）
   [60,400,1200].forEach(t=>setTimeout(()=>{ if(LVMAP===m){ m.invalidateSize(); m.fitBounds(L.latLngBounds([[lat,lng]].concat(near)).pad(0.15),{maxZoom:17}); } },t));
